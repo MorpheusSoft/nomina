@@ -1,0 +1,64 @@
+--- backend/src/reports/reports.controller.ts
++++ backend/src/reports/reports.controller.ts
+@@ -101,4 +101,65 @@
+ 
+     return reportData;
+   }
++
++  @Get('loans-account')
++  async getLoansAccount(
++    @CurrentUser() user: any,
++    @Query('viewType') viewType: string = 'SUMMARIZED',
++    @Query('currencyView') currencyView: string = 'VES',
++    @Query('exchangeRate') exchangeRateString: string = '1'
++  ) {
++    const currentGlobalExchangeRate = Number(exchangeRateString) || 1;
++
++    // Get all valid loans for the tenant
++    const loans = await this.prisma.workerLoan.findMany({
++      where: { tenantId: user.tenantId },
++      include: {
++        worker: {
++          include: {
++            employmentRecords: {
++              where: { isActive: true },
++              include: { department: true, payrollGroup: true }
++            }
++          }
++        }
++      }
++    });
++
++    const loanConceptIds = new Set<string>();
++    // Collect all loan deduction concept IDs
++    loans.forEach(l => {
++      const er = l.worker.employmentRecords[0];
++      if (er?.payrollGroup?.loanDeductionConceptId) {
++         loanConceptIds.add(er.payrollGroup.loanDeductionConceptId);
++      }
++    });
++
++    const reportData = [];
++
++    // If DETAILED, fetch all deductions that match the loan deduction concepts for this tenant
++    let historicalDeductions: any[] = [];
++    if (viewType === 'DETAILED' && loanConceptIds.size > 0) {
++      historicalDeductions = await this.prisma.payrollReceiptDetail.findMany({
++        where: {
++          conceptId: { in: Array.from(loanConceptIds) },
++          payrollReceipt: {
++            payrollPeriod: { tenantId: user.tenantId, status: { in: ['CLOSED', 'APPROVED', 'FINAL'] } }
++          }
++        },
++        include: {
++          payrollReceipt: {
++            include: { payrollPeriod: true }
++          }
++        }
++      });
++    }
++
++    // For now, I'll return the base empty structure. Next step handles computation
++    // I will write the full logic directly into the controller next step
++  }
+ }

@@ -1,0 +1,913 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id                  String               @id @default(uuid()) @db.Uuid
+  name                String               @db.VarChar(255)
+  taxId               String               @map("tax_id") @db.VarChar(50)
+  isActive              Boolean              @default(true) @map("is_active")
+  createdAt             DateTime             @default(now()) @map("created_at")
+  updatedAt             DateTime             @updatedAt @map("updated_at")
+  maxActiveWorkers      Int                  @default(50) @map("max_active_workers")
+  serviceEndDate        DateTime?            @map("service_end_date")
+  hasWorkerPortalAccess Boolean              @default(false) @map("has_worker_portal_access")
+  hasOracleAccess       Boolean              @default(false) @map("has_oracle_access")
+  oraclePrompt          String?              @db.Text @map("oracle_prompt") @default("Asume el rol de un Consultor Experto en Nómina Venezolana e IA de Nebula.\nPara comunicarte con el usuario, escribe en un Español Corporativo y Pragmático, usando terminología de leyes venezolanas (LOTT, IVSS, FAOV, ISLR) pero yendo directamente al grano de la solución y omitiendo teoría extensa.")
+  logoUrl               String?              @db.VarChar(255) @map("logo_url")
+  contactPhone          String?              @db.VarChar(50) @map("contact_phone")
+  documentTemplates   DocumentTemplate[]
+  accountingJournals  AccountingJournal[]
+  attendanceDetails   AttendanceDetail[]
+  attendancePunches   AttendancePunch[]
+  attendanceSummaries AttendanceSummary[]
+  biometricDevices    BiometricDevice[]
+  concepts            Concept[]
+  contractTrusts      ContractTrust[]
+  CostCenter          CostCenter[]
+  DailyAttendance     DailyAttendance[]
+  employmentRecords   EmploymentRecord[]
+  generalCatalogs     GeneralCatalog[]
+  globalVariables     GlobalVariable[]
+  Holiday             Holiday[]
+  payrollAccumulators PayrollAccumulator[]
+  payrollGroups       PayrollGroup[]
+  workerNovelties     WorkerNovelty[]
+  payrollPeriods      PayrollPeriod[]
+  roles               Role[]
+  shiftPatterns       ShiftPattern[]
+  shiftTemplates      ShiftTemplate[]
+  trustTransactions   TrustTransaction[]
+  userAccesses        UserTenantAccess[]
+  users               User[]
+  workerAbsences      WorkerAbsence[]
+  WorkerLoan          WorkerLoan[]
+  workers             Worker[]
+  workerTickets       WorkerTicket[]
+  workerAriForms      WorkerAriForm[]
+
+  @@map("tenants")
+}
+
+model Worker {
+  id                    String              @id @default(uuid()) @db.Uuid
+  tenantId              String              @map("tenant_id") @db.Uuid
+  primaryIdentityNumber String              @map("primary_identity_number") @db.VarChar(50)
+  firstName             String              @map("first_name") @db.VarChar(100)
+  lastName              String              @map("last_name") @db.VarChar(100)
+  birthDate             DateTime            @map("birth_date") @db.Date
+  gender                String              @db.VarChar(20)
+  nationality           String              @db.VarChar(50)
+  maritalStatus         String              @map("marital_status") @db.VarChar(30)
+  createdAt             DateTime            @default(now()) @map("created_at")
+  updatedAt             DateTime            @updatedAt @map("updated_at")
+  deletedAt             DateTime?           @map("deleted_at")
+  email                 String?             @db.VarChar(150)
+  phone                 String?             @db.VarChar(50)
+  bankAccountNumber     String?             @map("bank_account_number") @db.VarChar(50)
+  bankAccountType       String?             @map("bank_account_type") @db.VarChar(50)
+  bankName              String?             @map("bank_name") @db.VarChar(100)
+  attendancePunches     AttendancePunch[]
+  attendanceSummaries   AttendanceSummary[]
+  bankAccounts          BankAccount[]
+  costCenters           CostCenter[]
+  dailyAttendances      DailyAttendance[]
+  employmentRecords     EmploymentRecord[]
+  familyMembers         FamilyMember[]
+  payrollReceipts       PayrollReceipt[]
+  shiftTemplate         ShiftTemplate?
+  workerAbsences        WorkerAbsence[]
+  workerLoans           WorkerLoan[]
+  tenant                Tenant              @relation(fields: [tenantId], references: [id])
+  workerTickets         WorkerTicket[]
+
+  @@unique([tenantId, primaryIdentityNumber])
+  @@map("workers")
+}
+
+model GeneralCatalog {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  category  String   @db.VarChar(50)
+  value     String   @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, category, value])
+  @@map("general_catalogs")
+}
+
+model Role {
+  id           String             @id @default(uuid()) @db.Uuid
+  tenantId     String             @map("tenant_id") @db.Uuid
+  name         String             @db.VarChar(50)
+  permissions  String[]
+  createdAt    DateTime           @default(now()) @map("created_at")
+  tenant       Tenant             @relation(fields: [tenantId], references: [id])
+  userAccesses UserTenantAccess[]
+  users        User[]
+
+  @@map("roles")
+}
+
+model User {
+  id             String             @id @default(uuid()) @db.Uuid
+  tenantId       String             @map("tenant_id") @db.Uuid
+  roleId         String             @map("role_id") @db.Uuid
+  email          String             @unique @db.VarChar(150)
+  passwordHash   String             @map("password_hash") @db.VarChar(255)
+  firstName      String             @map("first_name") @db.VarChar(100)
+  lastName       String             @map("last_name") @db.VarChar(100)
+  isActive       Boolean            @default(true) @map("is_active")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  tenantAccesses UserTenantAccess[]
+  role           Role               @relation(fields: [roleId], references: [id])
+  tenant         Tenant             @relation(fields: [tenantId], references: [id])
+
+  @@map("users")
+}
+
+model UserTenantAccess {
+  id       String @id @default(uuid()) @db.Uuid
+  userId   String @map("user_id") @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  roleId   String @map("role_id") @db.Uuid
+  role     Role   @relation(fields: [roleId], references: [id])
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  user     User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, tenantId])
+  @@map("user_tenant_access")
+}
+
+model EmploymentRecord {
+  id                  String               @id @default(uuid()) @db.Uuid
+  workerId            String               @map("worker_id") @db.Uuid
+  tenantId            String               @map("tenant_id") @db.Uuid
+  startDate           DateTime             @map("start_date") @db.Date
+  endDate             DateTime?            @map("end_date") @db.Date
+  contractType        String               @map("contract_type") @db.VarChar(50)
+  position            String               @db.VarChar(100)
+  departmentId        String?              @map("department_id") @db.Uuid
+  isActive            Boolean              @default(true) @map("is_active")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  payrollGroupId      String?              @map("payroll_group_id") @db.Uuid
+  costCenterId        String?              @map("cost_center_id") @db.Uuid
+  crewId              String?              @map("crew_id") @db.Uuid
+  status              EmploymentStatus     @default(ACTIVE)
+  isConfidential      Boolean              @default(false) @map("is_confidential")
+  contractTrust       ContractTrust?
+  costCenter          CostCenter?          @relation(fields: [costCenterId], references: [id])
+  crew                Crew?                @relation(fields: [crewId], references: [id])
+  department          Department?          @relation(fields: [departmentId], references: [id])
+  payrollGroup        PayrollGroup?        @relation(fields: [payrollGroupId], references: [id])
+  worker              Tenant               @relation(fields: [tenantId], references: [id])
+  owner               Worker               @relation(fields: [workerId], references: [id])
+  workerNovelties     WorkerNovelty[]
+  salaryHistories     SalaryHistory[]
+  vacationHistories   VacationHistory[]
+  workerFixedConcepts WorkerFixedConcept[]
+  workerAriForms      WorkerAriForm[]
+
+  @@map("employment_records")
+}
+
+model VacationHistory {
+  id                 String           @id @default(uuid()) @db.Uuid
+  tenantId           String           @map("tenant_id") @db.Uuid
+  employmentRecordId String           @map("employment_record_id") @db.Uuid
+  payrollReceiptId   String?          @map("payroll_receipt_id") @db.Uuid
+  serviceYear        Int              @map("service_year")
+  servicePeriodName  String           @map("service_period_name") @db.VarChar(50)
+  enjoymentDays      Int              @map("enjoyment_days")
+  restDays           Int              @map("rest_days")
+  startDate          DateTime         @db.Date
+  endDate            DateTime         @db.Date
+  notes              String?
+  createdAt          DateTime         @default(now()) @map("created_at")
+  employmentRecord   EmploymentRecord @relation(fields: [employmentRecordId], references: [id])
+  payrollReceipt     PayrollReceipt?  @relation(fields: [payrollReceiptId], references: [id])
+
+  @@map("vacation_histories")
+}
+
+model SalaryHistory {
+  id                 String           @id @default(uuid()) @db.Uuid
+  employmentRecordId String           @map("employment_record_id") @db.Uuid
+  amount             Decimal          @db.Decimal(15, 2)
+  currency           String           @default("USD") @db.VarChar(10)
+  validFrom          DateTime         @map("valid_from") @db.Date
+  validTo            DateTime?        @map("valid_to") @db.Date
+  createdAt          DateTime         @default(now()) @map("created_at")
+  employmentRecord   EmploymentRecord @relation(fields: [employmentRecordId], references: [id])
+
+  @@map("salary_histories")
+}
+
+model BankAccount {
+  id            String   @id @default(uuid()) @db.Uuid
+  workerId      String   @map("worker_id") @db.Uuid
+  bankId        String   @map("bank_id") @db.VarChar(50)
+  accountNumber String   @map("account_number") @db.VarChar(50)
+  accountType   String   @map("account_type") @db.VarChar(30)
+  isPrimary     Boolean  @default(false) @map("is_primary")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  worker        Worker   @relation(fields: [workerId], references: [id])
+
+  @@map("bank_accounts")
+}
+
+model FamilyMember {
+  id             String    @id @default(uuid()) @db.Uuid
+  workerId       String    @map("worker_id") @db.Uuid
+  fullName       String    @map("full_name") @db.VarChar(150)
+  identityNumber String?   @map("identity_number") @db.VarChar(50)
+  relationship   String    @db.VarChar(50)
+  birthDate      DateTime? @map("birth_date") @db.Date
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  email          String?   @db.VarChar(150)
+  phone          String?   @db.VarChar(50)
+  worker         Worker    @relation(fields: [workerId], references: [id])
+
+  @@map("family_members")
+}
+
+model PayrollGroup {
+  id                       String                 @id @default(uuid()) @db.Uuid
+  tenantId                 String                 @map("tenant_id") @db.Uuid
+  name                     String                 @db.VarChar(100)
+  createdAt                DateTime               @default(now()) @map("created_at")
+  updatedAt                DateTime               @updatedAt @map("updated_at")
+  rootBonusConceptId       String?                @map("root_bonus_concept_id") @db.Uuid
+  rootLiquidationConceptId String?                @map("root_liquidation_concept_id") @db.Uuid
+  rootRegularConceptId     String?                @map("root_regular_concept_id") @db.Uuid
+  rootVacationConceptId    String?                @map("root_vacation_concept_id") @db.Uuid
+  loanDeductionConceptId   String?                @map("loan_deduction_concept_id") @db.Uuid
+  islrConceptId            String?                @map("islr_concept_id") @db.Uuid
+  nightShiftEndTime        String                 @default("05:00") @map("night_shift_end_time") @db.VarChar(10)
+  nightShiftStartTime      String                 @default("19:00") @map("night_shift_start_time") @db.VarChar(10)
+  standardWorkHours        Decimal                @default(8.0) @map("standard_work_hours") @db.Decimal(5, 2)
+  employmentRecords        EmploymentRecord[]
+  payrollGroupConcepts     PayrollGroupConcept[]
+  payrollGroupVariables    PayrollGroupVariable[]
+  loanDeductionConcept     Concept?               @relation("LoanDeduction", fields: [loanDeductionConceptId], references: [id])
+  rootBonusConcept         Concept?               @relation("RootBonus", fields: [rootBonusConceptId], references: [id])
+  rootLiquidationConcept   Concept?               @relation("RootLiquidation", fields: [rootLiquidationConceptId], references: [id])
+  rootRegularConcept       Concept?               @relation("RootRegular", fields: [rootRegularConceptId], references: [id])
+  rootVacationConcept      Concept?               @relation("RootVacation", fields: [rootVacationConceptId], references: [id])
+  islrConcept              Concept?               @relation("ISLRDeduction", fields: [islrConceptId], references: [id])
+  tenant                   Tenant                 @relation(fields: [tenantId], references: [id])
+  payrollPeriods           PayrollPeriod[]
+
+  @@map("payroll_groups")
+}
+
+model GlobalVariable {
+  id        String    @id @default(uuid()) @db.Uuid
+  tenantId  String    @map("tenant_id") @db.Uuid
+  code      String    @db.VarChar(50)
+  name      String    @db.VarChar(100)
+  value     Decimal   @db.Decimal(15, 4)
+  validFrom DateTime  @map("valid_from") @db.Date
+  validTo   DateTime? @map("valid_to") @db.Date
+  createdAt DateTime  @default(now()) @map("created_at")
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, code, validFrom])
+  @@map("global_variables")
+}
+
+model PayrollGroupVariable {
+  id             String       @id @default(uuid()) @db.Uuid
+  payrollGroupId String       @map("payroll_group_id") @db.Uuid
+  code           String       @db.VarChar(50)
+  name           String       @db.VarChar(100)
+  value          Decimal      @db.Decimal(15, 4)
+  validFrom      DateTime     @map("valid_from") @db.Date
+  validTo        DateTime?    @map("valid_to") @db.Date
+  createdAt      DateTime     @default(now()) @map("created_at")
+  type           String       @default("STATIC") @db.VarChar(30)
+  payrollGroup   PayrollGroup @relation(fields: [payrollGroupId], references: [id])
+  concepts       Concept[]    @relation("VariableConcepts")
+
+  @@unique([payrollGroupId, code, validFrom])
+  @@map("payroll_group_variables")
+}
+
+model Concept {
+  id                       String                 @id @default(uuid()) @db.Uuid
+  tenantId                 String                 @map("tenant_id") @db.Uuid
+  code                     String                 @db.VarChar(50)
+  name                     String                 @db.VarChar(150)
+  description              String?
+  type                     String                 @db.VarChar(30)
+  accountingCode           String?                @map("accounting_code") @db.VarChar(50)
+  accountingOperation      String?                @map("accounting_operation") @db.VarChar(20)
+  isSalaryIncidence        Boolean                @default(false) @map("is_salary_incidence")
+  isTaxable                Boolean                @default(false) @map("is_taxable")
+  isAuxiliary              Boolean                @default(false) @map("is_auxiliary")
+  formulaFactor            String?                @map("formula_factor")
+  formulaRate              String?                @map("formula_rate")
+  formulaAmount            String                 @map("formula_amount")
+  condition                String?
+  executionSequence        Int                    @map("execution_sequence")
+  executionPeriodTypes     String[]               @default(["REGULAR"]) @map("execution_period_types")
+  createdAt                DateTime               @default(now()) @map("created_at")
+  updatedAt                DateTime               @updatedAt @map("updated_at")
+  isBonifiable             Boolean                @default(false) @map("is_bonifiable")
+  accumulatorConcepts      AccumulatorConcept[]
+  invokedAsChild           ConceptDependency[]    @relation("ChildDependencies")
+  calledAsParent           ConceptDependency[]    @relation("ParentDependencies")
+  tenant                   Tenant                 @relation(fields: [tenantId], references: [id])
+  payrollGroupConcepts     PayrollGroupConcept[]
+  payrollGroupsLoan        PayrollGroup[]         @relation("LoanDeduction")
+  payrollGroupsISLR        PayrollGroup[]         @relation("ISLRDeduction")
+  payrollGroupsBonus       PayrollGroup[]         @relation("RootBonus")
+  payrollGroupsLiquidation PayrollGroup[]         @relation("RootLiquidation")
+  payrollGroupsRegular     PayrollGroup[]         @relation("RootRegular")
+  payrollGroupsVacation    PayrollGroup[]         @relation("RootVacation")
+  workerNovelties          WorkerNovelty[]
+  specialPayrollPeriods    PayrollPeriod[]        @relation("PeriodSpecialConcepts")
+  payrollReceiptDetails    PayrollReceiptDetail[]
+  workerFixedConcepts      WorkerFixedConcept[]
+  payrollGroupVariables    PayrollGroupVariable[] @relation("VariableConcepts")
+
+  @@unique([tenantId, code])
+  @@map("concepts")
+}
+
+model WorkerLoan {
+  id                 String   @id @default(uuid()) @db.Uuid
+  tenantId           String   @map("tenant_id") @db.Uuid
+  workerId           String   @map("worker_id") @db.Uuid
+  totalAmount        Decimal  @map("total_amount") @db.Decimal(15, 2)
+  outstandingBalance Decimal  @default(0) @map("outstanding_balance") @db.Decimal(15, 2)
+  installmentAmount  Decimal  @map("installment_amount") @db.Decimal(15, 2)
+  applyToRegular     Boolean  @default(true) @map("apply_to_regular")
+  applyToVacation    Boolean  @default(false) @map("apply_to_vacation")
+  applyToBonus       Boolean  @default(false) @map("apply_to_bonus")
+  applyToLiquidation Boolean  @default(true) @map("apply_to_liquidation")
+  currency           String   @default("VES") @db.VarChar(10)
+  status             String   @default("ACTIVE") @db.VarChar(30)
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  applyToSpecial     Boolean  @default(false) @map("apply_to_special")
+  tenant             Tenant   @relation(fields: [tenantId], references: [id])
+  worker             Worker   @relation(fields: [workerId], references: [id])
+
+  @@map("worker_loans")
+}
+
+model PayrollGroupConcept {
+  id             String       @id @default(uuid()) @db.Uuid
+  payrollGroupId String       @map("payroll_group_id") @db.Uuid
+  conceptId      String       @map("concept_id") @db.Uuid
+  concept        Concept      @relation(fields: [conceptId], references: [id])
+  payrollGroup   PayrollGroup @relation(fields: [payrollGroupId], references: [id])
+
+  @@unique([payrollGroupId, conceptId])
+  @@map("payroll_group_concepts")
+}
+
+model PayrollPeriod {
+  id             String @id @default(uuid()) @db.Uuid
+  tenantId       String @map("tenant_id") @db.Uuid
+  payrollGroupId String @map("payroll_group_id") @db.Uuid
+  name           String @db.VarChar(150)
+  type           String @db.VarChar(30)
+
+  startDate    DateTime @map("start_date") @db.Date
+  endDate      DateTime @map("end_date") @db.Date
+  status       String   @default("DRAFT") @db.VarChar(30)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  costCenterId String?  @map("cost_center_id") @db.Uuid
+
+  currency                  String              @default("VES") @db.VarChar(10)
+  exchangeRate              Decimal?            @map("exchange_rate") @db.Decimal(15, 4)
+  processStatuses           EmploymentStatus[]  @default([ACTIVE]) @map("process_statuses")
+  accountingJournal         AccountingJournal?
+  attendanceSummaries       AttendanceSummary[]
+  workerNovelties           WorkerNovelty[]
+  costCenter                CostCenter?         @relation(fields: [costCenterId], references: [id])
+  importedAttendancePeriods PayrollPeriod[]     @relation("AttendanceImportM2M")
+  periodsImportingThis      PayrollPeriod[]     @relation("AttendanceImportM2M")
+  payrollGroup              PayrollGroup        @relation(fields: [payrollGroupId], references: [id])
+  specialConcepts           Concept[]           @relation("PeriodSpecialConcepts")
+  tenant                    Tenant              @relation(fields: [tenantId], references: [id])
+  payrollReceipts           PayrollReceipt[]
+  departments               Department[]        @relation("PeriodDepartments")
+
+  @@map("payroll_periods")
+}
+
+model PayrollReceipt {
+  id                     String                 @id @default(uuid()) @db.Uuid
+  payrollPeriodId        String                 @map("payroll_period_id") @db.Uuid
+  workerId               String                 @map("worker_id") @db.Uuid
+  totalSalaryEarnings    Decimal                @default(0) @map("total_salary_earnings") @db.Decimal(15, 2)
+  totalNonSalaryEarnings Decimal                @default(0) @map("total_non_salary_earnings") @db.Decimal(15, 2)
+  totalEarnings          Decimal                @default(0) @map("total_earnings") @db.Decimal(15, 2)
+  totalDeductions        Decimal                @default(0) @map("total_deductions") @db.Decimal(15, 2)
+  netPay                 Decimal                @default(0) @map("net_pay") @db.Decimal(15, 2)
+  employerContributions  Decimal                @default(0) @map("employer_contributions") @db.Decimal(15, 2)
+  createdAt              DateTime               @default(now()) @map("created_at")
+  status                 String                 @default("DRAFT") @db.VarChar(30)
+  updatedAt              DateTime               @updatedAt @map("updated_at")
+  emailDeliveryStatus    String                 @default("PENDING") @map("email_delivery_status") @db.VarChar(30)
+  publishedAt            DateTime?              @map("published_at")
+  signatureIp            String?                @map("signature_ip") @db.VarChar(50)
+  signatureToken         String?                @unique @map("signature_token")
+  viewedAt               DateTime?              @map("viewed_at")
+  whatsappDeliveryStatus String                 @default("PENDING") @map("whatsapp_delivery_status") @db.VarChar(30)
+  details                PayrollReceiptDetail[]
+  payrollPeriod          PayrollPeriod          @relation(fields: [payrollPeriodId], references: [id])
+  worker                 Worker                 @relation(fields: [workerId], references: [id])
+  trustTransaction       TrustTransaction?
+  vacationHistories      VacationHistory[]
+
+  @@unique([payrollPeriodId, workerId])
+  @@map("payroll_receipts")
+}
+
+model PayrollReceiptDetail {
+  id                  String         @id @default(uuid()) @db.Uuid
+  payrollReceiptId    String         @map("payroll_receipt_id") @db.Uuid
+  conceptId           String         @map("concept_id") @db.Uuid
+  conceptNameSnapshot String         @map("concept_name_snapshot") @db.VarChar(150)
+  typeSnapshot        String         @map("type_snapshot") @db.VarChar(30)
+  factor              Decimal        @default(0) @db.Decimal(15, 4)
+  rate                Decimal        @default(0) @db.Decimal(15, 4)
+  amount              Decimal        @db.Decimal(15, 2)
+  concept             Concept        @relation(fields: [conceptId], references: [id])
+  payrollReceipt      PayrollReceipt @relation(fields: [payrollReceiptId], references: [id], onDelete: Cascade)
+
+  @@map("payroll_receipt_details")
+}
+
+model ConceptDependency {
+  id                String  @id @default(uuid()) @db.Uuid
+  parentConceptId   String  @map("parent_concept_id") @db.Uuid
+  childConceptId    String  @map("child_concept_id") @db.Uuid
+  executionSequence Int     @map("execution_sequence")
+  childConcept      Concept @relation("ChildDependencies", fields: [childConceptId], references: [id], onDelete: Cascade)
+  parentConcept     Concept @relation("ParentDependencies", fields: [parentConceptId], references: [id], onDelete: Cascade)
+
+  @@unique([parentConceptId, childConceptId])
+  @@map("concept_dependencies")
+}
+
+model AttendanceSummary {
+  id                  String             @id @default(uuid()) @db.Uuid
+  tenantId            String             @map("tenant_id") @db.Uuid
+  payrollPeriodId     String             @map("payroll_period_id") @db.Uuid
+  workerId            String             @map("worker_id") @db.Uuid
+  shiftBaseHours      Decimal            @map("shift_base_hours") @db.Decimal(15, 2)
+  shiftType           String             @map("shift_type") @db.VarChar(30)
+  daysWorked          Decimal            @map("days_worked") @db.Decimal(15, 2)
+  ordinaryHours       Decimal            @map("ordinary_hours") @db.Decimal(15, 2)
+  ordinaryDayHours    Decimal            @default(0) @map("ordinary_day_hours") @db.Decimal(15, 2)
+  ordinaryNightHours  Decimal            @default(0) @map("ordinary_night_hours") @db.Decimal(15, 2)
+  extraDayHours       Decimal            @default(0) @map("extra_day_hours") @db.Decimal(15, 2)
+  extraNightHours     Decimal            @default(0) @map("extra_night_hours") @db.Decimal(15, 2)
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+  holidays            Decimal            @default(0) @map("holidays") @db.Decimal(15, 2)
+  restDays            Decimal            @default(0) @map("rest_days") @db.Decimal(15, 2)
+  workedHolidays      Decimal            @default(0) @map("worked_holidays") @db.Decimal(15, 2)
+  workedRestDays      Decimal            @default(0) @map("worked_rest_days") @db.Decimal(15, 2)
+  saturdaysWorked     Decimal            @default(0) @map("saturdays_worked") @db.Decimal(15, 2)
+  sundaysWorked       Decimal            @default(0) @map("sundays_worked") @db.Decimal(15, 2)
+  justifiedAbsences   Decimal            @default(0) @map("justified_absences") @db.Decimal(15, 2)
+  unjustifiedAbsences Decimal            @default(0) @map("unjustified_absences") @db.Decimal(15, 2)
+  attendanceMode      String             @default("VIRTUAL") @map("attendance_mode") @db.VarChar(20)
+  details             AttendanceDetail[]
+  payrollPeriod       PayrollPeriod      @relation(fields: [payrollPeriodId], references: [id], onDelete: Cascade)
+  tenant              Tenant             @relation(fields: [tenantId], references: [id])
+  worker              Worker             @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@unique([payrollPeriodId, workerId])
+  @@map("attendance_summaries")
+}
+
+model AttendanceDetail {
+  id                  String            @id @default(uuid()) @db.Uuid
+  tenantId            String            @map("tenant_id") @db.Uuid
+  attendanceSummaryId String            @map("attendance_summary_id") @db.Uuid
+  datetimeIn          DateTime          @map("datetime_in") @db.Timestamp(6)
+  datetimeOut         DateTime          @map("datetime_out") @db.Timestamp(6)
+  workedHours         Decimal           @map("worked_hours") @db.Decimal(15, 2)
+  isExtra             Boolean           @default(false) @map("is_extra")
+  observations        String?
+  createdAt           DateTime          @default(now()) @map("created_at")
+  summary             AttendanceSummary @relation(fields: [attendanceSummaryId], references: [id], onDelete: Cascade)
+  tenant              Tenant            @relation(fields: [tenantId], references: [id])
+
+  @@map("attendance_details")
+}
+
+model WorkerAbsence {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  workerId     String   @map("worker_id") @db.Uuid
+  startDate    DateTime @map("start_date") @db.Date
+  endDate      DateTime @map("end_date") @db.Date
+  isJustified  Boolean  @default(false) @map("is_justified")
+  isPaid       Boolean  @default(false) @map("is_paid")
+  reason       String?  @db.VarChar(100)
+  observations String?
+  status       String   @default("APPROVED") @db.VarChar(30)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  worker       Worker   @relation(fields: [workerId], references: [id])
+
+  @@map("worker_absences")
+}
+
+model Holiday {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  date      DateTime @db.Date
+  name      String   @db.VarChar(100)
+  isAnnual  Boolean  @default(true) @map("is_annual")
+  createdAt DateTime @default(now()) @map("created_at")
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@map("holidays")
+}
+
+model CostCenter {
+  id                String             @id @default(uuid()) @db.Uuid
+  tenantId          String             @map("tenant_id") @db.Uuid
+  name              String             @db.VarChar(100)
+  accountingCode    String             @map("accounting_code") @db.VarChar(50)
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  workerId          String?            @db.Uuid
+  tenant            Tenant             @relation(fields: [tenantId], references: [id])
+  Worker            Worker?            @relation(fields: [workerId], references: [id])
+  departments       Department[]
+  employmentRecords EmploymentRecord[]
+  PayrollPeriod     PayrollPeriod[]
+
+  @@map("cost_centers")
+}
+
+model Department {
+  id                String             @id @default(uuid()) @db.Uuid
+  costCenterId      String             @map("cost_center_id") @db.Uuid
+  name              String             @db.VarChar(100)
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  monthlyBudget     Decimal?           @map("monthly_budget") @db.Decimal(15, 2)
+  crews             Crew[]
+  costCenter        CostCenter         @relation(fields: [costCenterId], references: [id], onDelete: Cascade)
+  employmentRecords EmploymentRecord[]
+  payrollPeriods    PayrollPeriod[]    @relation("PeriodDepartments")
+
+  @@map("departments")
+}
+
+model Crew {
+  id                String             @id @default(uuid()) @db.Uuid
+  departmentId      String             @map("department_id") @db.Uuid
+  name              String             @db.VarChar(100)
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  patternAnchor     DateTime?          @map("pattern_anchor") @db.Date
+  shiftPatternId    String?            @map("shift_pattern_id") @db.Uuid
+  department        Department         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  shiftPattern      ShiftPattern?      @relation(fields: [shiftPatternId], references: [id])
+  employmentRecords EmploymentRecord[]
+
+  @@map("crews")
+}
+
+model WorkerFixedConcept {
+  id                 String           @id @default(uuid()) @db.Uuid
+  employmentRecordId String           @map("employment_record_id") @db.Uuid
+  conceptId          String           @map("concept_id") @db.Uuid
+  amount             Decimal          @db.Decimal(15, 2)
+  currency           String           @default("VES") @db.VarChar(10)
+  validFrom          DateTime         @map("valid_from") @db.Date
+  validTo            DateTime?        @map("valid_to") @db.Date
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
+  concept            Concept          @relation(fields: [conceptId], references: [id])
+  employmentRecord   EmploymentRecord @relation(fields: [employmentRecordId], references: [id])
+
+  @@map("worker_fixed_concepts")
+}
+
+model WorkerNovelty {
+  id                 String  @id @default(uuid()) @db.Uuid
+  tenantId           String  @map("tenant_id") @db.Uuid
+  payrollPeriodId    String? @map("payroll_period_id") @db.Uuid // Conectado temporalmente al consolidar
+  employmentRecordId String  @map("employment_record_id") @db.Uuid
+  conceptId          String  @map("concept_id") @db.Uuid
+
+  paymentDate DateTime @default(now()) @map("payment_date") @db.Date
+  status      String   @default("PENDING") @db.VarChar(30) // PENDING, INJECTED, PAID
+
+  amount    Decimal  @db.Decimal(15, 2)
+  currency  String   @default("VES") @db.VarChar(10)
+  notes     String?  @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  concept          Concept          @relation(fields: [conceptId], references: [id])
+  employmentRecord EmploymentRecord @relation(fields: [employmentRecordId], references: [id], onDelete: Cascade)
+  payrollPeriod    PayrollPeriod?   @relation(fields: [payrollPeriodId], references: [id], onDelete: SetNull)
+  tenant           Tenant           @relation(fields: [tenantId], references: [id])
+
+  @@map("worker_novelties")
+}
+
+model ContractTrust {
+  id                 String             @id @default(uuid()) @db.Uuid
+  tenantId           String             @map("tenant_id") @db.Uuid
+  employmentRecordId String             @unique @map("employment_record_id") @db.Uuid
+  totalAccumulated   Decimal            @default(0) @map("total_accumulated") @db.Decimal(15, 2)
+  totalAdvances      Decimal            @default(0) @map("total_advances") @db.Decimal(15, 2)
+  availableBalance   Decimal            @default(0) @map("available_balance") @db.Decimal(15, 2)
+  currency           String             @default("VES") @db.VarChar(10)
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+  employmentRecord   EmploymentRecord   @relation(fields: [employmentRecordId], references: [id], onDelete: Cascade)
+  tenant             Tenant             @relation(fields: [tenantId], references: [id])
+  transactions       TrustTransaction[]
+
+  @@map("contract_trusts")
+}
+
+model TrustTransaction {
+  id               String          @id @default(uuid()) @db.Uuid
+  tenantId         String          @map("tenant_id") @db.Uuid
+  contractTrustId  String          @map("contract_trust_id") @db.Uuid
+  type             String          @db.VarChar(30)
+  amount           Decimal         @db.Decimal(15, 2)
+  referenceDate    DateTime        @map("reference_date") @db.Date
+  notes            String?
+  payrollReceiptId String?         @unique @map("payroll_receipt_id") @db.Uuid
+  createdAt        DateTime        @default(now()) @map("created_at")
+  contractTrust    ContractTrust   @relation(fields: [contractTrustId], references: [id], onDelete: Cascade)
+  payrollReceipt   PayrollReceipt? @relation(fields: [payrollReceiptId], references: [id])
+  tenant           Tenant          @relation(fields: [tenantId], references: [id])
+
+  @@map("trust_transactions")
+}
+
+model PayrollAccumulator {
+  id                   String               @id @default(uuid()) @db.Uuid
+  tenantId             String               @map("tenant_id") @db.Uuid
+  name                 String               @db.VarChar(255)
+  description          String?
+  createdAt            DateTime             @default(now()) @map("created_at")
+  updatedAt            DateTime             @updatedAt @map("updated_at")
+  type                 String               @default("WEEKS_BACK")
+  weeksBack            Int?                 @default(4) @map("weeks_back")
+  includeAllBonifiable Boolean              @default(false) @map("include_all_bonifiable")
+  concepts             AccumulatorConcept[]
+  tenant               Tenant               @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, name])
+  @@map("payroll_accumulators")
+}
+
+model AccumulatorConcept {
+  id            String             @id @default(uuid()) @db.Uuid
+  accumulatorId String             @map("accumulator_id") @db.Uuid
+  conceptId     String             @map("concept_id") @db.Uuid
+  accumulator   PayrollAccumulator @relation(fields: [accumulatorId], references: [id], onDelete: Cascade)
+  concept       Concept            @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+
+  @@unique([accumulatorId, conceptId])
+  @@map("accumulator_concepts")
+}
+
+model AccountingJournal {
+  id              String                  @id @default(uuid()) @db.Uuid
+  tenantId        String                  @map("tenant_id") @db.Uuid
+  payrollPeriodId String                  @unique @map("payroll_period_id") @db.Uuid
+  date            DateTime                @db.Date
+  status          String                  @default("DRAFT") @db.VarChar(30)
+  totalDebit      Decimal                 @default(0) @map("total_debit") @db.Decimal(15, 2)
+  totalCredit     Decimal                 @default(0) @map("total_credit") @db.Decimal(15, 2)
+  createdAt       DateTime                @default(now()) @map("created_at")
+  updatedAt       DateTime                @updatedAt @map("updated_at")
+  lines           AccountingJournalLine[]
+  payrollPeriod   PayrollPeriod           @relation(fields: [payrollPeriodId], references: [id])
+  tenant          Tenant                  @relation(fields: [tenantId], references: [id])
+
+  @@map("accounting_journals")
+}
+
+model AccountingJournalLine {
+  id             String            @id @default(uuid()) @db.Uuid
+  journalId      String            @map("journal_id") @db.Uuid
+  accountingCode String            @map("accounting_code") @db.VarChar(50)
+  costCenterCode String?           @map("cost_center_code") @db.VarChar(50)
+  debitAmount    Decimal           @default(0) @map("debit_amount") @db.Decimal(15, 2)
+  creditAmount   Decimal           @default(0) @map("credit_amount") @db.Decimal(15, 2)
+  description    String?           @db.VarChar(255)
+  createdAt      DateTime          @default(now()) @map("created_at")
+  journal        AccountingJournal @relation(fields: [journalId], references: [id], onDelete: Cascade)
+
+  @@map("accounting_journal_lines")
+}
+
+model BiometricDevice {
+  id         String            @id @default(uuid()) @db.Uuid
+  tenantId   String            @map("tenant_id") @db.Uuid
+  name       String            @db.VarChar(100)
+  ipAddress  String?           @map("ip_address") @db.VarChar(50)
+  macAddress String?           @map("mac_address") @db.VarChar(50)
+  isActive   Boolean           @default(true) @map("is_active")
+  createdAt  DateTime          @default(now()) @map("created_at")
+  updatedAt  DateTime          @updatedAt @map("updated_at")
+  punches    AttendancePunch[]
+  tenant     Tenant            @relation(fields: [tenantId], references: [id])
+
+  @@map("biometric_devices")
+}
+
+model AttendancePunch {
+  id          String           @id @default(uuid()) @db.Uuid
+  tenantId    String           @map("tenant_id") @db.Uuid
+  workerId    String           @map("worker_id") @db.Uuid
+  deviceId    String?          @map("device_id") @db.Uuid
+  timestamp   DateTime         @db.Timestamp(6)
+  type        PunchType
+  source      PunchSource
+  isProcessed Boolean          @default(false) @map("is_processed")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  device      BiometricDevice? @relation(fields: [deviceId], references: [id])
+  tenant      Tenant           @relation(fields: [tenantId], references: [id])
+  worker      Worker           @relation(fields: [workerId], references: [id])
+
+  @@unique([workerId, timestamp])
+  @@map("attendance_punches")
+}
+
+model DailyAttendance {
+  id               String    @id @default(uuid()) @db.Uuid
+  tenantId         String    @map("tenant_id") @db.Uuid
+  workerId         String    @map("worker_id") @db.Uuid
+  date             DateTime  @db.Date
+  firstIn          DateTime? @map("first_in") @db.Timestamp(6)
+  lastOut          DateTime? @map("last_out") @db.Timestamp(6)
+  regularHours     Decimal   @default(0) @map("regular_hours") @db.Decimal(5, 2)
+  ordinaryDayHours Decimal   @default(0) @map("ordinary_day_hours") @db.Decimal(5, 2)
+  ordinaryNightHours Decimal @default(0) @map("ordinary_night_hours") @db.Decimal(5, 2)
+  lateMinutes      Int       @default(0) @map("late_minutes")
+  earlyLeaveMins   Int       @default(0) @map("early_leave_mins")
+  status           String    @default("PRESENT") @db.VarChar(30)
+  isManuallyEdited Boolean   @default(false) @map("is_manually_edited")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  extraDayHours    Decimal   @default(0) @map("extra_day_hours") @db.Decimal(5, 2)
+  extraNightHours  Decimal   @default(0) @map("extra_night_hours") @db.Decimal(5, 2)
+  tenant           Tenant    @relation(fields: [tenantId], references: [id])
+  worker           Worker    @relation(fields: [workerId], references: [id])
+
+  @@unique([workerId, date])
+  @@map("daily_attendance")
+}
+
+model ShiftTemplate {
+  id             String   @id @default(uuid()) @db.Uuid
+  tenantId       String   @map("tenant_id") @db.Uuid
+  workerId       String   @unique @map("worker_id") @db.Uuid
+  startTime      String   @map("start_time") @db.VarChar(8)
+  endTime        String   @map("end_time") @db.VarChar(8)
+  graceMinutesIn Int      @default(15) @map("grace_minutes_in")
+  mealMinutes    Int      @default(60) @map("meal_minutes")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  worker         Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@map("shift_templates")
+}
+
+model ShiftPattern {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  name      String   @db.VarChar(150)
+  sequence  Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  crews     Crew[]
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@map("shift_patterns")
+}
+
+model DocumentTemplate {
+  id            String               @id @default(uuid()) @db.Uuid
+  tenantId      String               @map("tenant_id") @db.Uuid
+  name          String               @db.VarChar(200)
+  type          DocumentTemplateType @default(OTHER)
+  contentHtml   String               @map("content_html")
+  createdAt     DateTime             @default(now()) @map("created_at")
+  updatedAt     DateTime             @updatedAt @map("updated_at")
+  isSelfService Boolean              @default(false) @map("is_self_service")
+  tenant        Tenant               @relation(fields: [tenantId], references: [id])
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  ON_VACATION
+  SUSPENDED
+  LIQUIDATED
+}
+
+enum PunchSource {
+  BIOMETRIC
+  MANUAL
+  EXCEL_IMPORT
+}
+
+enum PunchType {
+  IN
+  OUT
+}
+
+enum DocumentTemplateType {
+  CONTRACT
+  WORK_LETTER
+  LIQUIDATION
+  OTHER
+}
+
+enum TicketType {
+  ABSENCE_OR_LEAVE
+  VACATION
+  TRUST_ADVANCE
+  PAYROLL_CLAIM
+  DOCUMENT_REQUEST
+  EXPENSE_REIMBURSEMENT
+}
+
+enum TicketStatus {
+  PENDING
+  IN_PROGRESS
+  APPROVED
+  REJECTED
+}
+
+model WorkerTicket {
+  id           String       @id @default(uuid()) @db.Uuid
+  tenantId     String       @map("tenant_id") @db.Uuid
+  workerId     String       @map("worker_id") @db.Uuid
+  type         TicketType
+  status       TicketStatus @default(PENDING)
+  title        String       @db.VarChar(150)
+  description  String       @db.Text
+  jsonMetadata Json?        @map("json_metadata")
+  hrNotes      String?      @map("hr_notes") @db.Text
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("worker_tickets")
+}
+
+model WorkerAriForm {
+  id                       String   @id @default(uuid()) @db.Uuid
+  tenantId                 String   @map("tenant_id") @db.Uuid
+  employmentRecordId       String   @map("employment_record_id") @db.Uuid
+  fiscalYear               Int      @map("fiscal_year")
+  month                    Int      @default(1)
+  estimatedRemuneration    Decimal  @map("estimated_remuneration") @db.Decimal(15, 2)
+  taxUnitsValue            Decimal  @map("tax_units_value") @db.Decimal(15, 4)
+  deductionType            String   @default("UNIQUE") @map("deduction_type") @db.VarChar(30)
+  detailedDeductionsAmount Decimal  @default(0) @map("detailed_deductions_amount") @db.Decimal(15, 2)
+  eduDeductionAmount       Decimal  @default(0) @map("edu_deduction_amount") @db.Decimal(15, 2)
+  hcmDeductionAmount       Decimal  @default(0) @map("hcm_deduction_amount") @db.Decimal(15, 2)
+  medDeductionAmount       Decimal  @default(0) @map("med_deduction_amount") @db.Decimal(15, 2)
+  housingDeductionAmount   Decimal  @default(0) @map("housing_deduction_amount") @db.Decimal(15, 2)
+  familyLoadCount          Int      @default(0) @map("family_load_count")
+  withholdingPercentage    Decimal  @map("withholding_percentage") @db.Decimal(5, 2)
+  isSystemGenerated        Boolean  @default(false) @map("is_system_generated")
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
+
+  employmentRecord EmploymentRecord @relation(fields: [employmentRecordId], references: [id], onDelete: Cascade)
+  tenant           Tenant           @relation(fields: [tenantId], references: [id])
+
+  @@unique([employmentRecordId, fiscalYear, month])
+  @@map("worker_ari_forms")
+}

@@ -1,0 +1,6 @@
+node_modules/
+.node_modules_bak/
+*.bak
+.env
+.db_analyzer/
+test-remote.js

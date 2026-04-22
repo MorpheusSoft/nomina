@@ -1,0 +1,84 @@
+--- backend/src/portal/portal.service.ts
++++ backend/src/portal/portal.service.ts
+@@ -169,4 +169,82 @@
+       status: 'PENDING'
+     });
+   }
++
++  async getLoansAccount(workerId: string, currencyView: string, exchangeRateString: string) {
++    const currentGlobalExchangeRate = Number(exchangeRateString) || 1;
++
++    const loans = await this.prisma.workerLoan.findMany({
++      where: { workerId },
++      include: {
++        worker: {
++          include: {
++            employmentRecords: {
++              where: { isActive: true },
++              include: { department: true, payrollGroup: true }
++            }
++          }
++        }
++      },
++      orderBy: { createdAt: 'desc' }
++    });
++
++    if (loans.length === 0) return [];
++
++    const loanConceptIds = new Set<string>();
++    loans.forEach(l => {
++      const contract = l.worker.employmentRecords[0];
++      if (contract?.payrollGroup?.loanDeductionConceptId) {
++         loanConceptIds.add(contract.payrollGroup.loanDeductionConceptId);
++      }
++    });
++
++    let historicalDeductions: any[] = [];
++    if (loanConceptIds.size > 0) {
++      historicalDeductions = await this.prisma.payrollReceiptDetail.findMany({
++        where: {
++          conceptId: { in: Array.from(loanConceptIds) },
++          payrollReceipt: {
++            workerId,
++            payrollPeriod: { status: { in: ['CLOSED', 'APPROVED', 'FINAL'] } }
++          }
++        },
++        include: {
++          payrollReceipt: { include: { payrollPeriod: true } }
++        },
++        orderBy: { payrollReceipt: { payrollPeriod: { endDate: 'desc' } } }
++      });
++    }
++
++    const reportData: any[] = [];
++    for (const loan of loans) {
++      const contract = loan.worker.employmentRecords[0];
++      const loanCurrency = loan.currency || 'VES';
++      
++      let totalAmountConverted = Number(loan.totalAmount);
++      if (loanCurrency === 'USD' && currencyView === 'VES') totalAmountConverted *= currentGlobalExchangeRate;
++      else if (loanCurrency === 'VES' && currencyView === 'USD') totalAmountConverted /= currentGlobalExchangeRate;
++
++      const amortizations = [];
++      let totalPaidAtHistoricalRates = 0;
++      
++      for (const ded of historicalDeductions) {
++        const period = ded.payrollReceipt.payrollPeriod;
++        const periodCurrency = period.currency || 'VES';
++        const histExchangeRate = Number(period.exchangeRate) || 1;
++        let amortAmount = Number(ded.amount);
++        
++        if (periodCurrency === 'USD' && currencyView === 'VES') amortAmount *= histExchangeRate;
++        else if (periodCurrency === 'VES' && currencyView === 'USD') amortAmount /= histExchangeRate;
++        
++        totalPaidAtHistoricalRates += amortAmount;
++        amortizations.push({ id: ded.id, periodName: period.name, periodDate: period.endDate, amount: amortAmount, historicalRate: histExchangeRate });
++      }
++
++      const balanceConverted = totalAmountConverted - totalPaidAtHistoricalRates;
++      reportData.push({ loanId: loan.id, issueDate: loan.createdAt, status: loan.status, totalAmount: totalAmountConverted, balance: balanceConverted < 0 ? 0 : balanceConverted, amortizations });
++    }
++
++    return reportData;
++  }
+ }

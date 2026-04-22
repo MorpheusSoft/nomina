@@ -1,0 +1,191 @@
+import { CreateWorkerAbsenceDto } from './dto/create-worker-absence.dto';
+import { UpdateWorkerAbsenceDto } from './dto/update-worker-absence.dto';
+import { PrismaService } from '../prisma/prisma.service';
+export declare class WorkerAbsencesService {
+    private readonly prisma;
+    constructor(prisma: PrismaService);
+    create(tenantId: string, createWorkerAbsenceDto: CreateWorkerAbsenceDto): Promise<{
+        worker: {
+            id: string;
+            tenantId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            email: string | null;
+            firstName: string;
+            lastName: string;
+            primaryIdentityNumber: string;
+            birthDate: Date;
+            gender: string;
+            nationality: string;
+            maritalStatus: string;
+            deletedAt: Date | null;
+            phone: string | null;
+            bankAccountNumber: string | null;
+            bankAccountType: string | null;
+            bankName: string | null;
+        };
+    } & {
+        id: string;
+        tenantId: string;
+        startDate: Date;
+        endDate: Date;
+        createdAt: Date;
+        updatedAt: Date;
+        status: string;
+        workerId: string;
+        isJustified: boolean;
+        isPaid: boolean;
+        reason: string | null;
+        observations: string | null;
+    }>;
+    findAll(tenantId: string): Promise<({
+        worker: {
+            id: string;
+            tenantId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            email: string | null;
+            firstName: string;
+            lastName: string;
+            primaryIdentityNumber: string;
+            birthDate: Date;
+            gender: string;
+            nationality: string;
+            maritalStatus: string;
+            deletedAt: Date | null;
+            phone: string | null;
+            bankAccountNumber: string | null;
+            bankAccountType: string | null;
+            bankName: string | null;
+        };
+    } & {
+        id: string;
+        tenantId: string;
+        startDate: Date;
+        endDate: Date;
+        createdAt: Date;
+        updatedAt: Date;
+        status: string;
+        workerId: string;
+        isJustified: boolean;
+        isPaid: boolean;
+        reason: string | null;
+        observations: string | null;
+    })[]>;
+    findOne(id: string, tenantId: string): Promise<{
+        worker: {
+            id: string;
+            tenantId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            email: string | null;
+            firstName: string;
+            lastName: string;
+            primaryIdentityNumber: string;
+            birthDate: Date;
+            gender: string;
+            nationality: string;
+            maritalStatus: string;
+            deletedAt: Date | null;
+            phone: string | null;
+            bankAccountNumber: string | null;
+            bankAccountType: string | null;
+            bankName: string | null;
+        };
+    } & {
+        id: string;
+        tenantId: string;
+        startDate: Date;
+        endDate: Date;
+        createdAt: Date;
+        updatedAt: Date;
+        status: string;
+        workerId: string;
+        isJustified: boolean;
+        isPaid: boolean;
+        reason: string | null;
+        observations: string | null;
+    }>;
+    update(id: string, tenantId: string, updateWorkerAbsenceDto: UpdateWorkerAbsenceDto): Promise<{
+        worker: {
+            id: string;
+            tenantId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            email: string | null;
+            firstName: string;
+            lastName: string;
+            primaryIdentityNumber: string;
+            birthDate: Date;
+            gender: string;
+            nationality: string;
+            maritalStatus: string;
+            deletedAt: Date | null;
+            phone: string | null;
+            bankAccountNumber: string | null;
+            bankAccountType: string | null;
+            bankName: string | null;
+        };
+    } & {
+        id: string;
+        tenantId: string;
+        startDate: Date;
+        endDate: Date;
+        createdAt: Date;
+        updatedAt: Date;
+        status: string;
+        workerId: string;
+        isJustified: boolean;
+        isPaid: boolean;
+        reason: string | null;
+        observations: string | null;
+    }>;
+    remove(id: string, tenantId: string): Promise<{
+        id: string;
+        tenantId: string;
+        startDate: Date;
+        endDate: Date;
+        createdAt: Date;
+        updatedAt: Date;
+        status: string;
+        workerId: string;
+        isJustified: boolean;
+        isPaid: boolean;
+        reason: string | null;
+        observations: string | null;
+    }>;
+    updateStatus(id: string, tenantId: string, status: string, isJustified?: boolean, isPaid?: boolean): Promise<{
+        worker: {
+            id: string;
+            tenantId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            email: string | null;
+            firstName: string;
+            lastName: string;
+            primaryIdentityNumber: string;
+            birthDate: Date;
+            gender: string;
+            nationality: string;
+            maritalStatus: string;
+            deletedAt: Date | null;
+            phone: string | null;
+            bankAccountNumber: string | null;
+            bankAccountType: string | null;
+            bankName: string | null;
+        };
+    } & {
+        id: string;
+        tenantId: string;
+        startDate: Date;
+        endDate: Date;
+        createdAt: Date;
+        updatedAt: Date;
+        status: string;
+        workerId: string;
+        isJustified: boolean;
+        isPaid: boolean;
+        reason: string | null;
+        observations: string | null;
+    }>;
+}

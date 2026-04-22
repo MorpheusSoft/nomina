@@ -1,0 +1,201 @@
+import { PayrollPeriodsService } from './payroll-periods.service';
+export declare class PayrollPeriodsController {
+    private readonly payrollPeriodsService;
+    constructor(payrollPeriodsService: PayrollPeriodsService);
+    create(data: any, user: any): Promise<{
+        id: string;
+        tenantId: string;
+        startDate: Date;
+        endDate: Date;
+        createdAt: Date;
+        name: string;
+        updatedAt: Date;
+        status: string;
+        payrollGroupId: string;
+        costCenterId: string | null;
+        type: string;
+        currency: string;
+        exchangeRate: import("@prisma/client/runtime/library").Decimal | null;
+        processStatuses: import(".prisma/client").$Enums.EmploymentStatus[];
+    }>;
+    findAll(user: any): Promise<({
+        _count: {
+            payrollReceipts: number;
+        };
+        costCenter: {
+            name: string;
+        } | null;
+        payrollGroup: {
+            name: string;
+        };
+        importedAttendancePeriods: {
+            id: string;
+            name: string;
+        }[];
+        departments: {
+            name: string;
+        }[];
+    } & {
+        id: string;
+        tenantId: string;
+        startDate: Date;
+        endDate: Date;
+        createdAt: Date;
+        name: string;
+        updatedAt: Date;
+        status: string;
+        payrollGroupId: string;
+        costCenterId: string | null;
+        type: string;
+        currency: string;
+        exchangeRate: import("@prisma/client/runtime/library").Decimal | null;
+        processStatuses: import(".prisma/client").$Enums.EmploymentStatus[];
+    })[]>;
+    findOne(id: string, user: any): Promise<{
+        tenant: {
+            id: string;
+            createdAt: Date;
+            name: string;
+            taxId: string;
+            isActive: boolean;
+            updatedAt: Date;
+            maxActiveWorkers: number;
+            serviceEndDate: Date | null;
+            hasWorkerPortalAccess: boolean;
+            hasOracleAccess: boolean;
+            oraclePrompt: string | null;
+            logoUrl: string | null;
+            contactPhone: string | null;
+        };
+        payrollGroup: {
+            id: string;
+            tenantId: string;
+            createdAt: Date;
+            name: string;
+            updatedAt: Date;
+            nightShiftEndTime: string;
+            nightShiftStartTime: string;
+            standardWorkHours: import("@prisma/client/runtime/library").Decimal;
+            rootBonusConceptId: string | null;
+            rootLiquidationConceptId: string | null;
+            rootRegularConceptId: string | null;
+            rootVacationConceptId: string | null;
+            loanDeductionConceptId: string | null;
+            islrConceptId: string | null;
+        };
+        importedAttendancePeriods: {
+            id: string;
+            tenantId: string;
+            startDate: Date;
+            endDate: Date;
+            createdAt: Date;
+            name: string;
+            updatedAt: Date;
+            status: string;
+            payrollGroupId: string;
+            costCenterId: string | null;
+            type: string;
+            currency: string;
+            exchangeRate: import("@prisma/client/runtime/library").Decimal | null;
+            processStatuses: import(".prisma/client").$Enums.EmploymentStatus[];
+        }[];
+        specialConcepts: {
+            id: string;
+            tenantId: string;
+            createdAt: Date;
+            name: string;
+            updatedAt: Date;
+            type: string;
+            code: string;
+            description: string | null;
+            accountingCode: string | null;
+            accountingOperation: string | null;
+            isSalaryIncidence: boolean;
+            isTaxable: boolean;
+            isAuxiliary: boolean;
+            formulaFactor: string | null;
+            formulaRate: string | null;
+            formulaAmount: string;
+            condition: string | null;
+            executionSequence: number;
+            executionPeriodTypes: string[];
+            isBonifiable: boolean;
+        }[];
+        departments: {
+            id: string;
+            createdAt: Date;
+            name: string;
+            updatedAt: Date;
+            costCenterId: string;
+            monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
+        }[];
+    } & {
+        id: string;
+        tenantId: string;
+        startDate: Date;
+        endDate: Date;
+        createdAt: Date;
+        name: string;
+        updatedAt: Date;
+        status: string;
+        payrollGroupId: string;
+        costCenterId: string | null;
+        type: string;
+        currency: string;
+        exchangeRate: import("@prisma/client/runtime/library").Decimal | null;
+        processStatuses: import(".prisma/client").$Enums.EmploymentStatus[];
+    }>;
+    getBudgetAnalysis(id: string, user: any): Promise<{
+        periodId: string;
+        periodName: string;
+        status: string;
+        analysis: {
+            departmentId: string;
+            departmentName: string;
+            monthlyBudgetUSD: number;
+            mtdHistoricCostUSD: number;
+            currentPeriodCostUSD: number;
+            totalProjectedCostUSD: number;
+            varianceUSD: number;
+            isOverBudget: boolean;
+        }[];
+        workerStatusSummary: {
+            ACTIVE: number;
+            ON_VACATION: number;
+            SUSPENDED: number;
+            LIQUIDATED: number;
+        };
+    }>;
+    update(id: string, data: any, user: any): Promise<{
+        id: string;
+        tenantId: string;
+        startDate: Date;
+        endDate: Date;
+        createdAt: Date;
+        name: string;
+        updatedAt: Date;
+        status: string;
+        payrollGroupId: string;
+        costCenterId: string | null;
+        type: string;
+        currency: string;
+        exchangeRate: import("@prisma/client/runtime/library").Decimal | null;
+        processStatuses: import(".prisma/client").$Enums.EmploymentStatus[];
+    }>;
+    remove(id: string, user: any): Promise<{
+        id: string;
+        tenantId: string;
+        startDate: Date;
+        endDate: Date;
+        createdAt: Date;
+        name: string;
+        updatedAt: Date;
+        status: string;
+        payrollGroupId: string;
+        costCenterId: string | null;
+        type: string;
+        currency: string;
+        exchangeRate: import("@prisma/client/runtime/library").Decimal | null;
+        processStatuses: import(".prisma/client").$Enums.EmploymentStatus[];
+    }>;
+}
