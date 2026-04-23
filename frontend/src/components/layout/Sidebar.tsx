@@ -130,7 +130,6 @@ export default function Sidebar({ isOpen }: { isOpen: boolean }) {
       <div className="flex-1 overflow-y-auto modern-scrollbar pt-6 pb-4">
         <ul className="space-y-1 mb-8">
           <NavLink href="/dashboard" icon="pi-home" label="Dashboard General" pathname={pathname} exact={true} />
-          <NavLink href="/dashboard/oracle" icon="pi-sparkles" label="Oráculo Analítico" specialColorType="indigo" pathname={pathname} />
         </ul>
 
         <div 

@@ -4,10 +4,13 @@ export declare class ConceptsController {
     constructor(conceptsService: ConceptsService);
     create(data: any, user: any): Promise<{
         id: string;
-        code: string;
+        tenantId: string;
+        createdAt: Date;
         name: string;
-        description: string | null;
+        updatedAt: Date;
         type: string;
+        code: string;
+        description: string | null;
         accountingCode: string | null;
         accountingOperation: string | null;
         isSalaryIncidence: boolean;
@@ -19,28 +22,25 @@ export declare class ConceptsController {
         condition: string | null;
         executionSequence: number;
         executionPeriodTypes: string[];
-        createdAt: Date;
-        updatedAt: Date;
         isBonifiable: boolean;
-        tenantId: string;
     }>;
     findAll(user: any): Promise<({
         payrollGroupConcepts: ({
             payrollGroup: {
                 id: string;
-                name: string;
-                createdAt: Date;
-                updatedAt: Date;
                 tenantId: string;
+                createdAt: Date;
+                name: string;
+                updatedAt: Date;
+                nightShiftEndTime: string;
+                nightShiftStartTime: string;
+                standardWorkHours: import("@prisma/client/runtime/library").Decimal;
                 rootBonusConceptId: string | null;
                 rootLiquidationConceptId: string | null;
                 rootRegularConceptId: string | null;
                 rootVacationConceptId: string | null;
                 loanDeductionConceptId: string | null;
                 islrConceptId: string | null;
-                nightShiftEndTime: string;
-                nightShiftStartTime: string;
-                standardWorkHours: import("@prisma/client/runtime/library").Decimal;
             };
         } & {
             id: string;
@@ -49,10 +49,13 @@ export declare class ConceptsController {
         })[];
     } & {
         id: string;
-        code: string;
+        tenantId: string;
+        createdAt: Date;
         name: string;
-        description: string | null;
+        updatedAt: Date;
         type: string;
+        code: string;
+        description: string | null;
         accountingCode: string | null;
         accountingOperation: string | null;
         isSalaryIncidence: boolean;
@@ -64,10 +67,7 @@ export declare class ConceptsController {
         condition: string | null;
         executionSequence: number;
         executionPeriodTypes: string[];
-        createdAt: Date;
-        updatedAt: Date;
         isBonifiable: boolean;
-        tenantId: string;
     })[]>;
     findOne(id: string, user: any): Promise<{
         payrollGroupConcepts: {
@@ -77,10 +77,13 @@ export declare class ConceptsController {
         }[];
     } & {
         id: string;
-        code: string;
+        tenantId: string;
+        createdAt: Date;
         name: string;
-        description: string | null;
+        updatedAt: Date;
         type: string;
+        code: string;
+        description: string | null;
         accountingCode: string | null;
         accountingOperation: string | null;
         isSalaryIncidence: boolean;
@@ -92,10 +95,7 @@ export declare class ConceptsController {
         condition: string | null;
         executionSequence: number;
         executionPeriodTypes: string[];
-        createdAt: Date;
-        updatedAt: Date;
         isBonifiable: boolean;
-        tenantId: string;
     }>;
     update(id: string, data: any, user: any): Promise<import(".prisma/client").Prisma.BatchPayload>;
     importFromRootNode(user: any): Promise<{
@@ -103,10 +103,13 @@ export declare class ConceptsController {
     }>;
     remove(id: string, user: any): Promise<{
         id: string;
-        code: string;
+        tenantId: string;
+        createdAt: Date;
         name: string;
-        description: string | null;
+        updatedAt: Date;
         type: string;
+        code: string;
+        description: string | null;
         accountingCode: string | null;
         accountingOperation: string | null;
         isSalaryIncidence: boolean;
@@ -118,9 +121,6 @@ export declare class ConceptsController {
         condition: string | null;
         executionSequence: number;
         executionPeriodTypes: string[];
-        createdAt: Date;
-        updatedAt: Date;
         isBonifiable: boolean;
-        tenantId: string;
     }>;
 }

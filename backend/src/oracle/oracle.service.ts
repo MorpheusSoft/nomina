@@ -5,6 +5,19 @@ import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
 
+const sanitizeDBResult = (obj: any): any => {
+  if (obj === null || obj === undefined) return null;
+  if (typeof obj === 'bigint') return Number(obj);
+  if (obj instanceof Date) return obj.toISOString();
+  if (typeof obj === 'object') {
+    // If it's a Prisma.Decimal or similar JS math object
+    if (obj.constructor?.name === 'Decimal' || (obj.d && obj.e !== undefined && obj.s !== undefined)) return obj.toString();
+    if (Array.isArray(obj)) return obj.map(sanitizeDBResult);
+    return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, sanitizeDBResult(v)]));
+  }
+  return obj;
+};
+
 @Injectable()
 export class OracleService {
   private ai: any;
@@ -184,9 +197,9 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
 DICCIONARIO DE DATOS (POSTGRESQL):
 Tablas Principales:
 - workers (id, first_name, last_name, primary_identity_number, birth_date, gender, marital_status)
-- employment_records (id, worker_id, start_date, end_date, contract_type, position, is_active)
-- payroll_periods (id, name, start_date, end_date, status)
-- payroll_receipts (id, worker_id, payroll_period_id, total_salary_earnings, total_non_salary_earnings, total_deductions, net_pay)
+- employment_records (id, worker_id, start_date, end_date, contract_type, position, is_active, status) -> status usualmente 'ACTIVE', 'SUSPENDED', 'LIQUIDATED'
+- payroll_periods (id, name, start_date, end_date, status) -> Valores de status vitales: 'DRAFT' (borrador inicial), 'PRE_CALCULATED' (precalculada), 'PENDING_APPROVAL' (en revisión/solicitada), 'APPROVED' (aprobada), 'PAID' (pagada), 'CLOSED' (cerrada).
+- payroll_receipts (id, worker_id, payroll_period_id, total_salary_earnings, total_non_salary_earnings, total_deductions, net_pay, status) -> status puede ser 'DRAFT', etc.
 - attendance_summaries (id, worker_id, payroll_period_id, days_worked, ordinary_hours, ordinary_day_hours, ordinary_night_hours, extra_day_hours, extra_night_hours, unjustified_absences, justified_absences)
 - worker_absences (id, worker_id, start_date, end_date, is_justified, is_paid, reason, status)
 
@@ -238,12 +251,13 @@ ${dataDictionary}`;
       
       let rows: any[] = [];
       if (parsed.sql_query && parsed.sql_query.trim() !== "") {
-        rows = await this.prisma.$transaction(async (tx) => {
+        const rawRows = await this.prisma.$transaction(async (tx) => {
           await tx.$executeRawUnsafe(`SET LOCAL ROLE oracle_readonly`);
           await tx.$executeRawUnsafe(`SET LOCAL app.current_tenant_id = '${tenantId}'`);
           await tx.$executeRawUnsafe(`SET LOCAL app.has_confidential = '${canViewConfidential ? 'true' : 'false'}'`);
           return await tx.$queryRawUnsafe<any[]>(parsed.sql_query);
-        }) as any[];
+        });
+        rows = sanitizeDBResult(rawRows) as any[];
       }
 
       return {

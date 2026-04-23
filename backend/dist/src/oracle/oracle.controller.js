@@ -28,6 +28,16 @@ let OracleController = class OracleController {
         }
         return this.oracleService.generateConcept(user.tenantId, body.prompt, body.context, body.history);
     }
+    async askData(body, user) {
+        if (!user.permissions?.includes('ALL_ACCESS') && !user.permissions?.includes('USE_ORACLE')) {
+            throw new common_1.ForbiddenException('No tienes el permiso corporativo (USE_ORACLE) para interrogar a la Inteligencia Artificial.');
+        }
+        if (!body.prompt || body.prompt.trim() === '') {
+            throw new common_1.HttpException('El prompt natural es requerido.', common_1.HttpStatus.BAD_REQUEST);
+        }
+        const canViewConfidential = user.permissions?.includes('ALL_ACCESS') || user.permissions?.includes('VIEW_CONFIDENTIAL');
+        return this.oracleService.askDataOracle(user.tenantId, body.prompt, canViewConfidential, body.history);
+    }
 };
 exports.OracleController = OracleController;
 __decorate([
@@ -38,6 +48,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], OracleController.prototype, "generateConcept", null);
+__decorate([
+    (0, common_1.Post)('ask-data'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], OracleController.prototype, "askData", null);
 exports.OracleController = OracleController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('oracle'),

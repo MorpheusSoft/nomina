@@ -7,4 +7,12 @@ export declare class OracleController {
         context?: any;
         history?: any[];
     }, user: any): Promise<any>;
+    askData(body: {
+        prompt: string;
+        history?: any[];
+    }, user: any): Promise<{
+        message: any;
+        sql_query_used: any;
+        data: any[];
+    }>;
 }

@@ -5,114 +5,114 @@ export declare class TenantsController {
     constructor(tenantsService: TenantsService);
     getMyStatus(user: any): Promise<({
         users: {
-            email: string;
-            firstName: string;
-            lastName: string;
             role: {
                 name: string;
             };
+            email: string;
+            firstName: string;
+            lastName: string;
         }[];
         _count: {
             workers: number;
         };
     } & {
-        maxActiveWorkers: number;
-        isActive: boolean;
-        hasWorkerPortalAccess: boolean;
-        hasOracleAccess: boolean;
-        logoUrl: string | null;
-        oraclePrompt: string | null;
-        contactPhone: string | null;
-        serviceEndDate: Date | null;
         id: string;
+        createdAt: Date;
         name: string;
         taxId: string;
-        createdAt: Date;
+        isActive: boolean;
         updatedAt: Date;
+        maxActiveWorkers: number;
+        serviceEndDate: Date | null;
+        hasWorkerPortalAccess: boolean;
+        hasOracleAccess: boolean;
+        oraclePrompt: string | null;
+        logoUrl: string | null;
+        contactPhone: string | null;
     }) | null>;
     findAll(user: any): Promise<({
         users: {
-            email: string;
-            firstName: string;
-            lastName: string;
             role: {
                 name: string;
             };
+            email: string;
+            firstName: string;
+            lastName: string;
         }[];
         _count: {
             workers: number;
         };
     } & {
-        maxActiveWorkers: number;
-        isActive: boolean;
-        hasWorkerPortalAccess: boolean;
-        hasOracleAccess: boolean;
-        logoUrl: string | null;
-        oraclePrompt: string | null;
-        contactPhone: string | null;
-        serviceEndDate: Date | null;
         id: string;
+        createdAt: Date;
         name: string;
         taxId: string;
-        createdAt: Date;
+        isActive: boolean;
         updatedAt: Date;
+        maxActiveWorkers: number;
+        serviceEndDate: Date | null;
+        hasWorkerPortalAccess: boolean;
+        hasOracleAccess: boolean;
+        oraclePrompt: string | null;
+        logoUrl: string | null;
+        contactPhone: string | null;
     })[]>;
     findOne(id: string, user: any): Promise<({
         users: {
-            email: string;
-            firstName: string;
-            lastName: string;
             role: {
                 name: string;
             };
+            email: string;
+            firstName: string;
+            lastName: string;
         }[];
         _count: {
             workers: number;
         };
     } & {
-        maxActiveWorkers: number;
-        isActive: boolean;
-        hasWorkerPortalAccess: boolean;
-        hasOracleAccess: boolean;
-        logoUrl: string | null;
-        oraclePrompt: string | null;
-        contactPhone: string | null;
-        serviceEndDate: Date | null;
         id: string;
+        createdAt: Date;
         name: string;
         taxId: string;
-        createdAt: Date;
+        isActive: boolean;
         updatedAt: Date;
+        maxActiveWorkers: number;
+        serviceEndDate: Date | null;
+        hasWorkerPortalAccess: boolean;
+        hasOracleAccess: boolean;
+        oraclePrompt: string | null;
+        logoUrl: string | null;
+        contactPhone: string | null;
     }) | null>;
     update(id: string, data: UpdateTenantDto, user: any): Promise<{
-        maxActiveWorkers: number;
-        isActive: boolean;
-        hasWorkerPortalAccess: boolean;
-        hasOracleAccess: boolean;
-        logoUrl: string | null;
-        oraclePrompt: string | null;
-        contactPhone: string | null;
-        serviceEndDate: Date | null;
         id: string;
+        createdAt: Date;
         name: string;
         taxId: string;
-        createdAt: Date;
+        isActive: boolean;
         updatedAt: Date;
+        maxActiveWorkers: number;
+        serviceEndDate: Date | null;
+        hasWorkerPortalAccess: boolean;
+        hasOracleAccess: boolean;
+        oraclePrompt: string | null;
+        logoUrl: string | null;
+        contactPhone: string | null;
     }>;
     uploadLogo(id: string, file: Express.Multer.File, user: any): Promise<{
-        maxActiveWorkers: number;
-        isActive: boolean;
-        hasWorkerPortalAccess: boolean;
-        hasOracleAccess: boolean;
-        logoUrl: string | null;
-        oraclePrompt: string | null;
-        contactPhone: string | null;
-        serviceEndDate: Date | null;
         id: string;
+        createdAt: Date;
         name: string;
         taxId: string;
-        createdAt: Date;
+        isActive: boolean;
         updatedAt: Date;
+        maxActiveWorkers: number;
+        serviceEndDate: Date | null;
+        hasWorkerPortalAccess: boolean;
+        hasOracleAccess: boolean;
+        oraclePrompt: string | null;
+        logoUrl: string | null;
+        contactPhone: string | null;
     }>;
     assignConsultant(targetTenantId: string, consultantUserId: string, user: any): Promise<{
         id: string;

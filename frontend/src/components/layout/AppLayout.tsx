@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
+import OracleCopilotWidget from '../shared/OracleCopilotWidget';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false); // Hidden by default on mobile
@@ -25,6 +26,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
+      
+      {/* Global AI Copilot */}
+      <OracleCopilotWidget />
     </div>
   );
 }
