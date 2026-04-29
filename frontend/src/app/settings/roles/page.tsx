@@ -32,6 +32,7 @@ const AVAILABLE_PERMISSIONS = [
   { id: 'PAYROLL_APPROVE', label: 'Aprobar Cierre Nomina' },
   { id: 'CONFIDENTIAL_VIEW', label: 'Ver Datos Confidenciales' },
   { id: 'SETTINGS_MANAGE', label: 'Gestionar Configuraciones' },
+  { id: 'USE_ORACLE', label: 'Consultar Oráculo de IA' },
 ];
 
 const schema = yup.object().shape({

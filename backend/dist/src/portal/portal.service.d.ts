@@ -13,23 +13,23 @@ export declare class PortalService {
     }>;
     getReceipts(workerId: string): Promise<({
         payrollPeriod: {
+            name: string;
             startDate: Date;
             endDate: Date;
-            name: string;
         };
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
-        workerId: string;
         payrollPeriodId: string;
+        workerId: string;
         totalSalaryEarnings: import("@prisma/client/runtime/library").Decimal;
         totalNonSalaryEarnings: import("@prisma/client/runtime/library").Decimal;
         totalEarnings: import("@prisma/client/runtime/library").Decimal;
         totalDeductions: import("@prisma/client/runtime/library").Decimal;
         netPay: import("@prisma/client/runtime/library").Decimal;
         employerContributions: import("@prisma/client/runtime/library").Decimal;
+        status: string;
         emailDeliveryStatus: string;
         publishedAt: Date | null;
         signatureIp: string | null;
@@ -39,48 +39,6 @@ export declare class PortalService {
     })[]>;
     getReceiptByToken(token: string): Promise<{
         worker: {
-            tenant: {
-                id: string;
-                createdAt: Date;
-                name: string;
-                taxId: string;
-                isActive: boolean;
-                updatedAt: Date;
-                maxActiveWorkers: number;
-                serviceEndDate: Date | null;
-                hasWorkerPortalAccess: boolean;
-                hasOracleAccess: boolean;
-                oraclePrompt: string | null;
-                logoUrl: string | null;
-                contactPhone: string | null;
-            };
-            employmentRecords: ({
-                department: {
-                    id: string;
-                    createdAt: Date;
-                    name: string;
-                    updatedAt: Date;
-                    costCenterId: string;
-                    monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
-                } | null;
-            } & {
-                id: string;
-                tenantId: string;
-                startDate: Date;
-                endDate: Date | null;
-                createdAt: Date;
-                isActive: boolean;
-                updatedAt: Date;
-                contractType: string;
-                position: string;
-                status: import(".prisma/client").$Enums.EmploymentStatus;
-                isConfidential: boolean;
-                workerId: string;
-                departmentId: string | null;
-                payrollGroupId: string | null;
-                costCenterId: string | null;
-                crewId: string | null;
-            })[];
             bankAccounts: {
                 id: string;
                 createdAt: Date;
@@ -91,48 +49,74 @@ export declare class PortalService {
                 accountType: string;
                 isPrimary: boolean;
             }[];
+            employmentRecords: ({
+                department: {
+                    id: string;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    name: string;
+                    costCenterId: string;
+                    monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
+                } | null;
+            } & {
+                id: string;
+                tenantId: string;
+                createdAt: Date;
+                updatedAt: Date;
+                workerId: string;
+                status: import(".prisma/client").$Enums.EmploymentStatus;
+                payrollGroupId: string | null;
+                startDate: Date;
+                endDate: Date | null;
+                costCenterId: string | null;
+                isActive: boolean;
+                contractType: string;
+                position: string;
+                departmentId: string | null;
+                crewId: string | null;
+                isConfidential: boolean;
+            })[];
+            tenant: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                isActive: boolean;
+                taxId: string;
+                maxActiveWorkers: number;
+                serviceEndDate: Date | null;
+                hasWorkerPortalAccess: boolean;
+                hasOracleAccess: boolean;
+                oraclePrompt: string | null;
+                logoUrl: string | null;
+                contactPhone: string | null;
+            };
         } & {
             id: string;
             tenantId: string;
-            createdAt: Date;
-            updatedAt: Date;
-            email: string | null;
+            primaryIdentityNumber: string;
             firstName: string;
             lastName: string;
-            primaryIdentityNumber: string;
             birthDate: Date;
             gender: string;
             nationality: string;
             maritalStatus: string;
+            createdAt: Date;
+            updatedAt: Date;
             deletedAt: Date | null;
+            email: string | null;
             phone: string | null;
             bankAccountNumber: string | null;
             bankAccountType: string | null;
             bankName: string | null;
-        };
-        payrollPeriod: {
-            id: string;
-            tenantId: string;
-            startDate: Date;
-            endDate: Date;
-            createdAt: Date;
-            name: string;
-            updatedAt: Date;
-            status: string;
-            payrollGroupId: string;
-            costCenterId: string | null;
-            type: string;
-            currency: string;
-            exchangeRate: import("@prisma/client/runtime/library").Decimal | null;
-            processStatuses: import(".prisma/client").$Enums.EmploymentStatus[];
         };
         details: ({
             concept: {
                 id: string;
                 tenantId: string;
                 createdAt: Date;
-                name: string;
                 updatedAt: Date;
+                name: string;
                 type: string;
                 code: string;
                 description: string | null;
@@ -153,25 +137,41 @@ export declare class PortalService {
             id: string;
             payrollReceiptId: string;
             conceptId: string;
-            amount: import("@prisma/client/runtime/library").Decimal;
             conceptNameSnapshot: string;
             typeSnapshot: string;
             factor: import("@prisma/client/runtime/library").Decimal;
             rate: import("@prisma/client/runtime/library").Decimal;
+            amount: import("@prisma/client/runtime/library").Decimal;
         })[];
+        payrollPeriod: {
+            id: string;
+            tenantId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            status: string;
+            payrollGroupId: string;
+            type: string;
+            startDate: Date;
+            endDate: Date;
+            costCenterId: string | null;
+            currency: string;
+            exchangeRate: import("@prisma/client/runtime/library").Decimal | null;
+            processStatuses: import(".prisma/client").$Enums.EmploymentStatus[];
+        };
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
-        workerId: string;
         payrollPeriodId: string;
+        workerId: string;
         totalSalaryEarnings: import("@prisma/client/runtime/library").Decimal;
         totalNonSalaryEarnings: import("@prisma/client/runtime/library").Decimal;
         totalEarnings: import("@prisma/client/runtime/library").Decimal;
         totalDeductions: import("@prisma/client/runtime/library").Decimal;
         netPay: import("@prisma/client/runtime/library").Decimal;
         employerContributions: import("@prisma/client/runtime/library").Decimal;
+        status: string;
         emailDeliveryStatus: string;
         publishedAt: Date | null;
         signatureIp: string | null;
@@ -188,8 +188,8 @@ export declare class PortalService {
         id: string;
         tenantId: string;
         createdAt: Date;
-        name: string;
         updatedAt: Date;
+        name: string;
         type: import(".prisma/client").$Enums.DocumentTemplateType;
         contentHtml: string;
         isSelfService: boolean;
@@ -212,8 +212,8 @@ export declare class PortalService {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.TicketStatus;
         workerId: string;
+        status: import(".prisma/client").$Enums.TicketStatus;
         type: import(".prisma/client").$Enums.TicketType;
         description: string;
         title: string;
@@ -225,8 +225,8 @@ export declare class PortalService {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.TicketStatus;
         workerId: string;
+        status: import(".prisma/client").$Enums.TicketStatus;
         type: import(".prisma/client").$Enums.TicketType;
         description: string;
         title: string;

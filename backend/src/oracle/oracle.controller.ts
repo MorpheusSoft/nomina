@@ -26,7 +26,7 @@ export class OracleController {
       throw new HttpException('El prompt natural es requerido.', HttpStatus.BAD_REQUEST);
     }
     
-    const canViewConfidential = user.permissions?.includes('ALL_ACCESS') || user.permissions?.includes('VIEW_CONFIDENTIAL');
+    const canViewConfidential = user.permissions?.includes('ALL_ACCESS') || user.permissions?.includes('CONFIDENTIAL_VIEW');
     return this.oracleService.askDataOracle(user.tenantId, body.prompt, canViewConfidential, body.history);
   }
 }

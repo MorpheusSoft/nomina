@@ -57,7 +57,7 @@ let PortalService = class PortalService {
         return this.prisma.payrollReceipt.findMany({
             where: {
                 workerId,
-                payrollPeriod: { status: { in: ['APPROVED', 'CLOSED'] } }
+                payrollPeriod: { status: { in: ['APPROVED', 'PAID', 'CLOSED'] } }
             },
             include: {
                 payrollPeriod: { select: { name: true, startDate: true, endDate: true } }
@@ -87,6 +87,9 @@ let PortalService = class PortalService {
         });
         if (!receipt)
             throw new common_1.NotFoundException('Recibo no encontrado o inválido');
+        if (!['APPROVED', 'PAID', 'CLOSED'].includes(receipt.payrollPeriod.status)) {
+            throw new common_1.ForbiddenException('El recibo de pago aún no está aprobado para su visualización oficial.');
+        }
         if (!receipt.viewedAt) {
             await this.prisma.payrollReceipt.update({
                 where: { id: receipt.id },

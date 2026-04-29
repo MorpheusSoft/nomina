@@ -35,7 +35,7 @@ let OracleController = class OracleController {
         if (!body.prompt || body.prompt.trim() === '') {
             throw new common_1.HttpException('El prompt natural es requerido.', common_1.HttpStatus.BAD_REQUEST);
         }
-        const canViewConfidential = user.permissions?.includes('ALL_ACCESS') || user.permissions?.includes('VIEW_CONFIDENTIAL');
+        const canViewConfidential = user.permissions?.includes('ALL_ACCESS') || user.permissions?.includes('CONFIDENTIAL_VIEW');
         return this.oracleService.askDataOracle(user.tenantId, body.prompt, canViewConfidential, body.history);
     }
 };

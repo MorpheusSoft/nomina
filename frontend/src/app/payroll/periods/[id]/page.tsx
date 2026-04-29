@@ -202,7 +202,9 @@ export default function PayrollEngineConsole({ params }: { params: Promise<{ id:
                 icon="pi pi-print" 
                 className={`px-6 py-3 rounded-xl font-bold bg-white text-indigo-700 border border-indigo-200 hover:bg-indigo-50 shadow-sm transition-all`}
                 onClick={() => window.print()}
-                disabled={receipts.length === 0}
+                disabled={receipts.length === 0 || !['APPROVED', 'PAID', 'CLOSED'].includes(period?.status)}
+                tooltip={!['APPROVED', 'PAID', 'CLOSED'].includes(period?.status) ? "La nómina debe estar aprobada para imprimir recibos" : undefined}
+                tooltipOptions={{ position: 'top' }}
              />
              <Button 
                 label={computing ? "Motor Procesando..." : "Calcular Nómina Automática"} 
