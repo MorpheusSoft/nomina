@@ -107,6 +107,7 @@ export default function ConceptsPage() {
   const [payrollGroups, setPayrollGroups] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [selectedPayrollGroupFilter, setSelectedPayrollGroupFilter] = useState<string | null>(null);
   const [dictionarySearch, setDictionarySearch] = useState('');
   const [showDialog, setShowDialog] = useState(false);
   const [showSandbox, setShowSandbox] = useState(false);
@@ -140,6 +141,11 @@ export default function ConceptsPage() {
   
   // Filtrar conceptos previos para encadenamiento
   const previousConcepts = concepts.filter(c => c.executionSequence < currentSequence);
+
+  const filteredConcepts = concepts.filter(c => {
+    if (!selectedPayrollGroupFilter) return true;
+    return c.payrollGroupConcepts?.some((pgc: any) => pgc.payrollGroupId === selectedPayrollGroupFilter);
+  });
 
   const fetchConcepts = async () => {
     try {
@@ -375,16 +381,22 @@ export default function ConceptsPage() {
 
   const header = (
     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-      <div className="relative w-full md:w-80 flex items-center">
-        <i className="pi pi-search absolute left-3 text-gray-400 z-10"></i>
-        <InputText type="search" onInput={(e) => setGlobalFilter(e.currentTarget.value)} placeholder="Buscar conceptos..." className="w-full border-gray-200 focus:border-indigo-500 rounded-lg" style={{ paddingLeft: '2.5rem' }} />
+      <div className="flex flex-col md:flex-row items-center gap-2 w-full md:w-auto">
+        <div className="relative w-full md:w-80 flex items-center">
+          <i className="pi pi-search absolute left-3 text-gray-400 z-10"></i>
+          <InputText type="search" onInput={(e) => setGlobalFilter(e.currentTarget.value)} placeholder="Buscar conceptos..." className="w-full border-gray-200 focus:border-indigo-500 rounded-lg" style={{ paddingLeft: '2.5rem' }} />
+        </div>
+        <Dropdown 
+          value={selectedPayrollGroupFilter} 
+          options={[{ label: 'Todos los Convenios', value: null }, ...payrollGroups.map(pg => ({ label: pg.name, value: pg.id }))]} 
+          onChange={(e) => setSelectedPayrollGroupFilter(e.value)} 
+          placeholder="Filtrar por Convenio" 
+          className="w-full md:w-56 p-inputtext-sm rounded-lg border-gray-200" 
+        />
       </div>
       <div className="flex gap-2">
-        {hasOracleAccess && (
-          <Button label="Oráculo IA" icon="pi pi-sparkles" className="bg-indigo-600 hover:bg-indigo-700 text-white border-0 px-4 py-2 rounded-lg font-medium transition-colors shadow-md" onClick={() => setOracleDialog(true)} />
-        )}
-        <Button label="Probar Fórmulas" icon="pi pi-bolt" className="bg-sky-600 hover:bg-sky-700 text-white border-0 px-4 py-2 rounded-lg font-medium transition-colors" onClick={() => setShowSandbox(true)} />
-        <Button label="Nuevo Concepto" icon="pi pi-plus" className="bg-emerald-600 hover:bg-emerald-700 text-white border-0 px-4 py-2 rounded-lg font-medium transition-colors" onClick={openNew} />
+        <Button label="Probar Fórmulas" icon="pi pi-bolt" className="bg-sky-600 hover:bg-sky-700 text-white border-0 px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" onClick={() => setShowSandbox(true)} />
+        <Button label="Nuevo Concepto" icon="pi pi-plus" className="bg-emerald-600 hover:bg-emerald-700 text-white border-0 px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap" onClick={openNew} />
       </div>
     </div>
   );
@@ -399,7 +411,7 @@ export default function ConceptsPage() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <DataTable value={concepts} paginator rows={15} loading={loading} globalFilter={globalFilter} header={header} 
+        <DataTable value={filteredConcepts} paginator rows={15} loading={loading} globalFilter={globalFilter} header={header} 
           emptyMessage="No se encontraron conceptos algorítmicos."
           className="p-datatable-sm"
           rowHover>
