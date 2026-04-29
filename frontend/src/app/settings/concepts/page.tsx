@@ -103,6 +103,7 @@ export default function ConceptsPage() {
   const [concepts, setConcepts] = useState<any[]>([]);
   const [globalVars, setGlobalVars] = useState<any[]>([]);
   const [payrollGroupVars, setPayrollGroupVars] = useState<any[]>([]);
+  const [costCenterVars, setCostCenterVars] = useState<any[]>([]);
   const [payrollGroups, setPayrollGroups] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -179,11 +180,21 @@ export default function ConceptsPage() {
     }
   };
 
+  const fetchCostCenterVars = async () => {
+    try {
+      const res = await api.get('/cost-centers/variables/all');
+      setCostCenterVars(res.data);
+    } catch (error) {
+      console.error('Error fetching cost center vars:', error);
+    }
+  };
+
   useEffect(() => {
     fetchConcepts();
     fetchGlobalVars();
     fetchPayrollGroups();
     fetchPayrollGroupVars();
+    fetchCostCenterVars();
     api.get('/tenants/my-status').then(res => setHasOracleAccess(res.data?.hasOracleAccess || false)).catch(console.error);
   }, []);
 
@@ -316,6 +327,7 @@ export default function ConceptsPage() {
        const payloadContext = {
          globalVars: globalVars.map(v => ({ code: v.code, description: v.description, value: v.numericalValue })),
          payrollGroupVars: payrollGroupVars.map(v => ({ code: v.code, description: v.description, value: v.numericalValue })),
+         costCenterVars: costCenterVars.map(v => ({ code: v.code, name: v.name, value: v.value })),
          existingConcepts: concepts.map(c => ({ code: c.code, name: c.name })),
          payrollGroups: payrollGroups.map(g => ({ id: g.value, name: g.label }))
        };
@@ -707,6 +719,24 @@ export default function ConceptsPage() {
                   <li key={gv.id} className="flex flex-col gap-1">
                     <span className="text-xs font-semibold text-slate-700">{gv.name}</span>
                     <span onClick={() => copyToClipboard(gv.code)} className="text-xs bg-indigo-50 text-indigo-700 font-mono px-2 py-1 rounded inline-block w-max cursor-pointer hover:bg-indigo-100 transition-colors border border-indigo-200" title="Click para copiar">{gv.code}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          
+          <div className="mb-6">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Variables Geográficas (C.C.)</h4>
+            {costCenterVars.length === 0 ? (
+               <p className="text-xs text-slate-400 italic">No tienes variables locacionales.</p>
+            ) : (
+              <ul className="space-y-3 m-0 p-0 list-none">
+                {costCenterVars.filter(cv => 
+                  !dictionarySearch || cv.name.toLowerCase().includes(dictionarySearch.toLowerCase()) || cv.code.toLowerCase().includes(dictionarySearch.toLowerCase())
+                ).map(cv => (
+                  <li key={cv.id} className="flex flex-col gap-1">
+                    <span className="text-xs font-semibold text-slate-700">{cv.name} <span className="text-[10px] text-fuchsia-600 font-bold ml-1" title={`Ejemplo referencial de ${cv.costCenterName}`}>Ej: ${Number(cv.value || 0).toFixed(2)}</span></span>
+                    <span onClick={() => copyToClipboard(cv.code)} className="text-xs bg-fuchsia-50 text-fuchsia-700 font-mono px-2 py-1 rounded inline-block w-max cursor-pointer hover:bg-fuchsia-100 transition-colors border border-fuchsia-200" title="Click para copiar">{cv.code}</span>
                   </li>
                 ))}
               </ul>

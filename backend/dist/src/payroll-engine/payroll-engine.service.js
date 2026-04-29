@@ -517,6 +517,20 @@ let PayrollEngineService = PayrollEngineService_1 = class PayrollEngineService {
         for (const [k, v] of Object.entries(contextDict)) {
             workerContext[k] = v;
         }
+        if (record.costCenterId) {
+            const ccVars = await this.prisma.costCenterVariable.findMany({
+                where: { costCenterId: record.costCenterId, validFrom: { lte: period.endDate } },
+                orderBy: { validFrom: 'desc' }
+            });
+            const ccDictSeen = {};
+            for (const cv of ccVars) {
+                const lowerCode = cv.code.toLowerCase();
+                if (!ccDictSeen[lowerCode]) {
+                    workerContext[lowerCode] = Number(cv.value);
+                    ccDictSeen[lowerCode] = true;
+                }
+            }
+        }
         const accumulators = await this.prisma.payrollAccumulator.findMany({
             where: { tenantId },
             include: { concepts: true }

@@ -586,6 +586,24 @@ export class PayrollEngineService {
         workerContext[k] = v;
       }
 
+      // Inyectar Variables del Centro de Costo (Tienen mayor precedencia, sobrescriben a las de convenio/globales)
+      if (record.costCenterId) {
+        const ccVars = await (this.prisma as any).costCenterVariable.findMany({
+          where: { costCenterId: record.costCenterId, validFrom: { lte: period.endDate } },
+          orderBy: { validFrom: 'desc' }
+        });
+        
+        const ccDictSeen: Record<string, boolean> = {};
+        for (const cv of ccVars) {
+          const lowerCode = cv.code.toLowerCase();
+          if (!ccDictSeen[lowerCode]) {
+             workerContext[lowerCode] = Number(cv.value);
+             ccDictSeen[lowerCode] = true;
+          }
+        }
+      }
+
+
 
       // 6.5 Resolve Dynamic Accumulators (Retroactive Memory)
       const accumulators = await this.prisma.payrollAccumulator.findMany({

@@ -27,6 +27,29 @@ let CostCentersService = class CostCentersService {
             throw new common_1.BadRequestException('Error creating Cost Center: ' + (e.message || JSON.stringify(e)));
         }
     }
+    async findAllVariablesGroupedByCode(tenantId) {
+        const vars = await this.prisma.costCenterVariable.findMany({
+            where: { costCenter: { tenantId } },
+            orderBy: { validFrom: 'desc' },
+            include: { costCenter: { select: { name: true } } }
+        });
+        const unique = [];
+        const seen = new Set();
+        for (const v of vars) {
+            const lower = v.code.toLowerCase();
+            if (!seen.has(lower)) {
+                seen.add(lower);
+                unique.push({
+                    id: v.id,
+                    code: v.code,
+                    name: v.name,
+                    value: Number(v.value),
+                    costCenterName: v.costCenter.name
+                });
+            }
+        }
+        return unique;
+    }
     async findAll(tenantId) {
         return this.prisma.costCenter.findMany({
             where: { tenantId },
@@ -63,6 +86,41 @@ let CostCentersService = class CostCentersService {
     async remove(tenantId, id) {
         return this.prisma.costCenter.deleteMany({
             where: { id, tenantId },
+        });
+    }
+    async findVariablesByCostCenter(tenantId, costCenterId) {
+        return this.prisma.costCenterVariable.findMany({
+            where: { costCenterId, costCenter: { tenantId } },
+            orderBy: { validFrom: 'desc' }
+        });
+    }
+    async createVariable(tenantId, costCenterId, data) {
+        return this.prisma.costCenterVariable.create({
+            data: {
+                costCenterId,
+                code: data.code,
+                name: data.name,
+                value: data.value,
+                validFrom: new Date(data.validFrom),
+                validTo: data.validTo ? new Date(data.validTo) : null
+            }
+        });
+    }
+    async updateVariable(tenantId, costCenterId, varId, data) {
+        return this.prisma.costCenterVariable.update({
+            where: { id: varId, costCenterId },
+            data: {
+                code: data.code,
+                name: data.name,
+                value: data.value,
+                validFrom: new Date(data.validFrom),
+                validTo: data.validTo ? new Date(data.validTo) : null
+            }
+        });
+    }
+    async removeVariable(tenantId, costCenterId, varId) {
+        return this.prisma.costCenterVariable.delete({
+            where: { id: varId, costCenterId }
         });
     }
 };

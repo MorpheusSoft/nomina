@@ -96,8 +96,9 @@ let OracleService = class OracleService {
         }
         let contextString = '';
         if (context) {
-            const globals = context.globalVars?.map((v) => `- ${v.code}: ${v.description} (Valor Numérico Actual: ${v.value !== undefined ? v.value : 'No asignado'})`).join('\n') || 'Ninguna';
-            const groups = context.payrollGroupVars?.map((v) => `- ${v.code}: ${v.description} (Valor Numérico Actual: ${v.value !== undefined ? v.value : 'No asignado'})`).join('\n') || 'Ninguna';
+            const globals = context.globalVars?.map((v) => `- ${v.code}: ${v.description || v.name} (Valor Numérico Actual: ${v.value !== undefined ? v.value : 'No asignado'})`).join('\n') || 'Ninguna';
+            const groups = context.payrollGroupVars?.map((v) => `- ${v.code}: ${v.description || v.name} (Valor Numérico Actual: ${v.value !== undefined ? v.value : 'No asignado'})`).join('\n') || 'Ninguna';
+            const costCenters = context.costCenterVars?.map((v) => `- ${v.code}: ${v.name} (Ejemplo de Valor en un centro: ${v.value !== undefined ? v.value : 'No asignado'})`).join('\n') || 'Ninguna';
             const concepts = context.existingConcepts?.map((c) => `- ${c.code}: ${c.name}`).join('\n') || 'Ninguno';
             const convenios = context.payrollGroups?.map((g) => `- UUID: ${g.id} | NOMBRE: ${g.name}`).join('\n') || 'Ninguno';
             contextString = `\n\nCONTEXTO DINÁMICO DE ESTA EMPRESA (Puedes usar estas variables libremente en tus fórmulas matemáticas si el usuario te lo pide):
@@ -106,6 +107,9 @@ ${globals}
 
 > Variables de Grupos de Nómina (Convenios):
 ${groups}
+
+> Variables Geográficas de Centros de Costo (Su valor se sobrescribe dinámicamente según la locación del trabajador):
+${costCenters}
 
 > Lista de CONVENIOS (Grupos de Nómina) en esta empresa:
 ${convenios}

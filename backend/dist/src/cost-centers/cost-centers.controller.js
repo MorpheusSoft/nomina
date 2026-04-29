@@ -29,6 +29,9 @@ let CostCentersController = class CostCentersController {
     findAll(user) {
         return this.costCentersService.findAll(user.tenantId);
     }
+    findAllVariables(user) {
+        return this.costCentersService.findAllVariablesGroupedByCode(user.tenantId);
+    }
     findOne(id, user) {
         return this.costCentersService.findOne(user.tenantId, id);
     }
@@ -37,6 +40,18 @@ let CostCentersController = class CostCentersController {
     }
     remove(id, user) {
         return this.costCentersService.remove(user.tenantId, id);
+    }
+    findVariables(id, user) {
+        return this.costCentersService.findVariablesByCostCenter(user.tenantId, id);
+    }
+    createVariable(id, data, user) {
+        return this.costCentersService.createVariable(user.tenantId, id, data);
+    }
+    updateVariable(id, varId, data, user) {
+        return this.costCentersService.updateVariable(user.tenantId, id, varId, data);
+    }
+    removeVariable(id, varId, user) {
+        return this.costCentersService.removeVariable(user.tenantId, id, varId);
     }
 };
 exports.CostCentersController = CostCentersController;
@@ -55,6 +70,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], CostCentersController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('variables/all'),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], CostCentersController.prototype, "findAllVariables", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -80,6 +102,42 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], CostCentersController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)(':id/variables'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], CostCentersController.prototype, "findVariables", null);
+__decorate([
+    (0, common_1.Post)(':id/variables'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", void 0)
+], CostCentersController.prototype, "createVariable", null);
+__decorate([
+    (0, common_1.Patch)(':id/variables/:varId'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('varId')),
+    __param(2, (0, common_1.Body)()),
+    __param(3, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object, Object]),
+    __metadata("design:returntype", void 0)
+], CostCentersController.prototype, "updateVariable", null);
+__decorate([
+    (0, common_1.Delete)(':id/variables/:varId'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('varId')),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", void 0)
+], CostCentersController.prototype, "removeVariable", null);
 exports.CostCentersController = CostCentersController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('cost-centers'),
