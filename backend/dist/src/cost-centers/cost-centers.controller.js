@@ -16,7 +16,6 @@ exports.CostCentersController = void 0;
 const common_1 = require("@nestjs/common");
 const cost_centers_service_1 = require("./cost-centers.service");
 const create_cost_center_dto_1 = require("./dto/create-cost-center.dto");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const current_user_decorator_1 = require("../auth/current-user.decorator");
 let CostCentersController = class CostCentersController {
     costCentersService;
@@ -139,7 +138,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], CostCentersController.prototype, "removeVariable", null);
 exports.CostCentersController = CostCentersController = __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('cost-centers'),
     __metadata("design:paramtypes", [cost_centers_service_1.CostCentersService])
 ], CostCentersController);

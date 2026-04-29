@@ -111,8 +111,9 @@ export default function OrganizationSettingsPage() {
       loadCostCenterVars(currentCostCenter.id);
       setCurrentCCVar({ code: '', name: '', value: 0, validFrom: new Date('2000-01-01T00:00:00') });
       toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Variable local guardada' });
-    } catch (error) {
-      toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Fallo al guardar variable' });
+    } catch (error: any) {
+      const errMsg = error.response?.data?.message || error.message || 'Fallo al guardar variable';
+      toast.current?.show({ severity: 'error', summary: 'Error', detail: typeof errMsg === 'string' ? errMsg : JSON.stringify(errMsg), life: 7000 });
     }
   };
 

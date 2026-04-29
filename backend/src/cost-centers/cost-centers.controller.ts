@@ -4,8 +4,6 @@ import { CreateCostCenterDto } from './dto/create-cost-center.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 
-@UseGuards(JwtAuthGuard)
-
 @Controller('cost-centers')
 export class CostCentersController {
   constructor(private readonly costCentersService: CostCentersService) {}

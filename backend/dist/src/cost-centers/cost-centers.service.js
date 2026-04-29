@@ -95,16 +95,21 @@ let CostCentersService = class CostCentersService {
         });
     }
     async createVariable(tenantId, costCenterId, data) {
-        return this.prisma.costCenterVariable.create({
-            data: {
-                costCenterId,
-                code: data.code,
-                name: data.name,
-                value: data.value,
-                validFrom: new Date(data.validFrom),
-                validTo: data.validTo ? new Date(data.validTo) : null
-            }
-        });
+        try {
+            return await this.prisma.costCenterVariable.create({
+                data: {
+                    costCenterId,
+                    code: data.code,
+                    name: data.name,
+                    value: data.value,
+                    validFrom: new Date(data.validFrom),
+                    validTo: data.validTo ? new Date(data.validTo) : null
+                }
+            });
+        }
+        catch (e) {
+            throw new common_1.BadRequestException('Prisma DB Error: ' + (e.message || JSON.stringify(e)));
+        }
     }
     async updateVariable(tenantId, costCenterId, varId, data) {
         return this.prisma.costCenterVariable.update({
