@@ -388,7 +388,7 @@ export default function ConceptsPage() {
         </div>
         <Dropdown 
           value={selectedPayrollGroupFilter} 
-          options={[{ label: 'Todos los Convenios', value: null }, ...payrollGroups.map(pg => ({ label: pg.name, value: pg.id }))]} 
+          options={[{ label: 'Todos los Convenios', value: null }, ...payrollGroups]} 
           onChange={(e) => setSelectedPayrollGroupFilter(e.value)} 
           placeholder="Filtrar por Convenio" 
           className="w-full md:w-56 p-inputtext-sm rounded-lg border-gray-200" 
