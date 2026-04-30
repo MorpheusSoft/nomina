@@ -578,7 +578,7 @@ export default function ConceptsPage() {
                 <div className="flex gap-2 items-end mb-4">
                   <div className="flex-1">
                     <label className="block text-xs font-medium text-gray-700 mb-1">Concepto Hijo a Invocar</label>
-                    <Dropdown value={newChildId} options={concepts.filter(c => c.id !== watch('id')).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))} onChange={(e) => setNewChildId(e.value)} placeholder="Seleccione sub-concepto" className="w-full text-sm" filter />
+                    <Dropdown value={newChildId} options={filteredConcepts.filter(c => c.id !== watch('id')).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))} onChange={(e) => setNewChildId(e.value)} placeholder="Seleccione sub-concepto" className="w-full text-sm" filter />
                   </div>
                   <div className="w-32">
                     <label className="block text-xs font-medium text-gray-700 mb-1">Orden (Nº)</label>
