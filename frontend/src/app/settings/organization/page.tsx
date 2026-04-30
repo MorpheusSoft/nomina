@@ -135,10 +135,16 @@ export default function OrganizationSettingsPage() {
       return;
     }
     try {
+      const payload = {
+        name: currentDepartment.name,
+        costCenterId: currentDepartment.costCenterId,
+        monthlyBudget: currentDepartment.monthlyBudget ? Number(currentDepartment.monthlyBudget) : null
+      };
+
       if (currentDepartment.id) {
-        await api.patch(`/departments/${currentDepartment.id}`, currentDepartment);
+        await api.patch(`/departments/${currentDepartment.id}`, payload);
       } else {
-        await api.post('/departments', currentDepartment);
+        await api.post('/departments', payload);
       }
       setDepartmentDialog(false);
       loadData();
