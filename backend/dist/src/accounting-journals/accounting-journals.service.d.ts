@@ -23,8 +23,8 @@ export declare class AccountingJournalsService {
         lines: {
             id: string;
             createdAt: Date;
-            description: string | null;
             accountingCode: string;
+            description: string | null;
             costCenterCode: string | null;
             debitAmount: Prisma.Decimal;
             creditAmount: Prisma.Decimal;
@@ -89,8 +89,8 @@ export declare class AccountingJournalsService {
         lines: {
             id: string;
             createdAt: Date;
-            description: string | null;
             accountingCode: string;
+            description: string | null;
             costCenterCode: string | null;
             debitAmount: Prisma.Decimal;
             creditAmount: Prisma.Decimal;

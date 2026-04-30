@@ -11,25 +11,6 @@ export declare class PayrollEngineController {
         count: number;
     }>;
     getReceipts(periodId: string, user: any): Promise<({
-        worker: {
-            id: string;
-            tenantId: string;
-            createdAt: Date;
-            updatedAt: Date;
-            email: string | null;
-            firstName: string;
-            lastName: string;
-            primaryIdentityNumber: string;
-            birthDate: Date;
-            gender: string;
-            nationality: string;
-            maritalStatus: string;
-            deletedAt: Date | null;
-            phone: string | null;
-            bankAccountNumber: string | null;
-            bankAccountType: string | null;
-            bankName: string | null;
-        };
         details: ({
             concept: {
                 code: string;
@@ -38,25 +19,44 @@ export declare class PayrollEngineController {
             id: string;
             payrollReceiptId: string;
             conceptId: string;
-            amount: import("@prisma/client/runtime/library").Decimal;
             conceptNameSnapshot: string;
             typeSnapshot: string;
             factor: import("@prisma/client/runtime/library").Decimal;
             rate: import("@prisma/client/runtime/library").Decimal;
+            amount: import("@prisma/client/runtime/library").Decimal;
         })[];
+        worker: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            tenantId: string;
+            primaryIdentityNumber: string;
+            firstName: string;
+            lastName: string;
+            birthDate: Date;
+            gender: string;
+            nationality: string;
+            maritalStatus: string;
+            deletedAt: Date | null;
+            email: string | null;
+            phone: string | null;
+            bankAccountNumber: string | null;
+            bankAccountType: string | null;
+            bankName: string | null;
+        };
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        status: string;
-        workerId: string;
         payrollPeriodId: string;
+        workerId: string;
         totalSalaryEarnings: import("@prisma/client/runtime/library").Decimal;
         totalNonSalaryEarnings: import("@prisma/client/runtime/library").Decimal;
         totalEarnings: import("@prisma/client/runtime/library").Decimal;
         totalDeductions: import("@prisma/client/runtime/library").Decimal;
         netPay: import("@prisma/client/runtime/library").Decimal;
         employerContributions: import("@prisma/client/runtime/library").Decimal;
+        createdAt: Date;
+        status: string;
+        updatedAt: Date;
         emailDeliveryStatus: string;
         publishedAt: Date | null;
         signatureIp: string | null;

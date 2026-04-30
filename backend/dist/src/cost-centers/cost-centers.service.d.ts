@@ -5,12 +5,12 @@ export declare class CostCentersService {
     constructor(prisma: PrismaService);
     create(tenantId: string, data: CreateCostCenterDto): Promise<{
         id: string;
-        name: string;
-        accountingCode: string;
-        createdAt: Date;
-        updatedAt: Date;
         tenantId: string;
+        createdAt: Date;
+        name: string;
+        updatedAt: Date;
         workerId: string | null;
+        accountingCode: string;
     }>;
     findAllVariablesGroupedByCode(tenantId: string): Promise<{
         id: any;
@@ -24,16 +24,16 @@ export declare class CostCentersService {
             crews: ({
                 shiftPattern: {
                     id: string;
-                    name: string;
-                    createdAt: Date;
-                    updatedAt: Date;
                     tenantId: string;
+                    createdAt: Date;
+                    name: string;
+                    updatedAt: Date;
                     sequence: import("@prisma/client/runtime/library").JsonValue;
                 } | null;
             } & {
                 id: string;
-                name: string;
                 createdAt: Date;
+                name: string;
                 updatedAt: Date;
                 departmentId: string;
                 patternAnchor: Date | null;
@@ -41,36 +41,36 @@ export declare class CostCentersService {
             })[];
         } & {
             id: string;
-            name: string;
             createdAt: Date;
+            name: string;
             updatedAt: Date;
             costCenterId: string;
             monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
         })[];
     } & {
         id: string;
-        name: string;
-        accountingCode: string;
-        createdAt: Date;
-        updatedAt: Date;
         tenantId: string;
+        createdAt: Date;
+        name: string;
+        updatedAt: Date;
         workerId: string | null;
+        accountingCode: string;
     })[]>;
     findOne(tenantId: string, id: string): Promise<({
         departments: ({
             crews: ({
                 shiftPattern: {
                     id: string;
-                    name: string;
-                    createdAt: Date;
-                    updatedAt: Date;
                     tenantId: string;
+                    createdAt: Date;
+                    name: string;
+                    updatedAt: Date;
                     sequence: import("@prisma/client/runtime/library").JsonValue;
                 } | null;
             } & {
                 id: string;
-                name: string;
                 createdAt: Date;
+                name: string;
                 updatedAt: Date;
                 departmentId: string;
                 patternAnchor: Date | null;
@@ -78,20 +78,20 @@ export declare class CostCentersService {
             })[];
         } & {
             id: string;
-            name: string;
             createdAt: Date;
+            name: string;
             updatedAt: Date;
             costCenterId: string;
             monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
         })[];
     } & {
         id: string;
-        name: string;
-        accountingCode: string;
-        createdAt: Date;
-        updatedAt: Date;
         tenantId: string;
+        createdAt: Date;
+        name: string;
+        updatedAt: Date;
         workerId: string | null;
+        accountingCode: string;
     }) | null>;
     update(tenantId: string, id: string, data: any): Promise<import(".prisma/client").Prisma.BatchPayload>;
     remove(tenantId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;

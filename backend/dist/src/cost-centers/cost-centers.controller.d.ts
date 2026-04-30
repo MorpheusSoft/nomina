@@ -5,28 +5,28 @@ export declare class CostCentersController {
     constructor(costCentersService: CostCentersService);
     create(data: CreateCostCenterDto, user: any): Promise<{
         id: string;
-        name: string;
-        accountingCode: string;
-        createdAt: Date;
-        updatedAt: Date;
         tenantId: string;
+        createdAt: Date;
+        name: string;
+        updatedAt: Date;
         workerId: string | null;
+        accountingCode: string;
     }>;
     findAll(user: any): Promise<({
         departments: ({
             crews: ({
                 shiftPattern: {
                     id: string;
-                    name: string;
-                    createdAt: Date;
-                    updatedAt: Date;
                     tenantId: string;
+                    createdAt: Date;
+                    name: string;
+                    updatedAt: Date;
                     sequence: import("@prisma/client/runtime/library").JsonValue;
                 } | null;
             } & {
                 id: string;
-                name: string;
                 createdAt: Date;
+                name: string;
                 updatedAt: Date;
                 departmentId: string;
                 patternAnchor: Date | null;
@@ -34,20 +34,20 @@ export declare class CostCentersController {
             })[];
         } & {
             id: string;
-            name: string;
             createdAt: Date;
+            name: string;
             updatedAt: Date;
             costCenterId: string;
             monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
         })[];
     } & {
         id: string;
-        name: string;
-        accountingCode: string;
-        createdAt: Date;
-        updatedAt: Date;
         tenantId: string;
+        createdAt: Date;
+        name: string;
+        updatedAt: Date;
         workerId: string | null;
+        accountingCode: string;
     })[]>;
     findAllVariables(user: any): Promise<{
         id: any;
@@ -61,16 +61,16 @@ export declare class CostCentersController {
             crews: ({
                 shiftPattern: {
                     id: string;
-                    name: string;
-                    createdAt: Date;
-                    updatedAt: Date;
                     tenantId: string;
+                    createdAt: Date;
+                    name: string;
+                    updatedAt: Date;
                     sequence: import("@prisma/client/runtime/library").JsonValue;
                 } | null;
             } & {
                 id: string;
-                name: string;
                 createdAt: Date;
+                name: string;
                 updatedAt: Date;
                 departmentId: string;
                 patternAnchor: Date | null;
@@ -78,20 +78,20 @@ export declare class CostCentersController {
             })[];
         } & {
             id: string;
-            name: string;
             createdAt: Date;
+            name: string;
             updatedAt: Date;
             costCenterId: string;
             monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
         })[];
     } & {
         id: string;
-        name: string;
-        accountingCode: string;
-        createdAt: Date;
-        updatedAt: Date;
         tenantId: string;
+        createdAt: Date;
+        name: string;
+        updatedAt: Date;
         workerId: string | null;
+        accountingCode: string;
     }) | null>;
     update(id: string, data: CreateCostCenterDto, user: any): Promise<import(".prisma/client").Prisma.BatchPayload>;
     remove(id: string, user: any): Promise<import(".prisma/client").Prisma.BatchPayload>;

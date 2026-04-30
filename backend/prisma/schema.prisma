@@ -255,6 +255,7 @@ model PayrollGroup {
   islrConceptId            String?                @map("islr_concept_id") @db.Uuid
   nightShiftEndTime        String                 @default("05:00") @map("night_shift_end_time") @db.VarChar(10)
   nightShiftStartTime      String                 @default("19:00") @map("night_shift_start_time") @db.VarChar(10)
+  mixedShiftMaxNightHours  Decimal                @default(4.0) @map("mixed_shift_max_night_hours") @db.Decimal(5, 2)
   standardWorkHours        Decimal                @default(8.0) @map("standard_work_hours") @db.Decimal(5, 2)
   employmentRecords        EmploymentRecord[]
   payrollGroupConcepts     PayrollGroupConcept[]
@@ -474,6 +475,9 @@ model AttendanceSummary {
   shiftBaseHours      Decimal            @map("shift_base_hours") @db.Decimal(15, 2)
   shiftType           String             @map("shift_type") @db.VarChar(30)
   daysWorked          Decimal            @map("days_worked") @db.Decimal(15, 2)
+  workedDaysDay       Decimal            @default(0) @map("worked_days_day") @db.Decimal(15, 2)
+  workedDaysNight     Decimal            @default(0) @map("worked_days_night") @db.Decimal(15, 2)
+  workedDaysMixed     Decimal            @default(0) @map("worked_days_mixed") @db.Decimal(15, 2)
   ordinaryHours       Decimal            @map("ordinary_hours") @db.Decimal(15, 2)
   ordinaryDayHours    Decimal            @default(0) @map("ordinary_day_hours") @db.Decimal(15, 2)
   ordinaryNightHours  Decimal            @default(0) @map("ordinary_night_hours") @db.Decimal(15, 2)

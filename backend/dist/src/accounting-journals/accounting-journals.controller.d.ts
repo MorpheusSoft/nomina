@@ -23,8 +23,8 @@ export declare class AccountingJournalsController {
         lines: {
             id: string;
             createdAt: Date;
-            description: string | null;
             accountingCode: string;
+            description: string | null;
             costCenterCode: string | null;
             debitAmount: import("@prisma/client/runtime/library").Decimal;
             creditAmount: import("@prisma/client/runtime/library").Decimal;
@@ -89,8 +89,8 @@ export declare class AccountingJournalsController {
         lines: {
             id: string;
             createdAt: Date;
-            description: string | null;
             accountingCode: string;
+            description: string | null;
             costCenterCode: string | null;
             debitAmount: import("@prisma/client/runtime/library").Decimal;
             creditAmount: import("@prisma/client/runtime/library").Decimal;

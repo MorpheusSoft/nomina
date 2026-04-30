@@ -48,9 +48,9 @@ export declare class WorkerNoveltiesController {
             name: string;
             updatedAt: Date;
             type: string;
+            accountingCode: string | null;
             code: string;
             description: string | null;
-            accountingCode: string | null;
             accountingOperation: string | null;
             isSalaryIncidence: boolean;
             isTaxable: boolean;
@@ -123,9 +123,9 @@ export declare class WorkerNoveltiesController {
             name: string;
             updatedAt: Date;
             type: string;
+            accountingCode: string | null;
             code: string;
             description: string | null;
-            accountingCode: string | null;
             accountingOperation: string | null;
             isSalaryIncidence: boolean;
             isTaxable: boolean;
@@ -160,9 +160,9 @@ export declare class WorkerNoveltiesController {
             name: string;
             updatedAt: Date;
             type: string;
+            accountingCode: string | null;
             code: string;
             description: string | null;
-            accountingCode: string | null;
             accountingOperation: string | null;
             isSalaryIncidence: boolean;
             isTaxable: boolean;

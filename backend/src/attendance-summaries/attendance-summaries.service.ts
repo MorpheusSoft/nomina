@@ -178,6 +178,9 @@ export class AttendanceSummariesService {
           shiftBaseHours: 8, // fallback default
           shiftType: 'DIURNO',
           daysWorked: 0,
+          workedDaysDay: 0,
+          workedDaysNight: 0,
+          workedDaysMixed: 0,
           ordinaryHours: 0,
           ordinaryDayHours: 0,
           ordinaryNightHours: 0,
@@ -204,25 +207,33 @@ export class AttendanceSummariesService {
       // Track the date to know what was punched
       if (record.date) calc.punchedDates.add(new Date(record.date).toISOString().split('T')[0]);
 
-      if (record.status === 'PRESENT') {
+      if (record.status === 'PRESENT' || record.status === 'WORKED_HOLIDAY') {
         calc.daysWorked += 1;
+        if (record.status === 'WORKED_HOLIDAY') {
+            calc.workedHolidays += 1;
+        }
+        
         calc.ordinaryHours += Number(record.regularHours);
         calc.ordinaryDayHours += Number(record.ordinaryDayHours);
         calc.ordinaryNightHours += Number(record.ordinaryNightHours);
         calc.extraDayHours += Number(record.extraDayHours);
         calc.extraNightHours += Number(record.extraNightHours);
+
+        // CLASIFICACIÓN DE LA JORNADA
+        const nightHrs = Number(record.ordinaryNightHours);
+        const maxNight = Number(period.payrollGroup?.mixedShiftMaxNightHours || 4.0);
+        
+        if (nightHrs === 0) {
+            calc.workedDaysDay += 1;
+        } else if (nightHrs <= maxNight) {
+            calc.workedDaysMixed += 1;
+        } else {
+            calc.workedDaysNight += 1;
+        }
       } else if (record.status === 'REST') {
         calc.restDays += 1;
       } else if (record.status === 'HOLIDAY') {
         calc.holidays += 1;
-      } else if (record.status === 'WORKED_HOLIDAY') {
-        calc.workedHolidays += 1;
-        calc.daysWorked += 1;
-        calc.ordinaryHours += Number(record.regularHours);
-        calc.ordinaryDayHours += Number(record.ordinaryDayHours);
-        calc.ordinaryNightHours += Number(record.ordinaryNightHours);
-        calc.extraDayHours += Number(record.extraDayHours);
-        calc.extraNightHours += Number(record.extraNightHours);
       }
 
       // Check for weekends worked
@@ -365,6 +376,9 @@ export class AttendanceSummariesService {
       }
 
       let daysWorked = 0;
+      let workedDaysDay = 0;
+      let workedDaysNight = 0;
+      let workedDaysMixed = 0;
       let restDays = 0;
       let ordinaryHours = 0;
       let ordinaryDayHours = 0;
@@ -446,6 +460,16 @@ export class AttendanceSummariesService {
                const slices = this.engineService.calculateTimeSlices(idealIn, totalValidMins, nightStartStr, nightEndStr);
                ordinaryDayHours += slices.dayMins / 60;
                ordinaryNightHours += slices.nightMins / 60;
+
+               const nightHrs = slices.nightMins / 60;
+               const maxNight = Number(pg?.mixedShiftMaxNightHours || 4.0);
+               if (nightHrs === 0) {
+                   workedDaysDay++;
+               } else if (nightHrs <= maxNight) {
+                   workedDaysMixed++;
+               } else {
+                   workedDaysNight++;
+               }
            } else {
                restDays++;
            }
@@ -465,6 +489,9 @@ export class AttendanceSummariesService {
         workerId: emp.workerId,
         attendanceMode: 'VIRTUAL',
         daysWorked,
+        workedDaysDay,
+        workedDaysNight,
+        workedDaysMixed,
         restDays,
         ordinaryHours,
         ordinaryDayHours,

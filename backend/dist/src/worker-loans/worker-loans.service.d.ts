@@ -38,6 +38,7 @@ export declare class WorkerLoansService {
                     updatedAt: Date;
                     nightShiftEndTime: string;
                     nightShiftStartTime: string;
+                    mixedShiftMaxNightHours: import("@prisma/client/runtime/library").Decimal;
                     standardWorkHours: import("@prisma/client/runtime/library").Decimal;
                     rootBonusConceptId: string | null;
                     rootLiquidationConceptId: string | null;

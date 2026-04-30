@@ -61,6 +61,9 @@ const OP_OPTIONS = [
 const NATIVE_VARS = [
   { label: 'Sueldo Base (Vigente)', code: 'base_salary', color: 'indigo' },
   { label: 'Días Trabajados (Quincena/Semana)', code: 'worked_days', color: 'indigo' },
+  { label: 'Días Trabajados (Turno Diurno)', code: 'worked_days_day', color: 'indigo' },
+  { label: 'Días Trabajados (Turno Mixto)', code: 'worked_days_mixed', color: 'indigo' },
+  { label: 'Días Trabajados (Turno Nocturno)', code: 'worked_days_night', color: 'indigo' },
   { label: 'Días de Descanso', code: 'rest_days', color: 'indigo' },
   { label: 'Días Feriados', code: 'holidays', color: 'indigo' },
   { label: 'Feriados Trabajados', code: 'worked_holidays', color: 'indigo' },

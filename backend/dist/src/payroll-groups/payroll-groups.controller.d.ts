@@ -10,6 +10,7 @@ export declare class PayrollGroupsController {
         updatedAt: Date;
         nightShiftEndTime: string;
         nightShiftStartTime: string;
+        mixedShiftMaxNightHours: import("@prisma/client/runtime/library").Decimal;
         standardWorkHours: import("@prisma/client/runtime/library").Decimal;
         rootBonusConceptId: string | null;
         rootLiquidationConceptId: string | null;
@@ -26,6 +27,7 @@ export declare class PayrollGroupsController {
         updatedAt: Date;
         nightShiftEndTime: string;
         nightShiftStartTime: string;
+        mixedShiftMaxNightHours: import("@prisma/client/runtime/library").Decimal;
         standardWorkHours: import("@prisma/client/runtime/library").Decimal;
         rootBonusConceptId: string | null;
         rootLiquidationConceptId: string | null;
@@ -43,9 +45,9 @@ export declare class PayrollGroupsController {
                 name: string;
                 updatedAt: Date;
                 type: string;
+                accountingCode: string | null;
                 code: string;
                 description: string | null;
-                accountingCode: string | null;
                 accountingOperation: string | null;
                 isSalaryIncidence: boolean;
                 isTaxable: boolean;
@@ -71,6 +73,7 @@ export declare class PayrollGroupsController {
         updatedAt: Date;
         nightShiftEndTime: string;
         nightShiftStartTime: string;
+        mixedShiftMaxNightHours: import("@prisma/client/runtime/library").Decimal;
         standardWorkHours: import("@prisma/client/runtime/library").Decimal;
         rootBonusConceptId: string | null;
         rootLiquidationConceptId: string | null;
