@@ -580,11 +580,11 @@ export default function ConceptsPage() {
                     <label className="block text-xs font-medium text-gray-700 mb-1">Concepto Hijo a Invocar</label>
                     <Dropdown value={newChildId} options={concepts.filter(c => c.id !== watch('id')).map(c => ({ label: `${c.code} - ${c.name}`, value: c.id }))} onChange={(e) => setNewChildId(e.value)} placeholder="Seleccione sub-concepto" className="w-full text-sm" filter />
                   </div>
-                  <div className="w-24">
+                  <div className="w-32">
                     <label className="block text-xs font-medium text-gray-700 mb-1">Orden (Nº)</label>
                     <InputText type="number" value={newChildSeq.toString()} onChange={(e) => setNewChildSeq(parseInt(e.target.value) || 0)} className="w-full text-center" />
                   </div>
-                  <Button type="button" icon="pi pi-plus" label="Enlazar" className="p-button-success" onClick={async () => {
+                  <Button type="button" icon="pi pi-link" tooltip="Enlazar a este Concepto" className="p-button-success" onClick={async () => {
                      if(!newChildId) return;
                      try {
                        await api.post('/concept-dependencies', { parentConceptId: watch('id'), childConceptId: newChildId, executionSequence: newChildSeq });
