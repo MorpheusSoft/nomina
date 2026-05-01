@@ -64,7 +64,7 @@ export default function OracleCopilotWidget() {
           title="Oráculo Analítico"
           style={{ backgroundImage: 'linear-gradient(135deg, #4f46e5 0%, #1e1b4b 100%)' }}
         >
-          <img src="/images/oracle_avatar.png?v=2" alt="Oracle" className="w-full h-full rounded-full object-cover group-hover:scale-110 transition-transform" />
+          <span className="text-white font-black text-2xl tracking-tighter group-hover:scale-110 transition-transform">O</span>
           <div className="absolute top-0 right-0 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white animate-pulse"></div>
         </button>
       )}
@@ -75,7 +75,7 @@ export default function OracleCopilotWidget() {
           {/* Header */}
           <div className="bg-indigo-600 px-4 py-3 flex items-center justify-between shrink-0" style={{ backgroundImage: 'linear-gradient(90deg, #4f46e5 0%, #312e81 100%)' }}>
             <div className="flex items-center gap-3">
-               <img src="/images/oracle_avatar.png?v=2" alt="Oracle" className="w-8 h-8 rounded-full object-cover shadow-inner" />
+               <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white font-black text-sm shadow-inner">O</span>
                <div className="flex flex-col">
                  <span className="text-white text-sm font-bold leading-tight">Oráculo Analítico</span>
                  <span className="text-indigo-200 text-[10px] uppercase tracking-wider font-semibold">Nebula Copilot</span>
