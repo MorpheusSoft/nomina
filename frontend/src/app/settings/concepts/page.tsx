@@ -70,6 +70,8 @@ const NATIVE_VARS = [
   { label: 'Descansos Trabajados', code: 'worked_rest_days', color: 'indigo' },
   { label: 'Años de Antigüedad', code: 'seniority_years', color: 'indigo' },
   { label: 'Cant. Cargas Familiares', code: 'dependents_count', color: 'indigo' },
+  { label: 'Código de Centro de Costo (Localidad)', code: 'cost_center_code', color: 'fuchsia' },
+  { label: 'Código de Departamento', code: 'department_code', color: 'fuchsia' },
   { label: '¿Es Fin de Mes? (1 o 0)', code: 'es_fin_de_mes', color: 'teal' },
   { label: 'Días Lunes (Total Mes)', code: 'lunes_en_mes', color: 'teal' },
   { label: 'Días Lunes (En Periodo)', code: 'lunes_en_periodo', color: 'teal' },
@@ -338,7 +340,8 @@ export default function ConceptsPage() {
          payrollGroupVars: payrollGroupVars.map(v => ({ code: v.code, description: v.description, value: v.numericalValue })),
          costCenterVars: costCenterVars.map(v => ({ code: v.code, name: v.name, value: v.value })),
          existingConcepts: concepts.map(c => ({ code: c.code, name: c.name })),
-         payrollGroups: payrollGroups.map(g => ({ id: g.value, name: g.label }))
+         payrollGroups: payrollGroups.map(g => ({ id: g.value, name: g.label })),
+         currentForm: watch()
        };
 
        const res = await api.post('/oracle/generate-concept', { 
@@ -449,11 +452,14 @@ export default function ConceptsPage() {
           {/* Oracle Button inside Edit */}
           {hasOracleAccess && (
              <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-xl mb-4 flex items-center justify-between shadow-sm">
-                <div>
-                   <h4 className="text-indigo-900 font-bold m-0 flex items-center gap-2"><i className="pi pi-sparkles"></i> Asistente de Creación IA</h4>
+                <div className="flex-1 pr-4">
+                   <h4 className="text-indigo-900 font-bold m-0 flex items-center gap-2"><img src="/images/oracle_avatar.png?v=2" alt="Oracle" className="w-5 h-5 rounded-full object-cover" /> Asistente de Creación IA</h4>
                    <p className="text-indigo-700 text-sm m-0">Deja que el Oráculo diseñe la matemática del concepto por ti.</p>
                 </div>
-                <Button type="button" label="Consultar al Oráculo" icon="pi pi-bolt" className="p-button-sm bg-indigo-600 border-none shadow-md hover:bg-indigo-700" onClick={() => setOracleDialog(true)} />
+                <button type="button" className="px-4 py-2 text-sm text-white rounded-md bg-indigo-600 shadow-md hover:bg-indigo-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0 transition-colors" onClick={() => setOracleDialog(true)}>
+                   <img src="/images/oracle_avatar.png" alt="Oracle" className="w-4 h-4 rounded-full object-cover" />
+                   <span className="font-bold">Consultar al Oráculo</span>
+                </button>
              </div>
           )}
 
@@ -787,7 +793,7 @@ export default function ConceptsPage() {
       {/* Oráculo Dialog */}
       <Dialog visible={oracleDialog} style={{ width: '600px', height: '80vh' }} modal onHide={() => { setOracleDialog(false); setOraclePrompt(''); setChatHistory([]); }} headerClassName="bg-indigo-900 text-white p-4" className="rounded-2xl overflow-hidden flex flex-col" contentClassName="p-0 flex flex-col overflow-hidden h-full" header={
         <div className="flex items-center gap-3">
-           <i className="pi pi-sparkles text-2xl text-amber-300"></i>
+           <img src="/images/oracle_avatar.png?v=2" alt="Oracle" className="w-10 h-10 rounded-full object-cover shadow-sm border border-indigo-300" />
            <div className="flex flex-col">
              <span className="font-extrabold text-lg">El Oráculo de Nebula</span>
              <span className="text-xs text-indigo-200 font-medium">Asistente de Inteligencia Artificial Matemática</span>
