@@ -48,6 +48,7 @@ import { join } from 'path';
 
 import { AriFormsModule } from './ari-forms/ari-forms.module';
 import { OracleModule } from './oracle/oracle.module';
+import { WorkLocationsModule } from './work-locations/work-locations.module';
 
 @Module({
   imports: [
@@ -55,7 +56,7 @@ import { OracleModule } from './oracle/oracle.module';
       rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads/',
     }),
-    PrismaModule, TenantsModule, WorkersModule, FamilyMembersModule, PayrollModule, GlobalVariablesModule, ConceptsModule, EmploymentRecordsModule, PayrollGroupsModule, PayrollGroupVariablesModule, ConceptDependenciesModule, PayrollPeriodsModule, AttendanceSummariesModule, AttendanceDetailsModule, HolidaysModule, CostCentersModule, DepartmentsModule, CrewsModule, PayrollEngineModule, WorkerFixedConceptsModule, AuthModule, UsersModule, RolesModule, WorkerLoansModule, PayrollAccumulatorsModule, ContractTrustsModule, VacationHistoriesModule, AccountingJournalsModule, AttendancePunchesModule, AttendanceEngineModule, BiometricDevicesModule, ShiftTemplatesModule, DashboardModule, GeneralCatalogsModule, ShiftsModule, WorkerAbsencesModule, DocumentTemplatesModule, PortalModule, WorkerNoveltiesModule, ReportsModule, ShiftPatternsModule, WorkerTicketsModule, AriFormsModule, OracleModule],
+    PrismaModule, TenantsModule, WorkersModule, FamilyMembersModule, PayrollModule, GlobalVariablesModule, ConceptsModule, EmploymentRecordsModule, PayrollGroupsModule, PayrollGroupVariablesModule, ConceptDependenciesModule, PayrollPeriodsModule, AttendanceSummariesModule, AttendanceDetailsModule, HolidaysModule, CostCentersModule, DepartmentsModule, CrewsModule, PayrollEngineModule, WorkerFixedConceptsModule, AuthModule, UsersModule, RolesModule, WorkerLoansModule, PayrollAccumulatorsModule, ContractTrustsModule, VacationHistoriesModule, AccountingJournalsModule, AttendancePunchesModule, AttendanceEngineModule, BiometricDevicesModule, ShiftTemplatesModule, DashboardModule, GeneralCatalogsModule, ShiftsModule, WorkerAbsencesModule, DocumentTemplatesModule, PortalModule, WorkerNoveltiesModule, ReportsModule, ShiftPatternsModule, WorkerTicketsModule, AriFormsModule, OracleModule, WorkLocationsModule],
   controllers: [AppController],
   providers: [AppService],
 })

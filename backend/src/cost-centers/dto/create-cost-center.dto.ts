@@ -10,4 +10,8 @@ export class CreateCostCenterDto {
   @IsOptional()
   @IsUUID()
   tenantId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  workLocationId?: string;
 }

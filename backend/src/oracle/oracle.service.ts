@@ -63,6 +63,23 @@ export class OracleService {
       const concepts = context.existingConcepts?.map((c: any) => `- ${c.code}: ${c.name}`).join('\n') || 'Ninguno';
       const convenios = context.payrollGroups?.map((g: any) => `- UUID: ${g.id} | NOMBRE: ${g.name}`).join('\n') || 'Ninguno';
       
+      const depts = await this.prisma.department.findMany({ where: { costCenter: { tenantId } }, select: { name: true, code: true } });
+      const departmentsStr = depts.map(d => `- Nombre: ${d.name} | Código (department_code): ${d.code || 'SIN_CODIGO'}`).join('\n') || 'Ninguno';
+
+      let editInstruction = '';
+      if (context.currentForm && context.currentForm.name) {
+         editInstruction = `\n\n> ATENCIÓN: El usuario está EDITANDO un concepto existente.
+Valores actuales del concepto en el formulario:
+- Nombre: ${context.currentForm.name || ''}
+- Tipo: ${context.currentForm.type || ''}
+- Factor: ${context.currentForm.formulaFactor || ''}
+- Rata: ${context.currentForm.formulaRate || ''}
+- Monto: ${context.currentForm.formulaAmount || ''}
+- Condición actual: ${context.currentForm.condition || ''}
+
+REGLA DE EDICIÓN: PRESERVA TODOS LOS VALORES ACTUALES EXACTAMENTE COMO ESTÁN, A MENOS QUE EL USUARIO HAYA PEDIDO EXPLÍCITAMENTE CAMBIARLOS. Si sólo pidió agregar una condición, copia y pega las fórmulas tal cual estaban en lugar de inventar unas nuevas.`;
+      }
+
       contextString = `\n\nCONTEXTO DINÁMICO DE ESTA EMPRESA (Puedes usar estas variables libremente en tus fórmulas matemáticas si el usuario te lo pide):
 > Variables Globales de Empresa:
 ${globals}
@@ -73,11 +90,14 @@ ${groups}
 > Variables Geográficas de Centros de Costo (Su valor se sobrescribe dinámicamente según la locación del trabajador):
 ${costCenters}
 
+> Lista de Departamentos en la empresa (Usa estos Códigos para tus condiciones):
+${departmentsStr}
+
 > Lista de CONVENIOS (Grupos de Nómina) en esta empresa:
 ${convenios}
 
 > Acumuladores Dinámicos (Conceptos ya creados cuyo valor puede usarse como variable):
-${concepts}`;
+${concepts}${editInstruction}`;
     }
 
     const customPromptHeader = tenant.oraclePrompt || `Asume el rol de un Consultor Experto en Nómina Venezolana e IA de Nebula.\nPara comunicarte con el usuario, escribe en un Español Corporativo y Pragmático, usando terminología de leyes venezolanas (LOTT, IVSS, FAOV, ISLR) pero yendo directly al grano de la solución y omitiendo teoría extensa.`;
@@ -120,6 +140,8 @@ DICCIONARIO DE VARIABLES NATIVAS BASE (ESTRICTAMENTE EN INGLÉS COMO SE MUESTRA)
 - "lunes_en_periodo": Lunes en el periodo de nómina actual (Usa esta variable para cálculos de seguros sociales)
 - "shift_base_hours": Duración del Turno Base de Horas
 - "shift_type": Código del Tipo de Turno ('DAY', 'NIGHT' o 'MIXED')
+- "cost_center_code": Código alfanumérico del Centro de Costo o Localidad ('CCS', 'MBO', etc.)
+- "department_code": Código alfanumérico del Departamento ('IT', 'HR', etc.)
 - "total_base_islr": Acumulado Renta Bruta Acumulada para ISLR
 - "factor": Valor dinámico evaluado en la casilla de Factor (úsalo si defines formulaFactor).
 - "rata": Valor dinámico evaluado en la casilla de Rata (úsalo si defines formulaRate).

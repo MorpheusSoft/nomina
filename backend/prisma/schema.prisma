@@ -17,6 +17,7 @@ model Tenant {
   maxActiveWorkers      Int                  @default(50) @map("max_active_workers")
   serviceEndDate        DateTime?            @map("service_end_date")
   hasWorkerPortalAccess Boolean              @default(false) @map("has_worker_portal_access")
+  hasGeofencingAccess   Boolean              @default(false) @map("has_geofencing_access")
   hasOracleAccess       Boolean              @default(false) @map("has_oracle_access")
   oraclePrompt          String?              @db.Text @map("oracle_prompt") @default("Asume el rol de un Consultor Experto en Nómina Venezolana e IA de Nebula.\nPara comunicarte con el usuario, escribe en un Español Corporativo y Pragmático, usando terminología de leyes venezolanas (LOTT, IVSS, FAOV, ISLR) pero yendo directamente al grano de la solución y omitiendo teoría extensa.")
   logoUrl               String?              @db.VarChar(255) @map("logo_url")
@@ -27,6 +28,7 @@ model Tenant {
   attendancePunches   AttendancePunch[]
   attendanceSummaries AttendanceSummary[]
   biometricDevices    BiometricDevice[]
+  workLocations       WorkLocation[]
   concepts            Concept[]
   contractTrusts      ContractTrust[]
   CostCenter          CostCenter[]
@@ -85,6 +87,8 @@ model Worker {
   workerLoans           WorkerLoan[]
   tenant                Tenant              @relation(fields: [tenantId], references: [id])
   workerTickets         WorkerTicket[]
+  user                  User?
+
 
   @@unique([tenantId, primaryIdentityNumber])
   @@map("workers")
@@ -126,9 +130,11 @@ model User {
   lastName       String             @map("last_name") @db.VarChar(100)
   isActive       Boolean            @default(true) @map("is_active")
   createdAt      DateTime           @default(now()) @map("created_at")
+  workerId       String?            @unique @map("worker_id") @db.Uuid
   tenantAccesses UserTenantAccess[]
   role           Role               @relation(fields: [roleId], references: [id])
   tenant         Tenant             @relation(fields: [tenantId], references: [id])
+  worker         Worker?            @relation(fields: [workerId], references: [id])
 
   @@map("users")
 }
@@ -550,6 +556,22 @@ model Holiday {
   @@map("holidays")
 }
 
+model WorkLocation {
+  id            String       @id @default(uuid()) @db.Uuid
+  tenantId      String       @map("tenant_id") @db.Uuid
+  name          String       @db.VarChar(150)
+  latitude      Decimal?     @db.Decimal(10, 8)
+  longitude     Decimal?     @db.Decimal(11, 8)
+  allowedRadius Int          @default(100) @map("allowed_radius")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  
+  tenant        Tenant       @relation(fields: [tenantId], references: [id])
+  costCenters   CostCenter[]
+
+  @@map("work_locations")
+}
+
 model CostCenter {
   id                String             @id @default(uuid()) @db.Uuid
   tenantId          String             @map("tenant_id") @db.Uuid
@@ -558,8 +580,10 @@ model CostCenter {
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
   workerId          String?            @db.Uuid
+  workLocationId    String?            @map("work_location_id") @db.Uuid
   tenant            Tenant             @relation(fields: [tenantId], references: [id])
   Worker            Worker?            @relation(fields: [workerId], references: [id])
+  workLocation      WorkLocation?      @relation(fields: [workLocationId], references: [id])
   departments          Department[]
   employmentRecords    EmploymentRecord[]
   PayrollPeriod        PayrollPeriod[]
@@ -588,6 +612,7 @@ model Department {
   id                String             @id @default(uuid()) @db.Uuid
   costCenterId      String             @map("cost_center_id") @db.Uuid
   name              String             @db.VarChar(100)
+  code              String?            @db.VarChar(50)
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
   monthlyBudget     Decimal?           @map("monthly_budget") @db.Decimal(15, 2)
@@ -771,6 +796,11 @@ model AttendancePunch {
   type        PunchType
   source      PunchSource
   isProcessed Boolean          @default(false) @map("is_processed")
+  latitude    Decimal?         @db.Decimal(10, 8)
+  longitude   Decimal?         @db.Decimal(11, 8)
+  locationStatus String?       @db.VarChar(30) @map("location_status")
+  isValid     Boolean          @default(true) @map("is_valid")
+  photoUrl    String?          @db.VarChar(255) @map("photo_url")
   createdAt   DateTime         @default(now()) @map("created_at")
   device      BiometricDevice? @relation(fields: [deviceId], references: [id])
   tenant      Tenant           @relation(fields: [tenantId], references: [id])

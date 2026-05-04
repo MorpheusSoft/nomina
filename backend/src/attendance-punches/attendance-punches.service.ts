@@ -1,23 +1,70 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, PunchSource, PunchType } from '@prisma/client';
+import { GeoLocationService } from './geo-location.service';
 
 @Injectable()
 export class AttendancePunchesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private geoLocationService: GeoLocationService
+  ) {}
 
   async create(data: Prisma.AttendancePunchUncheckedCreateInput) {
-    // Verificar que el trabajador pertenece al tenant
+    // Verificar que el trabajador pertenece al tenant y obtener su WorkLocation
     const worker = await this.prisma.worker.findUnique({
       where: { id: data.workerId },
+      include: {
+        employmentRecords: {
+          where: { isActive: true }, // assuming we only want active records, or just take the first one
+          include: {
+            costCenter: {
+              include: {
+                workLocation: true
+              }
+            }
+          }
+        }
+      }
     });
 
     if (!worker || worker.tenantId !== data.tenantId) {
       throw new BadRequestException('Worker does not exist or does not belong to the tenant');
     }
 
+    let isValid = true;
+    let locationStatus = 'VALID';
+
+    if (data.latitude && data.longitude) {
+      // Find the first employment record's work location
+      const workLocation = worker.employmentRecords[0]?.costCenter?.workLocation;
+
+      if (workLocation && workLocation.latitude && workLocation.longitude) {
+        const validation = this.geoLocationService.isWithinRadius(
+          Number(data.latitude),
+          Number(data.longitude),
+          Number(workLocation.latitude),
+          Number(workLocation.longitude),
+          workLocation.allowedRadius
+        );
+
+        if (!validation.isValid) {
+          isValid = false;
+          locationStatus = 'REJECTED_OUT_OF_RANGE';
+        }
+      } else {
+        locationStatus = 'NO_GEOFENCE_DEFINED';
+      }
+    } else {
+      locationStatus = 'NO_COORDINATES_PROVIDED';
+    }
+
     return this.prisma.attendancePunch.create({
-      data,
+      data: {
+        ...data,
+        isValid,
+        locationStatus
+      },
     });
   }
 

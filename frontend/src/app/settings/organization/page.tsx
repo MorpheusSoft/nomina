@@ -14,18 +14,21 @@ import { Calendar } from 'primereact/calendar';
 import Dropdown from '@/components/ui/Dropdown';
 import { TabView, TabPanel } from 'primereact/tabview';
 import api from '@/lib/api';
+import WorkLocationsManager from '@/components/organization/WorkLocationsManager';
 
 export default function OrganizationSettingsPage() {
   const [costCenters, setCostCenters] = useState<any[]>([]);
+  const [workLocations, setWorkLocations] = useState<any[]>([]);
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[] | undefined>(undefined);
   const [expandedDeptRows, setExpandedDeptRows] = useState<DataTableExpandedRows | any[] | undefined>(undefined);
   
   const [costCenterDialog, setCostCenterDialog] = useState(false);
   const [departmentDialog, setDepartmentDialog] = useState(false);
   const [crewDialog, setCrewDialog] = useState(false);
+  const [locationsManagerDialog, setLocationsManagerDialog] = useState(false);
 
-  const [currentCostCenter, setCurrentCostCenter] = useState<any>({ name: '', accountingCode: '' });
-  const [currentDepartment, setCurrentDepartment] = useState<any>({ name: '', costCenterId: '' });
+  const [currentCostCenter, setCurrentCostCenter] = useState<any>({ name: '', accountingCode: '', workLocationId: null });
+  const [currentDepartment, setCurrentDepartment] = useState<any>({ name: '', code: '', costCenterId: '' });
   const [currentCrew, setCurrentCrew] = useState<any>({ name: '', departmentId: '', shiftPatternId: null, patternAnchor: null });
 
   const [costCenterVars, setCostCenterVars] = useState<any[]>([]);
@@ -37,7 +40,17 @@ export default function OrganizationSettingsPage() {
   useEffect(() => {
     loadData();
     loadShifts();
+    loadWorkLocations();
   }, []);
+
+  const loadWorkLocations = async () => {
+    try {
+      const resp = await api.get('/work-locations');
+      setWorkLocations(resp.data.map((l: any) => ({ label: l.name, value: l.id })));
+    } catch (error) {
+      console.error('Error loading work-locations', error);
+    }
+  };
 
   const loadShifts = async () => {
     try {
@@ -137,6 +150,7 @@ export default function OrganizationSettingsPage() {
     try {
       const payload = {
         name: currentDepartment.name,
+        code: currentDepartment.code?.toUpperCase() || null,
         costCenterId: currentDepartment.costCenterId,
         monthlyBudget: currentDepartment.monthlyBudget ? Number(currentDepartment.monthlyBudget) : null
       };
@@ -210,7 +224,7 @@ export default function OrganizationSettingsPage() {
       <div className="p-3 bg-gray-50 rounded-lg ml-8 border border-gray-200">
         <div className="flex justify-between items-center mb-2">
           <h5 className="font-semibold text-gray-700 m-0">Departamentos de {costCenter.name}</h5>
-          <Button icon="pi pi-plus" size="small" label="Agregar Depto" onClick={() => { setCurrentDepartment({ name: '', costCenterId: costCenter.id }); setDepartmentDialog(true); }} />
+          <Button icon="pi pi-plus" size="small" label="Agregar Depto" onClick={() => { setCurrentDepartment({ name: '', code: '', costCenterId: costCenter.id }); setDepartmentDialog(true); }} />
         </div>
         <DataTable value={costCenter.departments} expandedRows={expandedDeptRows} onRowToggle={(e) => setExpandedDeptRows(e.data)} rowExpansionTemplate={deptExpansionTemplate} dataKey="id" size="small" emptyMessage="No hay departamentos registrados.">
           <Column expander style={{ width: '3rem' }} />
@@ -258,7 +272,7 @@ export default function OrganizationSettingsPage() {
 
         <Toolbar 
           className="mb-4 bg-white border border-gray-200 rounded-xl"
-          start={<Button label="Nuevo Centro de Costo (Sucursal)" icon="pi pi-plus" severity="success" onClick={() => { setCurrentCostCenter({ name: '', accountingCode: '' }); setCostCenterDialog(true); }} />}
+          start={<Button label="Nuevo Centro de Costo (Sucursal)" icon="pi pi-plus" severity="success" onClick={() => { setCurrentCostCenter({ name: '', accountingCode: '', workLocationId: null }); setCostCenterDialog(true); }} />}
         />
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -273,6 +287,7 @@ export default function OrganizationSettingsPage() {
             <Column expander style={{ width: '3rem' }} />
             <Column field="name" header="Centro de Costo / Sucursal" className="font-semibold text-primary" />
             <Column field="accountingCode" header="Terminal Contable" body={(r) => <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">{r.accountingCode}</span>} />
+            <Column header="Geocerca (Locación)" body={(r) => r.workLocation ? <span className="text-blue-700 font-medium"><i className="pi pi-map-marker mr-1 text-xs"></i>{r.workLocation.name}</span> : <span className="text-gray-400 text-xs italic">Sin asignar</span>} />
             <Column body={(rowData) => (
               <div className="flex gap-2 justify-end">
                 <Button icon="pi pi-pencil" rounded text severity="info" onClick={() => { 
@@ -300,6 +315,22 @@ export default function OrganizationSettingsPage() {
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-semibold">Código o Sufijo Contable</label>
                 <InputText value={currentCostCenter?.accountingCode || ''} onChange={(e) => setCurrentCostCenter({...currentCostCenter, accountingCode: e.target.value})} placeholder="Ej. -01" />
+              </div>
+              <div className="flex flex-col gap-1 mt-2">
+                <label className="text-sm font-semibold">Locación Física (Geocerca)</label>
+                <div className="flex gap-2 w-full">
+                  <Dropdown options={workLocations} value={currentCostCenter?.workLocationId || null} onChange={(e) => setCurrentCostCenter({...currentCostCenter, workLocationId: e.target.value})} placeholder="Seleccione Locación o deje vacío" showClear className="w-full flex-1" />
+                  <Button 
+                    icon="pi pi-map-marker" 
+                    onClick={() => setLocationsManagerDialog(true)}
+                    severity="secondary"
+                    outlined
+                    type="button"
+                    tooltip="Administrar Locaciones"
+                    tooltipOptions={{ position: 'top' }}
+                  />
+                </div>
+                <small className="text-gray-500">Requerido si los trabajadores de esta sucursal marcarán por la PWA móvil.</small>
               </div>
               <div className="flex justify-end gap-2 mt-4">
                 <Button label="Cancelar" icon="pi pi-times" text onClick={() => setCostCenterDialog(false)} />
@@ -362,6 +393,11 @@ export default function OrganizationSettingsPage() {
             <InputText value={currentDepartment?.name || ''} onChange={(e) => setCurrentDepartment({...currentDepartment, name: e.target.value})} placeholder="Ej. Panadería" />
           </div>
           <div className="flex flex-col gap-1">
+            <label className="text-sm font-semibold">Código Alfanumérico (Opcional)</label>
+            <InputText value={currentDepartment?.code || ''} onChange={(e) => setCurrentDepartment({...currentDepartment, code: e.target.value.toUpperCase()})} placeholder="Ej. PND" className="font-mono" />
+            <small className="text-gray-500">Útil para enlazarlo con las Fórmulas del Oráculo.</small>
+          </div>
+          <div className="flex flex-col gap-1">
             <label className="text-sm font-semibold">Presupuesto Mensual ($)</label>
             <InputNumber value={currentDepartment?.monthlyBudget ? parseFloat(currentDepartment.monthlyBudget) : null} onValueChange={(e) => setCurrentDepartment({...currentDepartment, monthlyBudget: e.value})} mode="currency" currency="USD" locale="en-US" placeholder="Ej. 15000" />
             <small className="text-gray-500">Déjalo en blanco si no tiene límite presupuestario.</small>
@@ -411,6 +447,9 @@ export default function OrganizationSettingsPage() {
         </div>
       </Dialog>
 
+      <Dialog visible={locationsManagerDialog} onHide={() => setLocationsManagerDialog(false)} header="Administrar Locaciones / Geocercas" className="w-full md:w-[900px]" maximizable>
+        <WorkLocationsManager onSave={loadWorkLocations} />
+      </Dialog>
     </AppLayout>
   );
 }

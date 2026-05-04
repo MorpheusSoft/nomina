@@ -9,7 +9,12 @@ export class CostCentersService {
   async create(tenantId: string, data: CreateCostCenterDto) {
     try {
       return await this.prisma.costCenter.create({
-        data: { ...data, tenantId },
+        data: { 
+          name: data.name,
+          accountingCode: data.accountingCode,
+          tenantId,
+          workLocationId: data.workLocationId
+        },
       });
     } catch (e: any) {
       throw new BadRequestException('Error creating Cost Center: ' + (e.message || JSON.stringify(e)));
@@ -47,6 +52,7 @@ export class CostCentersService {
     return this.prisma.costCenter.findMany({
       where: { tenantId },
       include: { 
+        workLocation: true,
         departments: { 
           include: { 
             crews: { include: { shiftPattern: true } } 
@@ -60,6 +66,7 @@ export class CostCentersService {
     return this.prisma.costCenter.findFirst({
       where: { id, tenantId },
       include: { 
+        workLocation: true,
         departments: { 
           include: { 
             crews: { include: { shiftPattern: true } } 
@@ -75,6 +82,7 @@ export class CostCentersService {
       data: {
         name: data.name,
         accountingCode: data.accountingCode,
+        workLocationId: data.workLocationId,
       },
     });
   }

@@ -59,6 +59,8 @@ export class PayrollEngineService {
 
     const includeOptions = {
       owner: { include: { familyMembers: true } },
+      costCenter: true,
+      department: true,
       salaryHistories: {
         where: { validFrom: { lte: period.endDate } },
         orderBy: { validFrom: 'desc' as any },
@@ -241,6 +243,8 @@ export class PayrollEngineService {
       include: {
         worker: true,
         owner: { include: { familyMembers: true } },
+        costCenter: true,
+        department: true,
         salaryHistories: { orderBy: { validFrom: 'desc' }, take: 1 }
       }
     });
@@ -581,6 +585,8 @@ export class PayrollEngineService {
         contract_start_month: record.startDate ? new Date(record.startDate).getUTCMonth() + 1 : 1,
         contract_start_year: record.startDate ? new Date(record.startDate).getUTCFullYear() : new Date().getUTCFullYear(),
         contract_type: `'${record.contractType}'`,
+        cost_center_code: record.costCenter ? `'${record.costCenter.accountingCode}'` : null,
+        department_code: (record.department && record.department.code) ? `'${record.department.code}'` : null,
         dependents_count: record.owner.familyMembers.length,
         lunes_en_periodo,
         lunes_en_mes,
