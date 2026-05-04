@@ -459,13 +459,12 @@ export default function LandingPage() {
               <p className="text-slate-600 mb-6">Escanea este código con tu celular para abrir e instalar la aplicación satélite.</p>
               
               <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm inline-block mb-6">
-                {/* Aseguramos que apunte a nuestra nueva ruta PWA local para que puedas probarla */}
-                <QRCodeSVG value="http://localhost:3000/pwa/login" size={200} />
+                <QRCodeSVG value="https://nebulapayrolls.com/pwa/login" size={200} />
               </div>
               
               <p className="text-sm text-slate-500 mb-2">O ingresa desde tu móvil a:</p>
-              <a href="http://localhost:3000/pwa/login" target="_blank" className="text-indigo-600 font-bold hover:underline block truncate">
-                localhost:3000/pwa/login
+              <a href="https://nebulapayrolls.com/pwa/login" target="_blank" className="text-indigo-600 font-bold hover:underline block truncate">
+                nebulapayrolls.com/pwa/login
               </a>
             </div>
           </div>
