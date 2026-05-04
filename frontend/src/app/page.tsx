@@ -17,11 +17,14 @@ import {
   Wallet,
   PieChart,
   Building2,
-  UserSquare2
+  UserSquare2,
+  Smartphone
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState(0);
+  const [showAppQr, setShowAppQr] = useState(false);
 
   const features = [
     {
@@ -90,6 +93,32 @@ export default function LandingPage() {
       imageSrc: "/images/organizacion.png"
     },
     {
+      title: "El Oráculo: Inteligencia Artificial",
+      icon: <Zap className="w-6 h-6" />,
+      color: "bg-purple-600",
+      description: "Asistente experto en nómina y legislación laboral. Pídale al sistema lo que necesita en lenguaje natural.",
+      details: [
+        "Generación automática de fórmulas matemáticas complejas en segundos.",
+        "Auditoría en tiempo real para garantizar el cumplimiento con la LOTTT.",
+        "Privacidad y Control de Acceso: Solo visible para roles directivos."
+      ],
+      screenshotDesc: "Consola de Inteligencia Artificial auditando un concepto de nómina.",
+      imageSrc: "/images/oraculo.png"
+    },
+    {
+      title: "Asistencia Geolocalizada Offline",
+      icon: <Globe className="w-6 h-6" />,
+      color: "bg-orange-600",
+      description: "Control descentralizado para personal de campo o supervisores de sucursales que funciona en zonas remotas.",
+      details: [
+        "Validación biométrica (Selfie obligatoria) y coordenadas GPS reales.",
+        "Tecnología de Geocercas para delimitar estrictamente el radio de trabajo.",
+        "Arquitectura PWA: Sigue operando sin internet y sincroniza al recuperar la señal."
+      ],
+      screenshotDesc: "Mapa de Geocercas y validación en la App de Asistencia.",
+      imageSrc: "/images/geocercas.png"
+    },
+    {
       title: "El Portal del Trabajador",
       icon: <UserSquare2 className="w-6 h-6" />,
       color: "bg-teal-600",
@@ -122,6 +151,10 @@ export default function LandingPage() {
               <a href="#inicio" className="hover:text-indigo-600 transition-colors">Inicio</a>
               <a href="#funcionalidades" className="hover:text-indigo-600 transition-colors">Funcionalidades</a>
               <a href="#seguridad" className="hover:text-indigo-600 transition-colors">Seguridad</a>
+              <button onClick={() => setShowAppQr(true)} className="flex items-center gap-2 text-slate-600 hover:text-indigo-600 font-bold transition-all">
+                <Smartphone className="w-4 h-4" />
+                App Asistencia
+              </button>
               <Link href="/portal/login" className="flex items-center gap-2 text-indigo-600 font-bold border border-indigo-200 bg-indigo-50 px-4 py-2 rounded-full hover:bg-indigo-100 transition-all">
                 <UserSquare2 className="w-4 h-4" />
                 Portal Empleado
@@ -152,9 +185,9 @@ export default function LandingPage() {
                 <Link href="/login" className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-200">
                   Comenzar ahora <ArrowRight className="w-5 h-5" />
                 </Link>
-                <Link href="/login" className="flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-50 transition-all">
-                  Agendar Demo
-                </Link>
+                <a href="/Presentacion_Comercial.html" target="_blank" className="flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-50 transition-all">
+                  Ver Presentación Ejecutiva
+                </a>
               </div>
             </div>
             <div className="relative">
@@ -409,6 +442,35 @@ export default function LandingPage() {
           </p>
         </div>
       </footer>
+
+      {/* App QR Modal */}
+      {showAppQr && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full relative shadow-2xl animate-in fade-in zoom-in duration-200">
+            <button onClick={() => setShowAppQr(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+              <span className="sr-only">Cerrar</span>
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                 <Smartphone className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">App de Asistencia</h3>
+              <p className="text-slate-600 mb-6">Escanea este código con tu celular para abrir e instalar la aplicación satélite.</p>
+              
+              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm inline-block mb-6">
+                {/* Aseguramos que apunte a nuestra nueva ruta PWA local para que puedas probarla */}
+                <QRCodeSVG value="http://localhost:3000/pwa/login" size={200} />
+              </div>
+              
+              <p className="text-sm text-slate-500 mb-2">O ingresa desde tu móvil a:</p>
+              <a href="http://localhost:3000/pwa/login" target="_blank" className="text-indigo-600 font-bold hover:underline block truncate">
+                localhost:3000/pwa/login
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
