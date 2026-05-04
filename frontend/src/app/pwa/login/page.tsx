@@ -61,7 +61,7 @@ export default function PWALoginPage() {
           </span>
         </div>
 
-        <Button label="Ingresar al Sistema" icon="pi pi-arrow-right" iconPos="right" loading={loading} className="w-full p-3 mt-4 rounded-xl font-bold text-lg" severity="primary" type="submit" />
+        <Button label="Ingresar al Sistema" icon="pi pi-arrow-right" iconPos="right" loading={loading} className="w-full p-3 mt-4 rounded-xl font-bold text-lg" type="submit" />
       </form>
 
       <div className="mt-auto pt-12 text-center text-xs text-gray-400">
