@@ -32,7 +32,7 @@ export class WorkLocationsService {
                 employmentRecords: {
                   where: { isActive: true },
                   include: {
-                    worker: {
+                    owner: {
                       select: { id: true, firstName: true, lastName: true, primaryIdentityNumber: true }
                     }
                   }
@@ -44,7 +44,7 @@ export class WorkLocationsService {
       }
     });
 
-    const mappedCrews = [];
+    const mappedCrews: any[] = [];
     costCenters.forEach(cc => {
       cc.departments.forEach(dept => {
         dept.crews.forEach(crew => {
@@ -54,9 +54,9 @@ export class WorkLocationsService {
               costCenterId: cc.id,
               costCenterName: `${cc.name} - ${crew.name}`,
               workers: crew.employmentRecords.map(er => ({
-                id: er.worker.id,
-                name: `${er.worker.firstName} ${er.worker.lastName}`,
-                identity: er.worker.primaryIdentityNumber,
+                id: er.owner.id,
+                name: `${er.owner.firstName} ${er.owner.lastName}`,
+                identity: er.owner.primaryIdentityNumber,
                 status: 'PENDING'
               }))
             });
