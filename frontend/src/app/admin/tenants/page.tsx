@@ -180,7 +180,7 @@ export default function TenantsPage() {
     return (
       <div className="flex gap-1 flex-wrap">
         {rowData.hasWorkerPortalAccess && <Tag severity="info" value="PORTAL" />}
-        {rowData.hasOracleAccess && <Tag severity="help" value="IA" />}
+        {rowData.hasOracleAccess && <Tag severity="contrast" value="IA" />}
         {rowData.hasGeofencingAccess && <Tag severity="warning" value="GPS" />}
         {!rowData.hasWorkerPortalAccess && !rowData.hasOracleAccess && !rowData.hasGeofencingAccess && <Tag severity="secondary" value="BÁSICO" />}
       </div>
