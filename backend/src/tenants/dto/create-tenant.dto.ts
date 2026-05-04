@@ -13,6 +13,18 @@ export class CreateTenantDto {
   @IsOptional()
   isActive?: boolean;
 
+  @IsBoolean()
+  @IsOptional()
+  hasWorkerPortalAccess?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  hasOracleAccess?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  hasGeofencingAccess?: boolean;
+
   @IsString()
   @IsOptional()
   oraclePrompt?: string;

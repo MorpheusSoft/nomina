@@ -28,6 +28,7 @@ export default function TenantsPage() {
     password: '',
     hasWorkerPortalAccess: false,
     hasOracleAccess: false,
+    hasGeofencingAccess: false,
     logoUrl: '',
     logoFile: null as File | null,
     contactPhone: '',
@@ -37,7 +38,7 @@ export default function TenantsPage() {
   // Edit Form State
   const [editData, setEditData] = useState<any>({ 
     id: '', maxActiveWorkers: 0, isActive: true, user: null,
-    hasWorkerPortalAccess: false, hasOracleAccess: false, logoUrl: '', logoFile: null as File | null, contactPhone: '', serviceEndDate: null as Date | null
+    hasWorkerPortalAccess: false, hasOracleAccess: false, hasGeofencingAccess: false, logoUrl: '', logoFile: null as File | null, contactPhone: '', serviceEndDate: null as Date | null
   });
 
   const [error, setError] = useState('');
@@ -85,7 +86,7 @@ export default function TenantsPage() {
       }
 
       setSuccess(`¡Empresa ${formData.companyName} creada con éxito!`);
-      setFormData({ companyName: '', taxId: '', firstName: '', lastName: '', email: '', password: '', hasWorkerPortalAccess: false, hasOracleAccess: false, logoUrl: '', logoFile: null, contactPhone: '', serviceEndDate: null });
+      setFormData({ companyName: '', taxId: '', firstName: '', lastName: '', email: '', password: '', hasWorkerPortalAccess: false, hasOracleAccess: false, hasGeofencingAccess: false, logoUrl: '', logoFile: null, contactPhone: '', serviceEndDate: null });
       setIsDialogVisible(false);
       if (token) loadTenants(token); // Reload table
 
@@ -107,6 +108,7 @@ export default function TenantsPage() {
       isActive: tenant.isActive,
       hasWorkerPortalAccess: tenant.hasWorkerPortalAccess ?? false,
       hasOracleAccess: tenant.hasOracleAccess ?? false,
+      hasGeofencingAccess: tenant.hasGeofencingAccess ?? false,
       oraclePrompt: tenant.oraclePrompt || "Asume el rol de un Consultor Experto en Nómina Venezolana e IA de Nebula.\nPara comunicarte con el usuario, escribe en un Español Corporativo y Pragmático, usando terminología de leyes venezolanas (LOTT, IVSS, FAOV, ISLR) pero yendo directamente al grano de la solución y omitiendo teoría extensa.",
       logoUrl: tenant.logoUrl || '',
       logoFile: null,
@@ -175,10 +177,14 @@ export default function TenantsPage() {
   };
 
   const portalStatusBodyTemplate = (rowData: any) => {
-    if (rowData.hasWorkerPortalAccess) {
-      return <Tag severity="info" value="PORTAL ACTIVO" icon="pi pi-desktop" />;
-    }
-    return <Tag severity="warning" value="BÁSICO" />;
+    return (
+      <div className="flex gap-1 flex-wrap">
+        {rowData.hasWorkerPortalAccess && <Tag severity="info" value="PORTAL" />}
+        {rowData.hasOracleAccess && <Tag severity="help" value="IA" />}
+        {rowData.hasGeofencingAccess && <Tag severity="warning" value="GPS" />}
+        {!rowData.hasWorkerPortalAccess && !rowData.hasOracleAccess && !rowData.hasGeofencingAccess && <Tag severity="secondary" value="BÁSICO" />}
+      </div>
+    );
   };
 
   const expirationBodyTemplate = (rowData: any) => {
@@ -400,7 +406,18 @@ export default function TenantsPage() {
                      />
                      Habilitar Oráculo IA (Copiloto de Conceptos)
                   </label>
-                  <small className="text-gray-500 block">Permite a la empresa generar fórmulas de nómina con Inteligencia Artificial.</small>
+                  <small className="text-gray-500 block mb-4">Permite a la empresa generar fórmulas de nómina con Inteligencia Artificial.</small>
+
+                  <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                     <input 
+                       type="checkbox" 
+                       className="w-5 h-5 text-orange-500 rounded cursor-pointer" 
+                       checked={formData.hasGeofencingAccess} 
+                       onChange={(e) => setFormData({...formData, hasGeofencingAccess: e.target.checked})} 
+                     />
+                     Habilitar Asistencia Geolocalizada (GPS / Offline)
+                  </label>
+                  <small className="text-gray-500 block">Restringe o habilita el uso de la PWA de asistencia y validación GPS.</small>
                 </div>
               </div>
 
@@ -513,6 +530,17 @@ export default function TenantsPage() {
                      Oráculo IA (Copiloto de Conceptos)
                   </label>
                   <small className="text-gray-500 block mb-4">Módulo Premium de Inteligencia Artificial para RRHH.</small>
+
+                  <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                     <input 
+                       type="checkbox" 
+                       className="w-5 h-5 text-orange-500 rounded cursor-pointer" 
+                       checked={editData.hasGeofencingAccess} 
+                       onChange={(e) => setEditData({...editData, hasGeofencingAccess: e.target.checked})} 
+                     />
+                     Asistencia Geolocalizada (GPS / Offline)
+                  </label>
+                  <small className="text-gray-500 block mb-4">Restringe o habilita el uso de la PWA de asistencia con validación GPS.</small>
 
                   {editData.hasOracleAccess && (
                     <div className="mb-4 bg-indigo-50 p-4 rounded-xl border border-indigo-100">

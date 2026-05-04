@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
@@ -20,6 +20,15 @@ export class WorkLocationsService {
   }
 
   async getSyncData(id: string, tenantId: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { hasGeofencingAccess: true }
+    });
+
+    if (!tenant?.hasGeofencingAccess) {
+      throw new UnauthorizedException('Su empresa no tiene habilitado el módulo premium de Asistencia Geolocalizada.');
+    }
+
     const location = await this.findOne(id, tenantId);
 
     const costCenters = await this.prisma.costCenter.findMany({

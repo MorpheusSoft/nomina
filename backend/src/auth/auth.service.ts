@@ -115,6 +115,8 @@ export class AuthService {
           name: data.companyName,
           taxId: data.taxId,
           hasWorkerPortalAccess: data.hasWorkerPortalAccess ?? false,
+          hasOracleAccess: data.hasOracleAccess ?? false,
+          hasGeofencingAccess: data.hasGeofencingAccess ?? false,
           logoUrl: data.logoUrl || null,
           contactPhone: data.contactPhone || null,
           serviceEndDate: data.serviceEndDate ? new Date(data.serviceEndDate) : null,

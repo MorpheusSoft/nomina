@@ -18,6 +18,10 @@ export class UpdateTenantDto {
   hasOracleAccess?: boolean;
 
   @IsOptional()
+  @IsBoolean()
+  hasGeofencingAccess?: boolean;
+
+  @IsOptional()
   @IsString()
   logoUrl?: string | null;
 
