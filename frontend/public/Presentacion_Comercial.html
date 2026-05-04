@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Nebula Payrolls - Presentación Ejecutiva</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f8fafc; overflow: hidden; margin: 0; color: #0f172a; }
+    .bg-shape-1 { position: absolute; top: -20vh; right: -10vw; width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; z-index: -1; }
+    .bg-shape-2 { position: absolute; bottom: -20vh; left: -10vw; width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; z-index: -1; }
+    
+    .slide {
+      position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+      opacity: 0; transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(20px) scale(0.98);
+      display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none;
+    }
+    .slide.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; z-index: 10; }
+    .slide.previous { transform: translateY(-20px) scale(0.98); }
+    
+    .glass-card { 
+      background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(24px); 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0,0,0,0.02); 
+      border-radius: 32px; padding: 4rem 5rem; width: 85%; max-width: 1100px; text-align: left;
+    }
+    
+    .logo-img { height: 60px; margin-bottom: 2rem; }
+    .pill { display: inline-block; padding: 0.5rem 1.2rem; background: #eff6ff; color: #4f46e5; font-size: 0.875rem; font-weight: 600; border-radius: 999px; margin-bottom: 1.5rem; letter-spacing: 0.05em; text-transform: uppercase;}
+    
+    /* Navigation dots */
+    .controls { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.5rem; z-index: 50; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; cursor: pointer; transition: 0.3s; }
+    .dot.active { background: #4f46e5; transform: scale(1.3); }
+    .help-text { position: fixed; bottom: 2rem; right: 2rem; color: #94a3b8; font-size: 0.875rem; z-index: 50;}
+  </style>
+</head>
+<body>
+  <div class="bg-shape-1"></div>
+  <div class="bg-shape-2"></div>
+
+  <!-- Lámina 1: Portada -->
+  <div class="slide active">
+    <div class="glass-card text-center" style="padding: 6rem;">
+      <img src="nebula_logo.png" alt="Nebula Payrolls" class="h-24 mx-auto mb-10 drop-shadow-sm">
+      <h1 class="text-6xl font-extrabold tracking-tight text-slate-900 mb-6">Tu nómina y tu personal, <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-emerald-500">bajo control total.</span></h1>
+      <p class="text-xl text-slate-500 font-light max-w-2xl mx-auto">La solución corporativa que automatiza la complejidad administrativa y empodera a tus líderes.</p>
+    </div>
+  </div>
+
+  <!-- Lámina 2: El Desafío -->
+  <div class="slide">
+    <div class="glass-card">
+      <span class="pill">El Desafío</span>
+      <h2 class="text-4xl font-extrabold mb-10 text-slate-900">La complejidad de la gestión humana</h2>
+      <div class="grid grid-cols-2 gap-12">
+        <div>
+          <div class="w-12 h-12 bg-red-50 text-red-500 rounded-xl flex items-center justify-center mb-4"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+          <h3 class="text-xl font-bold mb-2">Turnos Rotativos</h3>
+          <p class="text-slate-600">Esquemas 24/7 y rotaciones constantes generan un caos de cálculos manuales para RRHH (domingos, feriados y horas nocturnas).</p>
+        </div>
+        <div>
+          <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center mb-4"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
+          <h3 class="text-xl font-bold mb-2">Validación de Ingreso</h3>
+          <p class="text-slate-600">Supervisores lidiando con reportes manuales o sistemas biométricos aislados para validar si su personal realmente está en el lugar de trabajo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lámina 3: La Solución -->
+  <div class="slide">
+    <div class="glass-card text-center">
+      <img src="nebula_logo.png" alt="Nebula Payrolls" class="logo-img mx-auto mb-6">
+      <h2 class="text-4xl font-extrabold mb-6">Un ecosistema integrado e inteligente</h2>
+      <p class="text-xl text-slate-500 mb-12 max-w-3xl mx-auto">Nebula centraliza la operación, dándole herramientas a los supervisores para gestionar sus equipos y automatizando los cálculos para Recursos Humanos.</p>
+      <div class="flex justify-center gap-6">
+        <div class="px-6 py-3 bg-indigo-50 text-indigo-700 rounded-lg font-semibold tracking-wide">Patrones Dinámicos</div>
+        <div class="px-6 py-3 bg-emerald-50 text-emerald-700 rounded-lg font-semibold tracking-wide">Asistencia Validada</div>
+        <div class="px-6 py-3 bg-purple-50 text-purple-700 rounded-lg font-semibold tracking-wide">Inteligencia Artificial</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lámina 4: Pilar 1 -->
+  <div class="slide">
+    <div class="glass-card">
+      <span class="pill bg-indigo-50 text-indigo-600">Pilar Operativo</span>
+      <h2 class="text-4xl font-extrabold mb-6">Patrones y Rotaciones Automáticas</h2>
+      <p class="text-xl text-slate-600 mb-8">Olvídese de cuadrar guardias a mano. Configure el patrón (ej. 4x2 rotativo) una sola vez.</p>
+      <ul class="space-y-4 text-lg text-slate-700">
+        <li class="flex items-center"><svg class="w-6 h-6 text-emerald-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Proyección del calendario anual automático.</li>
+        <li class="flex items-center"><svg class="w-6 h-6 text-emerald-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cálculo exacto de domingos y feriados.</li>
+        <li class="flex items-center"><svg class="w-6 h-6 text-emerald-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Pago de recargos nocturnos sin intervención manual.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Lámina 5: Pilar 2 -->
+  <div class="slide">
+    <div class="glass-card">
+      <span class="pill bg-emerald-50 text-emerald-600">Control de Accesos</span>
+      <h2 class="text-4xl font-extrabold mb-6">Validación Inteligente por Supervisor</h2>
+      <p class="text-xl text-slate-600 mb-8">Empodere a sus supervisores para registrar la asistencia real de sus cuadrillas desde cualquier dispositivo.</p>
+      <div class="grid grid-cols-3 gap-6">
+        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+          <h4 class="font-bold text-slate-900 mb-2">Geocercas GPS</h4>
+          <p class="text-sm text-slate-500">Valida satelitalmente que el marcaje ocurre estrictamente en el perímetro de trabajo.</p>
+        </div>
+        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+          <h4 class="font-bold text-slate-900 mb-2">Biometría</h4>
+          <p class="text-sm text-slate-500">Exige una selfie en tiempo real para evitar fraudes y marcajes indebidos.</p>
+        </div>
+        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+          <h4 class="font-bold text-slate-900 mb-2">Modo Offline</h4>
+          <p class="text-sm text-slate-500">Sigue operando sin señal de internet y sincroniza la data automáticamente al recuperarla.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lámina 6: Pilar 3 -->
+  <div class="slide">
+    <div class="glass-card flex items-center justify-between">
+      <div class="w-1/2 pr-10">
+        <span class="pill bg-purple-50 text-purple-600">El Diferenciador Mágico</span>
+        <h2 class="text-4xl font-extrabold mb-6">El Oráculo con IA</h2>
+        <p class="text-xl text-slate-600 mb-6">Un asistente experto en nómina integrado en su sistema.</p>
+        <p class="text-slate-500">Solicite la creación de un nuevo concepto (ej. <i>"Crea un bono nocturno del 30% del salario base"</i>) en lenguaje natural.</p>
+        <p class="text-slate-500 mt-4">La Inteligencia Artificial validará que cumpla con la ley y generará la fórmula matemática en segundos.</p>
+      </div>
+      <div class="w-1/2 bg-slate-900 rounded-2xl p-8 text-white shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl"></div>
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-3 h-3 rounded-full bg-red-500"></div>
+          <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+          <div class="w-3 h-3 rounded-full bg-green-500"></div>
+        </div>
+        <p class="font-mono text-sm text-emerald-400 mb-2">> Analizando requerimiento...</p>
+        <p class="font-mono text-sm text-blue-300 mb-4">> Auditando LOTTT Art. 117...</p>
+        <div class="bg-slate-800 p-4 rounded-lg font-mono text-sm text-slate-300 border border-slate-700">
+          <code>const bonoNocturno = (SUELDO_BASE / 30 / 8) * HORAS_NOCT * 1.30;</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lámina 7: Cierre -->
+  <div class="slide">
+    <div class="glass-card text-center">
+      <h2 class="text-4xl font-extrabold mb-10 text-slate-900">Rentabilidad Operativa Inmediata</h2>
+      <div class="flex justify-center gap-12 mb-12">
+        <div class="text-center">
+          <div class="text-5xl font-black text-indigo-600 mb-2">-70%</div>
+          <div class="text-sm font-bold text-slate-500 uppercase">Tiempo Administrativo</div>
+        </div>
+        <div class="text-center">
+          <div class="text-5xl font-black text-emerald-500 mb-2">CERO</div>
+          <div class="text-sm font-bold text-slate-500 uppercase">Pagos Fantasmas</div>
+        </div>
+        <div class="text-center">
+          <div class="text-5xl font-black text-blue-500 mb-2">100%</div>
+          <div class="text-sm font-bold text-slate-500 uppercase">Cumplimiento Legal</div>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-slate-200">
+        <p class="text-xl font-bold text-slate-800 mb-2">¿Listos para evolucionar?</p>
+        <p class="text-slate-500 mb-8">Pasemos a la demostración del sistema.</p>
+        <a href="https://www.nebulapayrolls.com" target="_blank" class="inline-block px-10 py-4 bg-indigo-600 text-white font-bold rounded-full shadow-xl hover:bg-indigo-700 hover:scale-105 transition-all text-lg tracking-wide">
+          Ingresar a NebulaPayrolls.com
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls" id="controls"></div>
+  <div class="help-text">Usa ← y → para navegar</div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const controls = document.getElementById('controls');
+    let currentSlide = 0;
+
+    // Create dots
+    slides.forEach((_, index) => {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      if (index === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(index));
+      controls.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function goToSlide(index) {
+      if (index < 0 || index >= slides.length) return;
+      
+      slides[currentSlide].classList.remove('active');
+      if (index > currentSlide) {
+        slides[currentSlide].classList.add('previous');
+      } else {
+        slides[currentSlide].classList.remove('previous');
+      }
+      
+      dots[currentSlide].classList.remove('active');
+      
+      currentSlide = index;
+      
+      slides[currentSlide].classList.add('active');
+      slides[currentSlide].classList.remove('previous');
+      dots[currentSlide].classList.add('active');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        goToSlide(currentSlide + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        goToSlide(currentSlide - 1);
+      }
+    });
+  </script>
+</body>
+</html>
