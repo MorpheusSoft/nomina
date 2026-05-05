@@ -9,7 +9,27 @@ export class PayrollEngineService {
   // We limit mathjs features for security so arbitrary JS cannot be executed.
   private readonly math = mathjs.create(mathjs.all, {});
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {
+    // Override mathjs equal and unequal to support string comparison natively without throwing "Cannot convert to a number"
+    const customEqual = mathjs.typed('equal', {
+      'string, string': function (a: string, b: string) { return a === b; },
+      'string, any': function () { return false; },
+      'any, string': function () { return false; },
+      'any, any': this.math.equal
+    });
+
+    const customUnequal = mathjs.typed('unequal', {
+      'string, string': function (a: string, b: string) { return a !== b; },
+      'string, any': function () { return true; },
+      'any, string': function () { return true; },
+      'any, any': this.math.unequal
+    });
+
+    this.math.import({
+      equal: customEqual,
+      unequal: customUnequal
+    }, { override: true });
+  }
 
   /**
    * Main Entry Point to Calculate a Full Payroll Period
