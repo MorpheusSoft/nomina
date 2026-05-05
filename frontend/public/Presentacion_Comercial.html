@@ -174,7 +174,7 @@
   </div>
 
   <div class="controls" id="controls"></div>
-  <div class="help-text">Usa ← y → para navegar</div>
+  <div class="help-text">Usa ← y → o desliza para navegar</div>
 
   <script>
     const slides = document.querySelectorAll('.slide');
@@ -218,6 +218,31 @@
         goToSlide(currentSlide - 1);
       }
     });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    window.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    window.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const swipeThreshold = 50; // Minimum distance to be considered a swipe
+      if (touchEndX < touchStartX - swipeThreshold) {
+        // Swipe Left -> Next Slide
+        goToSlide(currentSlide + 1);
+      }
+      if (touchEndX > touchStartX + swipeThreshold) {
+        // Swipe Right -> Previous Slide
+        goToSlide(currentSlide - 1);
+      }
+    }
   </script>
 </body>
 </html>
