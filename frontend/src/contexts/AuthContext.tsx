@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (token && storedUser) {
       setUser(JSON.parse(storedUser));
-    } else if (pathname !== '/login' && pathname !== '/' && !pathname.startsWith('/pwa')) {
+    } else if (pathname !== '/login' && pathname !== '/' && !pathname.startsWith('/pwa') && !pathname.startsWith('/portal')) {
       router.push('/login');
     }
     setLoading(false);
