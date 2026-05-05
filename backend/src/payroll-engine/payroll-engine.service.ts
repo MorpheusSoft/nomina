@@ -173,7 +173,7 @@ export class PayrollEngineService {
       }
 
       const resMetrics = await this.buildWorkerReceiptMetrics(
-        tenantId, periodId, period, record, contextDict, bonifiableConceptIds, executionList
+        tenantId, periodId, period, record, contextDict, bonifiableConceptIds, executionList, sumVariables
       );
 
       if (!resMetrics) continue;
@@ -272,7 +272,7 @@ export class PayrollEngineService {
     if (!record) throw new BadRequestException('Trabajador no encontrado para Sandbox');
 
     const resMetrics = await this.buildWorkerReceiptMetrics(
-      tenantId, periodId, period, record, contextDict, bonifiableConceptIds, executionList, mockData
+      tenantId, periodId, period, record, contextDict, bonifiableConceptIds, executionList, sumVariables, mockData
     );
 
     if (!resMetrics) {
@@ -503,6 +503,7 @@ export class PayrollEngineService {
     contextDict: Record<string, any>,
     bonifiableConceptIds: string[],
     executionList: any[],
+    sumVariables: any[],
     mockData?: Record<string, any>
   ) {
       if (!record.salaryHistories || record.salaryHistories.length === 0) {
@@ -616,6 +617,25 @@ export class PayrollEngineService {
       // Inyectar variables globales y de tenant de forma insensible a mayúsculas
       for (const [k, v] of Object.entries(contextDict)) {
         workerContext[k] = v;
+      }
+
+      // Inyectar getters dinámicos para las variables tipo SUM_CONCEPTS
+      for (const sumVar of sumVariables) {
+        if (!sumVar.concepts || sumVar.concepts.length === 0) continue;
+        const lowerCode = sumVar.code.toLowerCase();
+        Object.defineProperty(workerContext, lowerCode, {
+          get: function() {
+            let total = 0;
+            for (const c of sumVar.concepts) {
+              const ccode = c.code.toLowerCase();
+              if (this[ccode] !== undefined) {
+                total += Number(this[ccode]) || 0;
+              }
+            }
+            return total;
+          },
+          enumerable: true
+        });
       }
 
       // Inyectar Variables del Centro de Costo (Tienen mayor precedencia, sobrescriben a las de convenio/globales)
