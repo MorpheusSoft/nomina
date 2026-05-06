@@ -286,12 +286,31 @@ export class PayrollEngineService {
    * Evaluates the math formulas strictly in the sequence provided.
    * Returns a list of generated Receipt Lines and the internal memory snapshot.
    */
-  private async evaluateFormulas(workerContext: Record<string, any>, executionList: any[]): Promise<{ receiptDetails: any[], memorySnapshot: any }> {
+  private async evaluateFormulas(workerContext: Record<string, any>, executionList: any[], sumVariables: any[] = []): Promise<{ receiptDetails: any[], memorySnapshot: any }> {
     // MathJS es case-sensitive. Para evitar problemas al usuario si escribe SUELDO en vez de sueldo,
     // normalizaremos el diccionario a minúsculas y las fórmulas proporcionadas también a minúsculas.
     const mem: Record<string, any> = {};
     for (const [key, value] of Object.entries(workerContext)) {
       mem[key.toLowerCase()] = value;
+    }
+    
+    // Inyectar getters dinámicos para las variables tipo SUM_CONCEPTS directamente en mem
+    for (const sumVar of sumVariables) {
+      if (!sumVar.concepts || sumVar.concepts.length === 0) continue;
+      const lowerCode = sumVar.code.toLowerCase();
+      Object.defineProperty(mem, lowerCode, {
+        get: function() {
+          let total = 0;
+          for (const c of sumVar.concepts) {
+            const ccode = c.code.toLowerCase();
+            if (this[ccode] !== undefined) {
+              total += Number(this[ccode]) || 0;
+            }
+          }
+          return total;
+        },
+        enumerable: true
+      });
     }
     // Inicialización del acumulador dinámico para ISLR
     mem['total_base_islr'] = 0;
@@ -619,24 +638,7 @@ export class PayrollEngineService {
         workerContext[k] = v;
       }
 
-      // Inyectar getters dinámicos para las variables tipo SUM_CONCEPTS
-      for (const sumVar of sumVariables) {
-        if (!sumVar.concepts || sumVar.concepts.length === 0) continue;
-        const lowerCode = sumVar.code.toLowerCase();
-        Object.defineProperty(workerContext, lowerCode, {
-          get: function() {
-            let total = 0;
-            for (const c of sumVar.concepts) {
-              const ccode = c.code.toLowerCase();
-              if (this[ccode] !== undefined) {
-                total += Number(this[ccode]) || 0;
-              }
-            }
-            return total;
-          },
-          enumerable: true
-        });
-      }
+
 
       // Inyectar Variables del Centro de Costo (Tienen mayor precedencia, sobrescriben a las de convenio/globales)
       if (record.costCenterId) {
@@ -835,7 +837,7 @@ export class PayrollEngineService {
       }
 
       // 7. Execute the Formulas!
-      const { receiptDetails, memorySnapshot } = await this.evaluateFormulas(workerContext, executionList);
+      const { receiptDetails, memorySnapshot } = await this.evaluateFormulas(workerContext, executionList, sumVariables);
       
       // 8. Aggregate Totals
       let totalIncome = 0;
