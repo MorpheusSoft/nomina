@@ -184,7 +184,7 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
       });
 
       const response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-2.5-pro',
         contents: contentsArray,
         config: {
           systemInstruction: systemPrompt,
@@ -273,7 +273,7 @@ ${dataDictionary}`;
       });
 
       const response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-2.5-pro',
         contents: contentsArray,
         config: {
           systemInstruction: systemPrompt,
