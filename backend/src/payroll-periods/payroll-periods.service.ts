@@ -72,14 +72,14 @@ export class PayrollPeriodsService {
         endDate: new Date(data.endDate),
         status: data.status || 'DRAFT',
         processStatuses: data.processStatuses || ['ACTIVE'],
-        departments: data.departmentIds && data.departmentIds.length > 0 ? {
-          connect: data.departmentIds.map((id: string) => ({ id }))
+        departments: (data.departmentIds || []).length > 0 ? {
+          connect: (data.departmentIds || []).map((id: string) => ({ id }))
         } : undefined,
-        specialConcepts: data.specialConceptIds && data.specialConceptIds.length > 0 ? {
-          connect: data.specialConceptIds.map((id: string) => ({ id }))
+        specialConcepts: (data.specialConceptIds || []).length > 0 ? {
+          connect: (data.specialConceptIds || []).map((id: string) => ({ id }))
         } : undefined,
-        importedAttendancePeriods: data.linkedAttendancePeriodIds && data.linkedAttendancePeriodIds.length > 0 ? {
-          connect: data.linkedAttendancePeriodIds.map((id: string) => ({ id }))
+        importedAttendancePeriods: (data.linkedAttendancePeriodIds || []).length > 0 ? {
+          connect: (data.linkedAttendancePeriodIds || []).map((id: string) => ({ id }))
         } : undefined
       }
     });
