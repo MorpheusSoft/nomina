@@ -226,7 +226,8 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
 DICCIONARIO DE DATOS (POSTGRESQL):
 Tablas Principales:
 - workers (id, first_name, last_name, primary_identity_number, birth_date, gender, marital_status)
-- employment_records (id, worker_id, start_date, end_date, contract_type, position, is_active, status) -> status usualmente 'ACTIVE', 'SUSPENDED', 'LIQUIDATED'
+- employment_records (id, worker_id, payroll_group_id, cost_center_id, department_id, start_date, end_date, contract_type, position, is_active, status) -> status usualmente 'ACTIVE', 'SUSPENDED', 'LIQUIDATED'. (Nota: payroll_group_id representa el 'Convenio').
+- payroll_groups (id, name, code) -> Tabla de convenios.
 - payroll_periods (id, name, start_date, end_date, status) -> Valores de status vitales: 'DRAFT' (borrador inicial), 'PRE_CALCULATED' (precalculada), 'PENDING_APPROVAL' (en revisión/solicitada), 'APPROVED' (aprobada), 'PAID' (pagada), 'CLOSED' (cerrada).
 - payroll_receipts (id, worker_id, payroll_period_id, total_salary_earnings, total_non_salary_earnings, total_deductions, net_pay, status) -> status puede ser 'DRAFT', etc.
 - attendance_summaries (id, worker_id, payroll_period_id, days_worked, ordinary_hours, ordinary_day_hours, ordinary_night_hours, extra_day_hours, extra_night_hours, unjustified_absences, justified_absences)
@@ -238,6 +239,7 @@ RELACIONES (JOINS):
 - workers.id = attendance_summaries.worker_id
 - payroll_periods.id = payroll_receipts.payroll_period_id
 - payroll_periods.id = attendance_summaries.payroll_period_id
+- payroll_groups.id = employment_records.payroll_group_id
 `;
 
     const systemPrompt = `Asume el rol de Consultor Analítico de Base de Datos de Nebula.
