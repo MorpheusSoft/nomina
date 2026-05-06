@@ -318,7 +318,6 @@ ${dataDictionary}`;
         contents: contentsArray,
         config: {
           systemInstruction: systemPrompt,
-          responseMimeType: "application/json",
           temperature: 0.1,
           tools: [{ googleSearch: {} }] // Permite buscar tasa de cambio en vivo
         }
