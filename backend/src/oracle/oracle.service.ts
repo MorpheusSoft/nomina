@@ -192,7 +192,29 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
           temperature: 0.4
         }
       });
-      return JSON.parse(response.text);
+      if (!response.text) {
+        throw new Error('El modelo devolvió una respuesta vacía o fue bloqueada por filtros de seguridad.');
+      }
+      
+      let rawText = response.text.trim();
+      if (rawText.startsWith('```json')) {
+        rawText = rawText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      } else if (rawText.startsWith('```')) {
+        rawText = rawText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
+
+      let parsed: any;
+      try {
+        parsed = JSON.parse(rawText);
+      } catch (parseError) {
+        throw new Error('El Oráculo generó un formato inválido. Respuesta cruda: ' + rawText.substring(0, 200));
+      }
+
+      if (!parsed.message || parsed.message.trim() === '') {
+        throw new Error('El Oráculo no pudo formular una respuesta matemática. Intenta replantear tu requerimiento.');
+      }
+
+      return parsed;
     } catch (error: any) {
       throw new HttpException('Falla en la predicción del Oráculo: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
