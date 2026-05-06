@@ -291,14 +291,14 @@ export class PayrollPeriodsService {
     delete updateData.linkedAttendancePeriodIds;
     
     if (data.specialConceptIds !== undefined) {
-      updateData.specialConcepts = { set: data.specialConceptIds.map((id: string) => ({ id })) };
+      updateData.specialConcepts = { set: (data.specialConceptIds || []).map((id: string) => ({ id })) };
     }
     if (data.linkedAttendancePeriodIds !== undefined) {
-      updateData.importedAttendancePeriods = { set: data.linkedAttendancePeriodIds.map((id: string) => ({ id })) };
+      updateData.importedAttendancePeriods = { set: (data.linkedAttendancePeriodIds || []).map((id: string) => ({ id })) };
     }
     if (data.departmentIds !== undefined) {
       updateData.departments = {
-        set: data.departmentIds.map((id: string) => ({ id }))
+        set: (data.departmentIds || []).map((id: string) => ({ id }))
       };
     }
     if (data.processStatuses !== undefined) updateData.processStatuses = data.processStatuses;
