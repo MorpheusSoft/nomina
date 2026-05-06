@@ -269,7 +269,7 @@ Tablas Principales:
 - workers (id, first_name, last_name, primary_identity_number, birth_date, gender, marital_status)
 - employment_records (id, worker_id, payroll_group_id, cost_center_id, department_id, start_date, end_date, contract_type, position, is_active, status) -> status usualmente 'ACTIVE', 'SUSPENDED', 'LIQUIDATED'. (Nota: payroll_group_id representa el 'Convenio').
 - payroll_groups (id, name, code) -> Tabla de convenios.
-- salary_histories (id, employment_record_id, base_salary, currency, salary_type, is_active) -> Tabla que registra el salario actual (is_active=true) y el histórico. Currency suele ser 'VES' (Bolívares) o 'USD'.
+- salary_histories (id, employment_record_id, amount, currency, valid_from, valid_to) -> 'amount' es el salario. 'currency' suele ser 'VES' (Bolívares) o 'USD'.
 - payroll_periods (id, name, start_date, end_date, status) -> Valores de status vitales: 'DRAFT', 'PRE_CALCULATED', 'PENDING_APPROVAL', 'APPROVED', 'PAID', 'CLOSED'.
 - payroll_receipts (id, worker_id, payroll_period_id, total_salary_earnings, total_non_salary_earnings, total_deductions, net_pay, status)
 - attendance_summaries (id, worker_id, payroll_period_id, days_worked, ordinary_hours, ordinary_day_hours, ordinary_night_hours, extra_day_hours, extra_night_hours, unjustified_absences, justified_absences)
