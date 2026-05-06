@@ -72,14 +72,14 @@ export class PayrollPeriodsService {
         endDate: new Date(data.endDate),
         status: data.status || 'DRAFT',
         processStatuses: data.processStatuses || ['ACTIVE'],
-        departments: (data.departmentIds || []).length > 0 ? {
-          connect: (data.departmentIds || []).map((id: string) => ({ id }))
+        departments: (data.departmentIds || []).filter(Boolean).length > 0 ? {
+          connect: (data.departmentIds || []).filter(Boolean).map((id: string) => ({ id }))
         } : undefined,
-        specialConcepts: (data.specialConceptIds || []).length > 0 ? {
-          connect: (data.specialConceptIds || []).map((id: string) => ({ id }))
+        specialConcepts: (data.specialConceptIds || []).filter(Boolean).length > 0 ? {
+          connect: (data.specialConceptIds || []).filter(Boolean).map((id: string) => ({ id }))
         } : undefined,
-        importedAttendancePeriods: (data.linkedAttendancePeriodIds || []).length > 0 ? {
-          connect: (data.linkedAttendancePeriodIds || []).map((id: string) => ({ id }))
+        importedAttendancePeriods: (data.linkedAttendancePeriodIds || []).filter(Boolean).length > 0 ? {
+          connect: (data.linkedAttendancePeriodIds || []).filter(Boolean).map((id: string) => ({ id }))
         } : undefined
       }
     });
@@ -291,14 +291,14 @@ export class PayrollPeriodsService {
     delete updateData.linkedAttendancePeriodIds;
     
     if (data.specialConceptIds !== undefined) {
-      updateData.specialConcepts = { set: (data.specialConceptIds || []).map((id: string) => ({ id })) };
+      updateData.specialConcepts = { set: (data.specialConceptIds || []).filter(Boolean).map((id: string) => ({ id })) };
     }
     if (data.linkedAttendancePeriodIds !== undefined) {
-      updateData.importedAttendancePeriods = { set: (data.linkedAttendancePeriodIds || []).map((id: string) => ({ id })) };
+      updateData.importedAttendancePeriods = { set: (data.linkedAttendancePeriodIds || []).filter(Boolean).map((id: string) => ({ id })) };
     }
     if (data.departmentIds !== undefined) {
       updateData.departments = {
-        set: (data.departmentIds || []).map((id: string) => ({ id }))
+        set: (data.departmentIds || []).filter(Boolean).map((id: string) => ({ id }))
       };
     }
     if (data.processStatuses !== undefined) updateData.processStatuses = data.processStatuses;
