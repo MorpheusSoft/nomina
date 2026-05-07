@@ -348,6 +348,8 @@ export default function ConceptsPage() {
          prompt: currentPrompt,
          context: payloadContext,
          history: chatHistory
+       }, {
+         timeout: 120000 // 120 segundos para permitir consultas pesadas de Google Search
        });
        
        const aiResponse = res.data;
