@@ -597,9 +597,10 @@ export default function TenantsPage() {
                            <i className="pi pi-sparkles"></i> Prompt Tuning (Directrices Especiales)
                          </label>
                          <InputTextarea 
+                           key={`prompt-${editData.id}`}
                            rows={3}
-                           value={editData.oraclePrompt || ''} 
-                           onChange={(e) => setEditData({...editData, oraclePrompt: e.target.value})} 
+                           defaultValue={editData.oraclePrompt || ''} 
+                           onBlur={(e) => setEditData({...editData, oraclePrompt: e.target.value})} 
                            className="w-full p-3 text-sm rounded border-indigo-200 focus:border-indigo-500 bg-white font-mono" 
                            placeholder="Ej: Para comunicarte con el usuario, escribe en un Español Corporativo..."
                          />
@@ -618,9 +619,10 @@ export default function TenantsPage() {
                            </div>
                          </label>
                          <InputTextarea 
+                           key={`rag-${editData.legalKnowledgeBase?.length || 0}`}
                            rows={6}
-                           value={editData.legalKnowledgeBase || ''} 
-                           onChange={(e) => setEditData({...editData, legalKnowledgeBase: e.target.value})} 
+                           defaultValue={editData.legalKnowledgeBase || ''} 
+                           onBlur={(e) => setEditData({...editData, legalKnowledgeBase: e.target.value})} 
                            className="w-full p-3 text-sm rounded border-indigo-200 focus:border-indigo-500 bg-white" 
                            placeholder="Ej: El tiempo de viaje diurno hasta 1.5h se paga al 52%. El exceso se paga al 77%..."
                            disabled={isPdfUploading}
