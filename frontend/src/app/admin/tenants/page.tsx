@@ -477,6 +477,18 @@ export default function TenantsPage() {
           className="p-fluid rounded-2xl"
         >
           <form onSubmit={handleUpdate} className="pt-4 space-y-5">
+            {error && (
+              <div className="mb-4 bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium border border-red-100 flex items-start">
+                 <i className="pi pi-exclamation-circle mt-0.5 mr-2"></i>
+                 <span>{error}</span>
+              </div>
+            )}
+            {success && (
+              <div className="mb-4 bg-emerald-50 text-emerald-600 p-4 rounded-xl text-sm font-medium border border-emerald-100 flex items-start">
+                 <i className="pi pi-check-circle mt-0.5 mr-2"></i>
+                 <span>{success}</span>
+              </div>
+            )}
              {editData.user && (
                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Usuario Administrador</h4>
