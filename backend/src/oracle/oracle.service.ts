@@ -117,15 +117,22 @@ ${concepts}${editInstruction}`;
       
       const step1Contents = [{ role: 'user', parts: [{ text: `Explícame la regla legal exacta para esto: ${naturalLanguagePrompt}` }] }];
       
-      const step1Response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: step1Contents,
-        config: { 
-          systemInstruction: step1SystemPrompt, 
-          temperature: 0.2,
-          tools: [{ googleSearch: {} }] 
-        }
-      });
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('TIMEOUT_GOOGLE')), 20000)
+      );
+
+      const step1Response: any = await Promise.race([
+        this.ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: step1Contents,
+          config: { 
+            systemInstruction: step1SystemPrompt, 
+            temperature: 0.2,
+            tools: [{ googleSearch: {} }] 
+          }
+        }),
+        timeoutPromise
+      ]);
       
       const extractedLegalTheory = step1Response.text || "No se encontró teoría legal específica.";
 
@@ -212,15 +219,22 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
          parts: [{ text: `Requerimiento del Analista: ${naturalLanguagePrompt}` }]
       });
 
-      const response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: contentsArray,
-        config: {
-          systemInstruction: step2SystemPrompt,
-          responseMimeType: "application/json",
-          temperature: 0.4
-        }
-      });
+      const timeoutPromise2 = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('TIMEOUT_GOOGLE')), 20000)
+      );
+
+      const response: any = await Promise.race([
+        this.ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: contentsArray,
+          config: {
+            systemInstruction: step2SystemPrompt,
+            responseMimeType: "application/json",
+            temperature: 0.4
+          }
+        }),
+        timeoutPromise2
+      ]);
       
       if (!response.text) {
         throw new Error('El modelo devolvió una respuesta vacía o fue bloqueada por filtros de seguridad.');
@@ -249,8 +263,14 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
       console.error('################ ORACLE ERROR ################');
       console.error(error);
       console.error('##############################################');
+      
+      let msg = error.message;
+      if (msg === 'TIMEOUT_GOOGLE') {
+         msg = 'La conexión con Google tardó demasiado. Esto ocurre si tu servidor VPS no tiene acceso a internet, o si Google está bloqueando temporalmente la IP del servidor por límite de cuota.';
+      }
+      
       // Usar BAD_REQUEST (400) en vez de 500 para evitar que NGINX intercepte el error y lo oculte tras su página HTML genérica.
-      throw new HttpException('Falla en la predicción del Oráculo: ' + error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException('Falla en la predicción del Oráculo: ' + msg, HttpStatus.BAD_REQUEST);
     }
   }
 
