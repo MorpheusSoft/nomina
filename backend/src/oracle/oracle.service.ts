@@ -106,9 +106,9 @@ ${concepts}${editInstruction}`;
       // --- PASO 1: Prompt Chaining (Extracción de Teoría Legal Pura) ---
       let ragContext = '';
       if (tenant.legalKnowledgeBase) {
-        // Truncate to ~15,000 characters to prevent Gemini API from taking several minutes and causing Nginx 500/504 timeouts
-        const safeText = tenant.legalKnowledgeBase.length > 15000 
-           ? tenant.legalKnowledgeBase.substring(0, 15000) + '\n\n[...TEXTO TRUNCADO POR LÍMITE DE TAMAÑO PARA EVITAR TIMEOUT]'
+        // Truncate to ~500,000 characters since Gemini Flash can easily process 1M tokens in under 15 seconds
+        const safeText = tenant.legalKnowledgeBase.length > 500000 
+           ? tenant.legalKnowledgeBase.substring(0, 500000) + '\n\n[...TEXTO TRUNCADO POR LÍMITE DE TAMAÑO]'
            : tenant.legalKnowledgeBase;
         ragContext = `\n\n> ATENCIÓN: BASE DE CONOCIMIENTO PRIVADA DEL CLIENTE (RAG):\n"""\n${safeText}\n"""\nInstrucción Estricta: 1. Lee cuidadosamente esta base de conocimiento privada. 2. Si la base de conocimiento responde a la petición, asume esa información como la LEY ABSOLUTA, ignorando internet. 3. Si la regla no está en la base de conocimiento, usa tus capacidades o herramientas de búsqueda para encontrar la ley actual.`;
       }
@@ -118,7 +118,7 @@ ${concepts}${editInstruction}`;
       const step1Contents = [{ role: 'user', parts: [{ text: `Explícame la regla legal exacta para esto: ${naturalLanguagePrompt}` }] }];
       
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('TIMEOUT_GOOGLE')), 20000)
+        setTimeout(() => reject(new Error('TIMEOUT_GOOGLE')), 25000)
       );
 
       const step1Response: any = await Promise.race([
@@ -220,7 +220,7 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
       });
 
       const timeoutPromise2 = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('TIMEOUT_GOOGLE')), 20000)
+        setTimeout(() => reject(new Error('TIMEOUT_GOOGLE')), 25000)
       );
 
       const response: any = await Promise.race([
