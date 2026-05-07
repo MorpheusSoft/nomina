@@ -6,7 +6,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
-import pdfParse from 'pdf-parse';
+const pdfParse = require('pdf-parse');
 
 @UseGuards(JwtAuthGuard)
 @Controller('tenants')
