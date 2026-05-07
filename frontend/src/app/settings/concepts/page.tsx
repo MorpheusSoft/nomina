@@ -104,6 +104,42 @@ const FORMULA_FUNCTIONS = [
   { label: 'Valor Absoluto (Positivo)', code: 'abs(valor)', example: 'abs(-150)' }
 ];
 
+const OracleChatInput = ({ onSend, isLoading }: { onSend: (text: string) => void, isLoading: boolean }) => {
+  const [text, setText] = useState('');
+  
+  const handleSend = () => {
+    if (text.trim() && !isLoading) {
+      onSend(text);
+      setText('');
+    }
+  };
+
+  return (
+    <div className="flex gap-2">
+      <InputTextarea 
+        value={text} 
+        onChange={(e) => setText(e.target.value)} 
+        rows={2} 
+        autoResize
+        className="flex-1 text-sm p-3 bg-slate-50 border-slate-300 focus:border-indigo-500 rounded-xl" 
+        placeholder="Escribe tu requerimiento (ej. Bono sujeto a ISLR de $50)..."
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+          }
+        }}
+      />
+      <Button 
+        icon={isLoading ? "pi pi-spin pi-spinner" : "pi pi-send"} 
+        onClick={handleSend} 
+        disabled={isLoading || !text.trim()} 
+        className="bg-indigo-600 hover:bg-indigo-700 border-none rounded-xl w-12 h-12 flex-shrink-0 flex items-center justify-center p-0"
+      />
+    </div>
+  );
+};
+
 export default function ConceptsPage() {
   const [concepts, setConcepts] = useState<any[]>([]);
   const [globalVars, setGlobalVars] = useState<any[]>([]);
@@ -122,7 +158,6 @@ export default function ConceptsPage() {
   const [newChildId, setNewChildId] = useState<string | null>(null);
   const [newChildSeq, setNewChildSeq] = useState<number>(10);
   const [oracleDialog, setOracleDialog] = useState(false);
-  const [oraclePrompt, setOraclePrompt] = useState('');
   const [isOracleLoading, setIsOracleLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const toast = useRef<Toast>(null);
@@ -322,14 +357,12 @@ export default function ConceptsPage() {
     }
   };
 
-  const handleAskOracle = async () => {
-    if (!oraclePrompt.trim()) return;
+  const handleAskOracle = async (promptText: string) => {
+    if (!promptText.trim()) return;
     
     // Add User Message to History UI
-    const newUserMessage = { role: 'user', content: oraclePrompt };
+    const newUserMessage = { role: 'user', content: promptText };
     setChatHistory(prev => [...prev, newUserMessage]);
-    const currentPrompt = oraclePrompt;
-    setOraclePrompt('');
 
     try {
        setIsOracleLoading(true);
@@ -360,7 +393,6 @@ export default function ConceptsPage() {
         toast.current?.show({ severity: 'error', summary: 'Error del Oráculo', detail: err.response?.data?.message || 'Tu empresa no cuenta con este módulo premium o hubo un fallo de conexión.', life: 5000 });
         // Rollback last user message on error
         setChatHistory(prev => prev.slice(0, -1));
-        setOraclePrompt(currentPrompt);
     } finally {
        setIsOracleLoading(false);
     }
@@ -793,7 +825,7 @@ export default function ConceptsPage() {
       </Dialog>
 
       {/* Oráculo Dialog */}
-      <Dialog visible={oracleDialog} style={{ width: '600px', height: '80vh' }} modal onHide={() => { setOracleDialog(false); setOraclePrompt(''); setChatHistory([]); }} headerClassName="bg-indigo-900 text-white p-4" className="rounded-2xl overflow-hidden flex flex-col" contentClassName="p-0 flex flex-col overflow-hidden h-full" header={
+      <Dialog visible={oracleDialog} style={{ width: '600px', height: '80vh' }} modal onHide={() => { setOracleDialog(false); setChatHistory([]); }} headerClassName="bg-indigo-900 text-white p-4" className="rounded-2xl overflow-hidden flex flex-col" contentClassName="p-0 flex flex-col overflow-hidden h-full" header={
         <div className="flex items-center gap-3">
            <i className="pi pi-sparkles text-2xl text-amber-300"></i>
            <div className="flex flex-col">
@@ -866,28 +898,7 @@ export default function ConceptsPage() {
             
             {/* Input Inferior */}
             <div className="p-4 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-               <div className="flex gap-2">
-                 <InputTextarea 
-                   value={oraclePrompt} 
-                   onChange={(e) => setOraclePrompt(e.target.value)} 
-                   rows={2} 
-                   autoResize
-                   className="flex-1 text-sm p-3 bg-slate-50 border-slate-300 focus:border-indigo-500 rounded-xl" 
-                   placeholder="Escribe tu requerimiento (ej. Bono sujeto a ISLR de $50)..."
-                   onKeyDown={(e) => {
-                     if (e.key === 'Enter' && !e.shiftKey) {
-                       e.preventDefault();
-                       handleAskOracle();
-                     }
-                   }}
-                 />
-                 <Button 
-                   icon={isOracleLoading ? "pi pi-spin pi-spinner" : "pi pi-send"} 
-                   onClick={handleAskOracle} 
-                   disabled={isOracleLoading || !oraclePrompt.trim()} 
-                   className="bg-indigo-600 hover:bg-indigo-700 border-none rounded-xl w-12 h-12 flex-shrink-0 flex items-center justify-center p-0"
-                 />
-               </div>
+               <OracleChatInput onSend={(text) => handleAskOracle(text)} isLoading={isOracleLoading} />
             </div>
          </div>
       </Dialog>
