@@ -21,8 +21,8 @@ export declare class PortalService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         payrollPeriodId: string;
         totalSalaryEarnings: import("@prisma/client/runtime/library").Decimal;
         totalNonSalaryEarnings: import("@prisma/client/runtime/library").Decimal;
@@ -49,8 +49,10 @@ export declare class PortalService {
                 maxActiveWorkers: number;
                 serviceEndDate: Date | null;
                 hasWorkerPortalAccess: boolean;
+                hasGeofencingAccess: boolean;
                 hasOracleAccess: boolean;
                 oraclePrompt: string | null;
+                legalKnowledgeBase: string | null;
                 logoUrl: string | null;
                 contactPhone: string | null;
             };
@@ -61,6 +63,7 @@ export declare class PortalService {
                     name: string;
                     updatedAt: Date;
                     costCenterId: string;
+                    code: string | null;
                     monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
                 } | null;
             } & {
@@ -71,11 +74,11 @@ export declare class PortalService {
                 createdAt: Date;
                 isActive: boolean;
                 updatedAt: Date;
+                workerId: string;
                 contractType: string;
                 position: string;
                 status: import(".prisma/client").$Enums.EmploymentStatus;
                 isConfidential: boolean;
-                workerId: string;
                 departmentId: string | null;
                 payrollGroupId: string | null;
                 costCenterId: string | null;
@@ -134,9 +137,9 @@ export declare class PortalService {
                 name: string;
                 updatedAt: Date;
                 type: string;
-                accountingCode: string | null;
                 code: string;
                 description: string | null;
+                accountingCode: string | null;
                 accountingOperation: string | null;
                 isSalaryIncidence: boolean;
                 isTaxable: boolean;
@@ -163,8 +166,8 @@ export declare class PortalService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         payrollPeriodId: string;
         totalSalaryEarnings: import("@prisma/client/runtime/library").Decimal;
         totalNonSalaryEarnings: import("@prisma/client/runtime/library").Decimal;
@@ -212,8 +215,8 @@ export declare class PortalService {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.TicketStatus;
         workerId: string;
+        status: import(".prisma/client").$Enums.TicketStatus;
         type: import(".prisma/client").$Enums.TicketType;
         description: string;
         title: string;
@@ -225,8 +228,8 @@ export declare class PortalService {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.TicketStatus;
         workerId: string;
+        status: import(".prisma/client").$Enums.TicketStatus;
         type: import(".prisma/client").$Enums.TicketType;
         description: string;
         title: string;

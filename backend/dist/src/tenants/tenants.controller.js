@@ -21,6 +21,7 @@ const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
 const path_1 = require("path");
 const update_tenant_dto_1 = require("./dto/update-tenant.dto");
+const pdfParse = require('pdf-parse');
 let TenantsController = class TenantsController {
     tenantsService;
     constructor(tenantsService) {
@@ -62,6 +63,21 @@ let TenantsController = class TenantsController {
         if (!consultantUserId)
             throw new common_1.BadRequestException('Falta ID del consultor');
         return this.tenantsService.assignConsultant(targetTenantId, consultantUserId);
+    }
+    async uploadRagPdf(id, file, user) {
+        if (user?.email !== 'admin@nebulapayrolls.com')
+            throw new common_1.ForbiddenException('Acceso Denegado');
+        if (!file)
+            throw new common_1.BadRequestException('Archivo requerido');
+        if (file.mimetype !== 'application/pdf')
+            throw new common_1.BadRequestException('El archivo debe ser un PDF válido');
+        try {
+            const data = await pdfParse(file.buffer);
+            return { text: data.text };
+        }
+        catch (e) {
+            throw new common_1.BadRequestException('Error leyendo PDF: ' + e.message);
+        }
     }
 };
 exports.TenantsController = TenantsController;
@@ -130,6 +146,16 @@ __decorate([
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", void 0)
 ], TenantsController.prototype, "assignConsultant", null);
+__decorate([
+    (0, common_1.Post)(':id/upload-rag-pdf'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.UploadedFile)()),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], TenantsController.prototype, "uploadRagPdf", null);
 exports.TenantsController = TenantsController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('tenants'),

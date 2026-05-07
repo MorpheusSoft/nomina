@@ -9,9 +9,9 @@ export declare class ConceptsService {
         name: string;
         updatedAt: Date;
         type: string;
-        accountingCode: string | null;
         code: string;
         description: string | null;
+        accountingCode: string | null;
         accountingOperation: string | null;
         isSalaryIncidence: boolean;
         isTaxable: boolean;
@@ -32,16 +32,16 @@ export declare class ConceptsService {
                 createdAt: Date;
                 name: string;
                 updatedAt: Date;
-                nightShiftEndTime: string;
-                nightShiftStartTime: string;
-                mixedShiftMaxNightHours: import("@prisma/client/runtime/library").Decimal;
-                standardWorkHours: import("@prisma/client/runtime/library").Decimal;
                 rootBonusConceptId: string | null;
                 rootLiquidationConceptId: string | null;
                 rootRegularConceptId: string | null;
                 rootVacationConceptId: string | null;
                 loanDeductionConceptId: string | null;
                 islrConceptId: string | null;
+                nightShiftEndTime: string;
+                nightShiftStartTime: string;
+                mixedShiftMaxNightHours: import("@prisma/client/runtime/library").Decimal;
+                standardWorkHours: import("@prisma/client/runtime/library").Decimal;
             };
         } & {
             id: string;
@@ -55,9 +55,9 @@ export declare class ConceptsService {
         name: string;
         updatedAt: Date;
         type: string;
-        accountingCode: string | null;
         code: string;
         description: string | null;
+        accountingCode: string | null;
         accountingOperation: string | null;
         isSalaryIncidence: boolean;
         isTaxable: boolean;
@@ -83,9 +83,9 @@ export declare class ConceptsService {
         name: string;
         updatedAt: Date;
         type: string;
-        accountingCode: string | null;
         code: string;
         description: string | null;
+        accountingCode: string | null;
         accountingOperation: string | null;
         isSalaryIncidence: boolean;
         isTaxable: boolean;
@@ -106,9 +106,9 @@ export declare class ConceptsService {
         name: string;
         updatedAt: Date;
         type: string;
-        accountingCode: string | null;
         code: string;
         description: string | null;
+        accountingCode: string | null;
         accountingOperation: string | null;
         isSalaryIncidence: boolean;
         isTaxable: boolean;

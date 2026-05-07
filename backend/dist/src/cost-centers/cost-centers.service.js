@@ -20,7 +20,12 @@ let CostCentersService = class CostCentersService {
     async create(tenantId, data) {
         try {
             return await this.prisma.costCenter.create({
-                data: { ...data, tenantId },
+                data: {
+                    name: data.name,
+                    accountingCode: data.accountingCode,
+                    tenantId,
+                    workLocationId: data.workLocationId
+                },
             });
         }
         catch (e) {
@@ -54,6 +59,7 @@ let CostCentersService = class CostCentersService {
         return this.prisma.costCenter.findMany({
             where: { tenantId },
             include: {
+                workLocation: true,
                 departments: {
                     include: {
                         crews: { include: { shiftPattern: true } }
@@ -66,6 +72,7 @@ let CostCentersService = class CostCentersService {
         return this.prisma.costCenter.findFirst({
             where: { id, tenantId },
             include: {
+                workLocation: true,
                 departments: {
                     include: {
                         crews: { include: { shiftPattern: true } }
@@ -80,6 +87,7 @@ let CostCentersService = class CostCentersService {
             data: {
                 name: data.name,
                 accountingCode: data.accountingCode,
+                workLocationId: data.workLocationId,
             },
         });
     }

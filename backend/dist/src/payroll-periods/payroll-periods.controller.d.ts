@@ -62,8 +62,10 @@ export declare class PayrollPeriodsController {
             maxActiveWorkers: number;
             serviceEndDate: Date | null;
             hasWorkerPortalAccess: boolean;
+            hasGeofencingAccess: boolean;
             hasOracleAccess: boolean;
             oraclePrompt: string | null;
+            legalKnowledgeBase: string | null;
             logoUrl: string | null;
             contactPhone: string | null;
         };
@@ -73,16 +75,16 @@ export declare class PayrollPeriodsController {
             createdAt: Date;
             name: string;
             updatedAt: Date;
-            nightShiftEndTime: string;
-            nightShiftStartTime: string;
-            mixedShiftMaxNightHours: import("@prisma/client/runtime/library").Decimal;
-            standardWorkHours: import("@prisma/client/runtime/library").Decimal;
             rootBonusConceptId: string | null;
             rootLiquidationConceptId: string | null;
             rootRegularConceptId: string | null;
             rootVacationConceptId: string | null;
             loanDeductionConceptId: string | null;
             islrConceptId: string | null;
+            nightShiftEndTime: string;
+            nightShiftStartTime: string;
+            mixedShiftMaxNightHours: import("@prisma/client/runtime/library").Decimal;
+            standardWorkHours: import("@prisma/client/runtime/library").Decimal;
         };
         importedAttendancePeriods: {
             id: string;
@@ -107,9 +109,9 @@ export declare class PayrollPeriodsController {
             name: string;
             updatedAt: Date;
             type: string;
-            accountingCode: string | null;
             code: string;
             description: string | null;
+            accountingCode: string | null;
             accountingOperation: string | null;
             isSalaryIncidence: boolean;
             isTaxable: boolean;
@@ -128,6 +130,7 @@ export declare class PayrollPeriodsController {
             name: string;
             updatedAt: Date;
             costCenterId: string;
+            code: string | null;
             monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
         }[];
     } & {

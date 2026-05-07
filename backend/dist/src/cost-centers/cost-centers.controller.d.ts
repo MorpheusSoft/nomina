@@ -11,6 +11,7 @@ export declare class CostCentersController {
         updatedAt: Date;
         workerId: string | null;
         accountingCode: string;
+        workLocationId: string | null;
     }>;
     findAll(user: any): Promise<({
         departments: ({
@@ -38,8 +39,19 @@ export declare class CostCentersController {
             name: string;
             updatedAt: Date;
             costCenterId: string;
+            code: string | null;
             monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
         })[];
+        workLocation: {
+            id: string;
+            tenantId: string;
+            createdAt: Date;
+            name: string;
+            updatedAt: Date;
+            latitude: import("@prisma/client/runtime/library").Decimal | null;
+            longitude: import("@prisma/client/runtime/library").Decimal | null;
+            allowedRadius: number;
+        } | null;
     } & {
         id: string;
         tenantId: string;
@@ -48,6 +60,7 @@ export declare class CostCentersController {
         updatedAt: Date;
         workerId: string | null;
         accountingCode: string;
+        workLocationId: string | null;
     })[]>;
     findAllVariables(user: any): Promise<{
         id: any;
@@ -82,8 +95,19 @@ export declare class CostCentersController {
             name: string;
             updatedAt: Date;
             costCenterId: string;
+            code: string | null;
             monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
         })[];
+        workLocation: {
+            id: string;
+            tenantId: string;
+            createdAt: Date;
+            name: string;
+            updatedAt: Date;
+            latitude: import("@prisma/client/runtime/library").Decimal | null;
+            longitude: import("@prisma/client/runtime/library").Decimal | null;
+            allowedRadius: number;
+        } | null;
     } & {
         id: string;
         tenantId: string;
@@ -92,6 +116,7 @@ export declare class CostCentersController {
         updatedAt: Date;
         workerId: string | null;
         accountingCode: string;
+        workLocationId: string | null;
     }) | null>;
     update(id: string, data: CreateCostCenterDto, user: any): Promise<import(".prisma/client").Prisma.BatchPayload>;
     remove(id: string, user: any): Promise<import(".prisma/client").Prisma.BatchPayload>;

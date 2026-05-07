@@ -15,6 +15,9 @@ class CreateTenantDto {
     name;
     taxId;
     isActive;
+    hasWorkerPortalAccess;
+    hasOracleAccess;
+    hasGeofencingAccess;
     oraclePrompt;
 }
 exports.CreateTenantDto = CreateTenantDto;
@@ -33,6 +36,21 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
 ], CreateTenantDto.prototype, "isActive", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateTenantDto.prototype, "hasWorkerPortalAccess", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateTenantDto.prototype, "hasOracleAccess", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateTenantDto.prototype, "hasGeofencingAccess", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),

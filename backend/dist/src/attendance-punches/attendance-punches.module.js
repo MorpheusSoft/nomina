@@ -11,14 +11,16 @@ const common_1 = require("@nestjs/common");
 const attendance_punches_service_1 = require("./attendance-punches.service");
 const attendance_punches_controller_1 = require("./attendance-punches.controller");
 const prisma_module_1 = require("../prisma/prisma.module");
+const geo_location_service_1 = require("./geo-location.service");
 let AttendancePunchesModule = class AttendancePunchesModule {
 };
 exports.AttendancePunchesModule = AttendancePunchesModule;
 exports.AttendancePunchesModule = AttendancePunchesModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
-        providers: [attendance_punches_service_1.AttendancePunchesService],
-        controllers: [attendance_punches_controller_1.AttendancePunchesController]
+        providers: [attendance_punches_service_1.AttendancePunchesService, geo_location_service_1.GeoLocationService],
+        controllers: [attendance_punches_controller_1.AttendancePunchesController],
+        exports: [geo_location_service_1.GeoLocationService],
     })
 ], AttendancePunchesModule);
 //# sourceMappingURL=attendance-punches.module.js.map

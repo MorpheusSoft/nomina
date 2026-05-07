@@ -16,8 +16,10 @@ class UpdateTenantDto {
     isActive;
     hasWorkerPortalAccess;
     hasOracleAccess;
+    hasGeofencingAccess;
     logoUrl;
     oraclePrompt;
+    legalKnowledgeBase;
     contactPhone;
     serviceEndDate;
 }
@@ -44,6 +46,11 @@ __decorate([
 ], UpdateTenantDto.prototype, "hasOracleAccess", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], UpdateTenantDto.prototype, "hasGeofencingAccess", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", Object)
 ], UpdateTenantDto.prototype, "logoUrl", void 0);
@@ -52,6 +59,11 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", Object)
 ], UpdateTenantDto.prototype, "oraclePrompt", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", Object)
+], UpdateTenantDto.prototype, "legalKnowledgeBase", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),

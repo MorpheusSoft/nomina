@@ -13,6 +13,11 @@ export declare class AttendancePunchesController {
         timestamp: Date;
         source: import(".prisma/client").$Enums.PunchSource;
         isProcessed: boolean;
+        latitude: Prisma.Decimal | null;
+        longitude: Prisma.Decimal | null;
+        locationStatus: string | null;
+        isValid: boolean;
+        photoUrl: string | null;
     }>;
     createBulk(body: {
         tenantId: string;
@@ -39,6 +44,11 @@ export declare class AttendancePunchesController {
         timestamp: Date;
         source: import(".prisma/client").$Enums.PunchSource;
         isProcessed: boolean;
+        latitude: Prisma.Decimal | null;
+        longitude: Prisma.Decimal | null;
+        locationStatus: string | null;
+        isValid: boolean;
+        photoUrl: string | null;
     })[]>;
     remove(id: string, tenantId: string): Promise<{
         id: string;
@@ -50,5 +60,10 @@ export declare class AttendancePunchesController {
         timestamp: Date;
         source: import(".prisma/client").$Enums.PunchSource;
         isProcessed: boolean;
+        latitude: Prisma.Decimal | null;
+        longitude: Prisma.Decimal | null;
+        locationStatus: string | null;
+        isValid: boolean;
+        photoUrl: string | null;
     }>;
 }

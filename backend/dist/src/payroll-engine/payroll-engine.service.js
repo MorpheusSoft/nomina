@@ -53,6 +53,22 @@ let PayrollEngineService = PayrollEngineService_1 = class PayrollEngineService {
     math = mathjs.create(mathjs.all, {});
     constructor(prisma) {
         this.prisma = prisma;
+        const customEqual = mathjs.typed('equal', {
+            'string, string': function (a, b) { return a === b; },
+            'string, any': function () { return false; },
+            'any, string': function () { return false; },
+            'any, any': this.math.equal
+        });
+        const customUnequal = mathjs.typed('unequal', {
+            'string, string': function (a, b) { return a !== b; },
+            'string, any': function () { return true; },
+            'any, string': function () { return true; },
+            'any, any': this.math.unequal
+        });
+        this.math.import({
+            equal: customEqual,
+            unequal: customUnequal
+        }, { override: true });
     }
     async calculateFullPeriod(periodId, specificWorkerId) {
         const period = await this.prisma.payrollPeriod.findUnique({
@@ -94,6 +110,8 @@ let PayrollEngineService = PayrollEngineService_1 = class PayrollEngineService {
         let activeRecords = [];
         const includeOptions = {
             owner: { include: { familyMembers: true } },
+            costCenter: true,
+            department: true,
             salaryHistories: {
                 where: { validFrom: { lte: period.endDate } },
                 orderBy: { validFrom: 'desc' },
@@ -171,7 +189,7 @@ let PayrollEngineService = PayrollEngineService_1 = class PayrollEngineService {
                 this.logger.warn(`Worker has no active salary history. Skipping.`);
                 continue;
             }
-            const resMetrics = await this.buildWorkerReceiptMetrics(tenantId, periodId, period, record, contextDict, bonifiableConceptIds, executionList);
+            const resMetrics = await this.buildWorkerReceiptMetrics(tenantId, periodId, period, record, contextDict, bonifiableConceptIds, executionList, sumVariables);
             if (!resMetrics)
                 continue;
             const { netPay, totalIncome, totalDeductions, receiptDetails } = resMetrics;
@@ -253,21 +271,41 @@ let PayrollEngineService = PayrollEngineService_1 = class PayrollEngineService {
             include: {
                 worker: true,
                 owner: { include: { familyMembers: true } },
+                costCenter: true,
+                department: true,
                 salaryHistories: { orderBy: { validFrom: 'desc' }, take: 1 }
             }
         });
         if (!record)
             throw new common_1.BadRequestException('Trabajador no encontrado para Sandbox');
-        const resMetrics = await this.buildWorkerReceiptMetrics(tenantId, periodId, period, record, contextDict, bonifiableConceptIds, executionList, mockData);
+        const resMetrics = await this.buildWorkerReceiptMetrics(tenantId, periodId, period, record, contextDict, bonifiableConceptIds, executionList, sumVariables, mockData);
         if (!resMetrics) {
             throw new common_1.BadRequestException('No se pudo levantar el AST ni la traza porque el trabajador carece de historial salarial activo.');
         }
         return resMetrics;
     }
-    async evaluateFormulas(workerContext, executionList) {
+    async evaluateFormulas(workerContext, executionList, sumVariables = []) {
         const mem = {};
         for (const [key, value] of Object.entries(workerContext)) {
             mem[key.toLowerCase()] = value;
+        }
+        for (const sumVar of sumVariables) {
+            if (!sumVar.concepts || sumVar.concepts.length === 0)
+                continue;
+            const lowerCode = sumVar.code.toLowerCase();
+            Object.defineProperty(mem, lowerCode, {
+                get: function () {
+                    let total = 0;
+                    for (const c of sumVar.concepts) {
+                        const ccode = c.code.toLowerCase();
+                        if (this[ccode] !== undefined) {
+                            total += Number(this[ccode]) || 0;
+                        }
+                    }
+                    return total;
+                },
+                enumerable: true
+            });
         }
         mem['total_base_islr'] = 0;
         const receiptLines = [];
@@ -303,10 +341,20 @@ let PayrollEngineService = PayrollEngineService_1 = class PayrollEngineService {
                 }
                 else {
                     if (formulaFactor && formulaFactor.trim() !== '') {
-                        factor = Number(this.math.evaluate(formulaFactor.toLowerCase(), mem)) || 0;
+                        try {
+                            factor = Number(this.math.evaluate(formulaFactor.toLowerCase(), mem)) || 0;
+                        }
+                        catch (e) {
+                            factor = 0;
+                        }
                     }
                     if (formulaRate && formulaRate.trim() !== '') {
-                        rata = Number(this.math.evaluate(formulaRate.toLowerCase(), mem)) || 0;
+                        try {
+                            rata = Number(this.math.evaluate(formulaRate.toLowerCase(), mem)) || 0;
+                        }
+                        catch (e) {
+                            rata = 0;
+                        }
                     }
                     mem['factor'] = factor;
                     mem['rata'] = rata;
@@ -427,7 +475,7 @@ let PayrollEngineService = PayrollEngineService_1 = class PayrollEngineService {
             }
         });
     }
-    async buildWorkerReceiptMetrics(tenantId, periodId, period, record, contextDict, bonifiableConceptIds, executionList, mockData) {
+    async buildWorkerReceiptMetrics(tenantId, periodId, period, record, contextDict, bonifiableConceptIds, executionList, sumVariables, mockData) {
         if (!record.salaryHistories || record.salaryHistories.length === 0) {
             this.logger.warn(`Worker has no active salary history. Skipping.`);
             return null;
@@ -515,6 +563,8 @@ let PayrollEngineService = PayrollEngineService_1 = class PayrollEngineService {
             contract_start_month: record.startDate ? new Date(record.startDate).getUTCMonth() + 1 : 1,
             contract_start_year: record.startDate ? new Date(record.startDate).getUTCFullYear() : new Date().getUTCFullYear(),
             contract_type: `'${record.contractType}'`,
+            cost_center_code: record.costCenter ? `'${record.costCenter.accountingCode}'` : null,
+            department_code: (record.department && record.department.code) ? `'${record.department.code}'` : null,
             dependents_count: record.owner.familyMembers.length,
             lunes_en_periodo,
             lunes_en_mes,
@@ -687,7 +737,7 @@ let PayrollEngineService = PayrollEngineService_1 = class PayrollEngineService {
                 }
             }
         }
-        const { receiptDetails, memorySnapshot } = await this.evaluateFormulas(workerContext, executionList);
+        const { receiptDetails, memorySnapshot } = await this.evaluateFormulas(workerContext, executionList, sumVariables);
         let totalIncome = 0;
         let totalDeductions = 0;
         let employerContributions = 0;

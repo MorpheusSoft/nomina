@@ -9,6 +9,7 @@ export declare class DepartmentsController {
         name: string;
         updatedAt: Date;
         costCenterId: string;
+        code: string | null;
         monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
     }>;
     findAll(user: any): Promise<({
@@ -20,6 +21,7 @@ export declare class DepartmentsController {
             updatedAt: Date;
             workerId: string | null;
             accountingCode: string;
+            workLocationId: string | null;
         };
         crews: {
             id: string;
@@ -36,6 +38,7 @@ export declare class DepartmentsController {
         name: string;
         updatedAt: Date;
         costCenterId: string;
+        code: string | null;
         monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
     })[]>;
     getBudgetMetrics(user: any): Promise<{
@@ -57,6 +60,7 @@ export declare class DepartmentsController {
             updatedAt: Date;
             workerId: string | null;
             accountingCode: string;
+            workLocationId: string | null;
         };
         crews: {
             id: string;
@@ -73,6 +77,7 @@ export declare class DepartmentsController {
         name: string;
         updatedAt: Date;
         costCenterId: string;
+        code: string | null;
         monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
     }>;
     update(id: string, data: CreateDepartmentDto, user: any): Promise<{
@@ -81,6 +86,7 @@ export declare class DepartmentsController {
         name: string;
         updatedAt: Date;
         costCenterId: string;
+        code: string | null;
         monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
     }>;
     remove(id: string, user: any): Promise<{
@@ -89,6 +95,7 @@ export declare class DepartmentsController {
         name: string;
         updatedAt: Date;
         costCenterId: string;
+        code: string | null;
         monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
     }>;
 }

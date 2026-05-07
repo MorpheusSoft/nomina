@@ -5,8 +5,15 @@ export declare class AttendanceSummariesController {
     upsert(data: any): Promise<{
         id: string;
         tenantId: string;
-        payrollPeriodId: string;
+        restDays: import("@prisma/client/runtime/library").Decimal;
+        createdAt: Date;
+        updatedAt: Date;
         workerId: string;
+        payrollPeriodId: string;
+        ordinaryDayHours: import("@prisma/client/runtime/library").Decimal;
+        ordinaryNightHours: import("@prisma/client/runtime/library").Decimal;
+        extraDayHours: import("@prisma/client/runtime/library").Decimal;
+        extraNightHours: import("@prisma/client/runtime/library").Decimal;
         shiftBaseHours: import("@prisma/client/runtime/library").Decimal;
         shiftType: string;
         daysWorked: import("@prisma/client/runtime/library").Decimal;
@@ -14,14 +21,7 @@ export declare class AttendanceSummariesController {
         workedDaysNight: import("@prisma/client/runtime/library").Decimal;
         workedDaysMixed: import("@prisma/client/runtime/library").Decimal;
         ordinaryHours: import("@prisma/client/runtime/library").Decimal;
-        ordinaryDayHours: import("@prisma/client/runtime/library").Decimal;
-        ordinaryNightHours: import("@prisma/client/runtime/library").Decimal;
-        extraDayHours: import("@prisma/client/runtime/library").Decimal;
-        extraNightHours: import("@prisma/client/runtime/library").Decimal;
-        createdAt: Date;
-        updatedAt: Date;
         holidays: import("@prisma/client/runtime/library").Decimal;
-        restDays: import("@prisma/client/runtime/library").Decimal;
         workedHolidays: import("@prisma/client/runtime/library").Decimal;
         workedRestDays: import("@prisma/client/runtime/library").Decimal;
         saturdaysWorked: import("@prisma/client/runtime/library").Decimal;
@@ -33,8 +33,15 @@ export declare class AttendanceSummariesController {
     upsertBulk(data: any[]): Promise<{
         id: string;
         tenantId: string;
-        payrollPeriodId: string;
+        restDays: import("@prisma/client/runtime/library").Decimal;
+        createdAt: Date;
+        updatedAt: Date;
         workerId: string;
+        payrollPeriodId: string;
+        ordinaryDayHours: import("@prisma/client/runtime/library").Decimal;
+        ordinaryNightHours: import("@prisma/client/runtime/library").Decimal;
+        extraDayHours: import("@prisma/client/runtime/library").Decimal;
+        extraNightHours: import("@prisma/client/runtime/library").Decimal;
         shiftBaseHours: import("@prisma/client/runtime/library").Decimal;
         shiftType: string;
         daysWorked: import("@prisma/client/runtime/library").Decimal;
@@ -42,14 +49,7 @@ export declare class AttendanceSummariesController {
         workedDaysNight: import("@prisma/client/runtime/library").Decimal;
         workedDaysMixed: import("@prisma/client/runtime/library").Decimal;
         ordinaryHours: import("@prisma/client/runtime/library").Decimal;
-        ordinaryDayHours: import("@prisma/client/runtime/library").Decimal;
-        ordinaryNightHours: import("@prisma/client/runtime/library").Decimal;
-        extraDayHours: import("@prisma/client/runtime/library").Decimal;
-        extraNightHours: import("@prisma/client/runtime/library").Decimal;
-        createdAt: Date;
-        updatedAt: Date;
         holidays: import("@prisma/client/runtime/library").Decimal;
-        restDays: import("@prisma/client/runtime/library").Decimal;
         workedHolidays: import("@prisma/client/runtime/library").Decimal;
         workedRestDays: import("@prisma/client/runtime/library").Decimal;
         saturdaysWorked: import("@prisma/client/runtime/library").Decimal;
@@ -63,15 +63,22 @@ export declare class AttendanceSummariesController {
     }>;
     findByPeriod(periodId: string): Promise<({
         worker: {
-            primaryIdentityNumber: string;
             firstName: string;
             lastName: string;
+            primaryIdentityNumber: string;
         };
     } & {
         id: string;
         tenantId: string;
-        payrollPeriodId: string;
+        restDays: import("@prisma/client/runtime/library").Decimal;
+        createdAt: Date;
+        updatedAt: Date;
         workerId: string;
+        payrollPeriodId: string;
+        ordinaryDayHours: import("@prisma/client/runtime/library").Decimal;
+        ordinaryNightHours: import("@prisma/client/runtime/library").Decimal;
+        extraDayHours: import("@prisma/client/runtime/library").Decimal;
+        extraNightHours: import("@prisma/client/runtime/library").Decimal;
         shiftBaseHours: import("@prisma/client/runtime/library").Decimal;
         shiftType: string;
         daysWorked: import("@prisma/client/runtime/library").Decimal;
@@ -79,14 +86,7 @@ export declare class AttendanceSummariesController {
         workedDaysNight: import("@prisma/client/runtime/library").Decimal;
         workedDaysMixed: import("@prisma/client/runtime/library").Decimal;
         ordinaryHours: import("@prisma/client/runtime/library").Decimal;
-        ordinaryDayHours: import("@prisma/client/runtime/library").Decimal;
-        ordinaryNightHours: import("@prisma/client/runtime/library").Decimal;
-        extraDayHours: import("@prisma/client/runtime/library").Decimal;
-        extraNightHours: import("@prisma/client/runtime/library").Decimal;
-        createdAt: Date;
-        updatedAt: Date;
         holidays: import("@prisma/client/runtime/library").Decimal;
-        restDays: import("@prisma/client/runtime/library").Decimal;
         workedHolidays: import("@prisma/client/runtime/library").Decimal;
         workedRestDays: import("@prisma/client/runtime/library").Decimal;
         saturdaysWorked: import("@prisma/client/runtime/library").Decimal;
@@ -106,8 +106,15 @@ export declare class AttendanceSummariesController {
     remove(id: string): Promise<{
         id: string;
         tenantId: string;
-        payrollPeriodId: string;
+        restDays: import("@prisma/client/runtime/library").Decimal;
+        createdAt: Date;
+        updatedAt: Date;
         workerId: string;
+        payrollPeriodId: string;
+        ordinaryDayHours: import("@prisma/client/runtime/library").Decimal;
+        ordinaryNightHours: import("@prisma/client/runtime/library").Decimal;
+        extraDayHours: import("@prisma/client/runtime/library").Decimal;
+        extraNightHours: import("@prisma/client/runtime/library").Decimal;
         shiftBaseHours: import("@prisma/client/runtime/library").Decimal;
         shiftType: string;
         daysWorked: import("@prisma/client/runtime/library").Decimal;
@@ -115,14 +122,7 @@ export declare class AttendanceSummariesController {
         workedDaysNight: import("@prisma/client/runtime/library").Decimal;
         workedDaysMixed: import("@prisma/client/runtime/library").Decimal;
         ordinaryHours: import("@prisma/client/runtime/library").Decimal;
-        ordinaryDayHours: import("@prisma/client/runtime/library").Decimal;
-        ordinaryNightHours: import("@prisma/client/runtime/library").Decimal;
-        extraDayHours: import("@prisma/client/runtime/library").Decimal;
-        extraNightHours: import("@prisma/client/runtime/library").Decimal;
-        createdAt: Date;
-        updatedAt: Date;
         holidays: import("@prisma/client/runtime/library").Decimal;
-        restDays: import("@prisma/client/runtime/library").Decimal;
         workedHolidays: import("@prisma/client/runtime/library").Decimal;
         workedRestDays: import("@prisma/client/runtime/library").Decimal;
         saturdaysWorked: import("@prisma/client/runtime/library").Decimal;

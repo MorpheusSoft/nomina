@@ -33,11 +33,11 @@ export declare class ContractTrustsService {
             createdAt: Date;
             isActive: boolean;
             updatedAt: Date;
+            workerId: string;
             contractType: string;
             position: string;
             status: import(".prisma/client").$Enums.EmploymentStatus;
             isConfidential: boolean;
-            workerId: string;
             departmentId: string | null;
             payrollGroupId: string | null;
             costCenterId: string | null;
@@ -105,11 +105,11 @@ export declare class ContractTrustsService {
             createdAt: Date;
             isActive: boolean;
             updatedAt: Date;
+            workerId: string;
             contractType: string;
             position: string;
             status: import(".prisma/client").$Enums.EmploymentStatus;
             isConfidential: boolean;
-            workerId: string;
             departmentId: string | null;
             payrollGroupId: string | null;
             costCenterId: string | null;

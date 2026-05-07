@@ -21,8 +21,8 @@ export declare class VacationHistoriesService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            status: string;
             workerId: string;
+            status: string;
             payrollPeriodId: string;
             totalSalaryEarnings: import("@prisma/client/runtime/library").Decimal;
             totalNonSalaryEarnings: import("@prisma/client/runtime/library").Decimal;

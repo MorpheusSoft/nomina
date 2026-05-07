@@ -37,6 +37,7 @@ export declare class WorkersService {
                 updatedAt: Date;
                 workerId: string | null;
                 accountingCode: string;
+                workLocationId: string | null;
             } | null;
             crew: {
                 id: string;
@@ -53,6 +54,7 @@ export declare class WorkersService {
                 name: string;
                 updatedAt: Date;
                 costCenterId: string;
+                code: string | null;
                 monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
             } | null;
             vacationHistories: {
@@ -80,8 +82,8 @@ export declare class WorkersService {
             endDate: Date;
             createdAt: Date;
             updatedAt: Date;
-            status: string;
             workerId: string;
+            status: string;
             isJustified: boolean;
             isPaid: boolean;
             reason: string | null;

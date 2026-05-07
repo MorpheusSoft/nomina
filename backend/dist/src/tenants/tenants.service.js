@@ -55,6 +55,9 @@ let TenantsService = class TenantsService {
                 isActive: data.isActive,
                 hasWorkerPortalAccess: data.hasWorkerPortalAccess,
                 hasOracleAccess: data.hasOracleAccess,
+                hasGeofencingAccess: data.hasGeofencingAccess,
+                oraclePrompt: data.oraclePrompt,
+                legalKnowledgeBase: data.legalKnowledgeBase,
                 logoUrl: data.logoUrl,
                 contactPhone: data.contactPhone,
                 serviceEndDate: data.serviceEndDate !== undefined ? (data.serviceEndDate ? new Date(data.serviceEndDate) : null) : undefined

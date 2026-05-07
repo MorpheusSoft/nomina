@@ -22,9 +22,9 @@ export declare class WorkerFixedConceptsService {
             name: string;
             updatedAt: Date;
             type: string;
-            accountingCode: string | null;
             code: string;
             description: string | null;
+            accountingCode: string | null;
             accountingOperation: string | null;
             isSalaryIncidence: boolean;
             isTaxable: boolean;
@@ -56,9 +56,9 @@ export declare class WorkerFixedConceptsService {
             name: string;
             updatedAt: Date;
             type: string;
-            accountingCode: string | null;
             code: string;
             description: string | null;
+            accountingCode: string | null;
             accountingOperation: string | null;
             isSalaryIncidence: boolean;
             isTaxable: boolean;
@@ -91,11 +91,11 @@ export declare class WorkerFixedConceptsService {
             createdAt: Date;
             isActive: boolean;
             updatedAt: Date;
+            workerId: string;
             contractType: string;
             position: string;
             status: import(".prisma/client").$Enums.EmploymentStatus;
             isConfidential: boolean;
-            workerId: string;
             departmentId: string | null;
             payrollGroupId: string | null;
             costCenterId: string | null;
@@ -108,9 +108,9 @@ export declare class WorkerFixedConceptsService {
             name: string;
             updatedAt: Date;
             type: string;
-            accountingCode: string | null;
             code: string;
             description: string | null;
+            accountingCode: string | null;
             accountingOperation: string | null;
             isSalaryIncidence: boolean;
             isTaxable: boolean;

@@ -9,9 +9,9 @@ export declare class FamilyMembersService {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
+        workerId: string;
         birthDate: Date | null;
         phone: string | null;
-        workerId: string;
         fullName: string;
         identityNumber: string | null;
         relationship: string;
@@ -21,9 +21,9 @@ export declare class FamilyMembersService {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
+        workerId: string;
         birthDate: Date | null;
         phone: string | null;
-        workerId: string;
         fullName: string;
         identityNumber: string | null;
         relationship: string;
@@ -33,9 +33,9 @@ export declare class FamilyMembersService {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
+        workerId: string;
         birthDate: Date | null;
         phone: string | null;
-        workerId: string;
         fullName: string;
         identityNumber: string | null;
         relationship: string;
@@ -45,9 +45,9 @@ export declare class FamilyMembersService {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
+        workerId: string;
         birthDate: Date | null;
         phone: string | null;
-        workerId: string;
         fullName: string;
         identityNumber: string | null;
         relationship: string;
@@ -57,9 +57,9 @@ export declare class FamilyMembersService {
         createdAt: Date;
         updatedAt: Date;
         email: string | null;
+        workerId: string;
         birthDate: Date | null;
         phone: string | null;
-        workerId: string;
         fullName: string;
         identityNumber: string | null;
         relationship: string;

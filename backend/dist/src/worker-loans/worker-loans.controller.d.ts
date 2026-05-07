@@ -7,8 +7,8 @@ export declare class WorkerLoansController {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         currency: string;
         totalAmount: import("@prisma/client/runtime/library").Decimal;
         outstandingBalance: import("@prisma/client/runtime/library").Decimal;
@@ -36,16 +36,16 @@ export declare class WorkerLoansController {
                     createdAt: Date;
                     name: string;
                     updatedAt: Date;
-                    nightShiftEndTime: string;
-                    nightShiftStartTime: string;
-                    mixedShiftMaxNightHours: import("@prisma/client/runtime/library").Decimal;
-                    standardWorkHours: import("@prisma/client/runtime/library").Decimal;
                     rootBonusConceptId: string | null;
                     rootLiquidationConceptId: string | null;
                     rootRegularConceptId: string | null;
                     rootVacationConceptId: string | null;
                     loanDeductionConceptId: string | null;
                     islrConceptId: string | null;
+                    nightShiftEndTime: string;
+                    nightShiftStartTime: string;
+                    mixedShiftMaxNightHours: import("@prisma/client/runtime/library").Decimal;
+                    standardWorkHours: import("@prisma/client/runtime/library").Decimal;
                 } | null;
             } & {
                 id: string;
@@ -55,11 +55,11 @@ export declare class WorkerLoansController {
                 createdAt: Date;
                 isActive: boolean;
                 updatedAt: Date;
+                workerId: string;
                 contractType: string;
                 position: string;
                 status: import(".prisma/client").$Enums.EmploymentStatus;
                 isConfidential: boolean;
-                workerId: string;
                 departmentId: string | null;
                 payrollGroupId: string | null;
                 costCenterId: string | null;
@@ -88,8 +88,8 @@ export declare class WorkerLoansController {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         currency: string;
         totalAmount: import("@prisma/client/runtime/library").Decimal;
         outstandingBalance: import("@prisma/client/runtime/library").Decimal;
@@ -105,8 +105,8 @@ export declare class WorkerLoansController {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         currency: string;
         totalAmount: import("@prisma/client/runtime/library").Decimal;
         outstandingBalance: import("@prisma/client/runtime/library").Decimal;
@@ -122,8 +122,8 @@ export declare class WorkerLoansController {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         currency: string;
         totalAmount: import("@prisma/client/runtime/library").Decimal;
         outstandingBalance: import("@prisma/client/runtime/library").Decimal;
@@ -139,8 +139,8 @@ export declare class WorkerLoansController {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         currency: string;
         totalAmount: import("@prisma/client/runtime/library").Decimal;
         outstandingBalance: import("@prisma/client/runtime/library").Decimal;

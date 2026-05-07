@@ -9,8 +9,8 @@ export declare class AttendanceEngineService {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         date: Date;
         firstIn: Date | null;
         lastOut: Date | null;

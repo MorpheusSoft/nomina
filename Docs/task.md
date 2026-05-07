@@ -33,3 +33,6 @@
 - [x] UI: Settings -> Concepts (Child Dependencies Grid)
 - [ ] DB Schema: `PayrollPeriod` Model & Execution Logic
 - [ ] Payslip Generation (PDF/Layout)
+
+## Phase 6: Engine Optimization
+- [x] Add Locational Variables (cost_center_code, department_code) to Formula Engine

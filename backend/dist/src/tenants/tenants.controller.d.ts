@@ -25,8 +25,10 @@ export declare class TenantsController {
         maxActiveWorkers: number;
         serviceEndDate: Date | null;
         hasWorkerPortalAccess: boolean;
+        hasGeofencingAccess: boolean;
         hasOracleAccess: boolean;
         oraclePrompt: string | null;
+        legalKnowledgeBase: string | null;
         logoUrl: string | null;
         contactPhone: string | null;
     }) | null>;
@@ -52,8 +54,10 @@ export declare class TenantsController {
         maxActiveWorkers: number;
         serviceEndDate: Date | null;
         hasWorkerPortalAccess: boolean;
+        hasGeofencingAccess: boolean;
         hasOracleAccess: boolean;
         oraclePrompt: string | null;
+        legalKnowledgeBase: string | null;
         logoUrl: string | null;
         contactPhone: string | null;
     })[]>;
@@ -79,8 +83,10 @@ export declare class TenantsController {
         maxActiveWorkers: number;
         serviceEndDate: Date | null;
         hasWorkerPortalAccess: boolean;
+        hasGeofencingAccess: boolean;
         hasOracleAccess: boolean;
         oraclePrompt: string | null;
+        legalKnowledgeBase: string | null;
         logoUrl: string | null;
         contactPhone: string | null;
     }) | null>;
@@ -94,8 +100,10 @@ export declare class TenantsController {
         maxActiveWorkers: number;
         serviceEndDate: Date | null;
         hasWorkerPortalAccess: boolean;
+        hasGeofencingAccess: boolean;
         hasOracleAccess: boolean;
         oraclePrompt: string | null;
+        legalKnowledgeBase: string | null;
         logoUrl: string | null;
         contactPhone: string | null;
     }>;
@@ -109,8 +117,10 @@ export declare class TenantsController {
         maxActiveWorkers: number;
         serviceEndDate: Date | null;
         hasWorkerPortalAccess: boolean;
+        hasGeofencingAccess: boolean;
         hasOracleAccess: boolean;
         oraclePrompt: string | null;
+        legalKnowledgeBase: string | null;
         logoUrl: string | null;
         contactPhone: string | null;
     }>;
@@ -119,5 +129,8 @@ export declare class TenantsController {
         tenantId: string;
         roleId: string;
         userId: string;
+    }>;
+    uploadRagPdf(id: string, file: Express.Multer.File, user: any): Promise<{
+        text: any;
     }>;
 }

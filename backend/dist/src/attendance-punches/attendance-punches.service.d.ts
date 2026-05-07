@@ -1,8 +1,10 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { GeoLocationService } from './geo-location.service';
 export declare class AttendancePunchesService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private geoLocationService;
+    constructor(prisma: PrismaService, geoLocationService: GeoLocationService);
     create(data: Prisma.AttendancePunchUncheckedCreateInput): Promise<{
         id: string;
         tenantId: string;
@@ -13,6 +15,11 @@ export declare class AttendancePunchesService {
         timestamp: Date;
         source: import(".prisma/client").$Enums.PunchSource;
         isProcessed: boolean;
+        latitude: Prisma.Decimal | null;
+        longitude: Prisma.Decimal | null;
+        locationStatus: string | null;
+        isValid: boolean;
+        photoUrl: string | null;
     }>;
     createBulk(tenantId: string, punches: any[]): Promise<{
         count: number;
@@ -36,6 +43,11 @@ export declare class AttendancePunchesService {
         timestamp: Date;
         source: import(".prisma/client").$Enums.PunchSource;
         isProcessed: boolean;
+        latitude: Prisma.Decimal | null;
+        longitude: Prisma.Decimal | null;
+        locationStatus: string | null;
+        isValid: boolean;
+        photoUrl: string | null;
     })[]>;
     remove(id: string, tenantId: string): Promise<{
         id: string;
@@ -47,5 +59,10 @@ export declare class AttendancePunchesService {
         timestamp: Date;
         source: import(".prisma/client").$Enums.PunchSource;
         isProcessed: boolean;
+        latitude: Prisma.Decimal | null;
+        longitude: Prisma.Decimal | null;
+        locationStatus: string | null;
+        isValid: boolean;
+        photoUrl: string | null;
     }>;
 }

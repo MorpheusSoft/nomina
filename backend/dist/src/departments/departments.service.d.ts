@@ -8,6 +8,7 @@ export declare class DepartmentsService {
         name: string;
         updatedAt: Date;
         costCenterId: string;
+        code: string | null;
         monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
     }>;
     findAll(tenantId: string): Promise<({
@@ -19,6 +20,7 @@ export declare class DepartmentsService {
             updatedAt: Date;
             workerId: string | null;
             accountingCode: string;
+            workLocationId: string | null;
         };
         crews: {
             id: string;
@@ -35,6 +37,7 @@ export declare class DepartmentsService {
         name: string;
         updatedAt: Date;
         costCenterId: string;
+        code: string | null;
         monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
     })[]>;
     findOne(tenantId: string, id: string): Promise<{
@@ -46,6 +49,7 @@ export declare class DepartmentsService {
             updatedAt: Date;
             workerId: string | null;
             accountingCode: string;
+            workLocationId: string | null;
         };
         crews: {
             id: string;
@@ -62,6 +66,7 @@ export declare class DepartmentsService {
         name: string;
         updatedAt: Date;
         costCenterId: string;
+        code: string | null;
         monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
     }>;
     update(tenantId: string, id: string, data: any): Promise<{
@@ -70,6 +75,7 @@ export declare class DepartmentsService {
         name: string;
         updatedAt: Date;
         costCenterId: string;
+        code: string | null;
         monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
     }>;
     remove(tenantId: string, id: string): Promise<{
@@ -78,6 +84,7 @@ export declare class DepartmentsService {
         name: string;
         updatedAt: Date;
         costCenterId: string;
+        code: string | null;
         monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
     }>;
     getBudgetMetrics(tenantId: string): Promise<{

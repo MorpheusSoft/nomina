@@ -31,8 +31,8 @@ export declare class WorkerAbsencesService {
         endDate: Date;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         isJustified: boolean;
         isPaid: boolean;
         reason: string | null;
@@ -65,8 +65,8 @@ export declare class WorkerAbsencesService {
         endDate: Date;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         isJustified: boolean;
         isPaid: boolean;
         reason: string | null;
@@ -99,8 +99,8 @@ export declare class WorkerAbsencesService {
         endDate: Date;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         isJustified: boolean;
         isPaid: boolean;
         reason: string | null;
@@ -133,8 +133,8 @@ export declare class WorkerAbsencesService {
         endDate: Date;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         isJustified: boolean;
         isPaid: boolean;
         reason: string | null;
@@ -147,8 +147,8 @@ export declare class WorkerAbsencesService {
         endDate: Date;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         isJustified: boolean;
         isPaid: boolean;
         reason: string | null;
@@ -181,8 +181,8 @@ export declare class WorkerAbsencesService {
         endDate: Date;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         workerId: string;
+        status: string;
         isJustified: boolean;
         isPaid: boolean;
         reason: string | null;

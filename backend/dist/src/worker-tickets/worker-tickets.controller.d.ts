@@ -15,8 +15,8 @@ export declare class WorkerTicketsController {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.TicketStatus;
         workerId: string;
+        status: import(".prisma/client").$Enums.TicketStatus;
         type: import(".prisma/client").$Enums.TicketType;
         description: string;
         title: string;
@@ -34,8 +34,8 @@ export declare class WorkerTicketsController {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.TicketStatus;
         workerId: string;
+        status: import(".prisma/client").$Enums.TicketStatus;
         type: import(".prisma/client").$Enums.TicketType;
         description: string;
         title: string;
@@ -67,8 +67,8 @@ export declare class WorkerTicketsController {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.TicketStatus;
         workerId: string;
+        status: import(".prisma/client").$Enums.TicketStatus;
         type: import(".prisma/client").$Enums.TicketType;
         description: string;
         title: string;
@@ -80,8 +80,8 @@ export declare class WorkerTicketsController {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.TicketStatus;
         workerId: string;
+        status: import(".prisma/client").$Enums.TicketStatus;
         type: import(".prisma/client").$Enums.TicketType;
         description: string;
         title: string;
@@ -95,8 +95,8 @@ export declare class WorkerTicketsController {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.TicketStatus;
         workerId: string;
+        status: import(".prisma/client").$Enums.TicketStatus;
         type: import(".prisma/client").$Enums.TicketType;
         description: string;
         title: string;
@@ -108,8 +108,8 @@ export declare class WorkerTicketsController {
         tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.TicketStatus;
         workerId: string;
+        status: import(".prisma/client").$Enums.TicketStatus;
         type: import(".prisma/client").$Enums.TicketType;
         description: string;
         title: string;

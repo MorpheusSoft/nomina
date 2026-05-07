@@ -15,6 +15,7 @@ class CreateCostCenterDto {
     name;
     accountingCode;
     tenantId;
+    workLocationId;
 }
 exports.CreateCostCenterDto = CreateCostCenterDto;
 __decorate([
@@ -30,4 +31,9 @@ __decorate([
     (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
 ], CreateCostCenterDto.prototype, "tenantId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], CreateCostCenterDto.prototype, "workLocationId", void 0);
 //# sourceMappingURL=create-cost-center.dto.js.map

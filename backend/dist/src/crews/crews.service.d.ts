@@ -21,6 +21,7 @@ export declare class CrewsService {
                 updatedAt: Date;
                 workerId: string | null;
                 accountingCode: string;
+                workLocationId: string | null;
             };
         } & {
             id: string;
@@ -28,6 +29,7 @@ export declare class CrewsService {
             name: string;
             updatedAt: Date;
             costCenterId: string;
+            code: string | null;
             monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
         };
         shiftPattern: {
@@ -57,6 +59,7 @@ export declare class CrewsService {
                 updatedAt: Date;
                 workerId: string | null;
                 accountingCode: string;
+                workLocationId: string | null;
             };
         } & {
             id: string;
@@ -64,6 +67,7 @@ export declare class CrewsService {
             name: string;
             updatedAt: Date;
             costCenterId: string;
+            code: string | null;
             monthlyBudget: import("@prisma/client/runtime/library").Decimal | null;
         };
         shiftPattern: {

@@ -24,8 +24,10 @@ export declare class TenantsService {
         maxActiveWorkers: number;
         serviceEndDate: Date | null;
         hasWorkerPortalAccess: boolean;
+        hasGeofencingAccess: boolean;
         hasOracleAccess: boolean;
         oraclePrompt: string | null;
+        legalKnowledgeBase: string | null;
         logoUrl: string | null;
         contactPhone: string | null;
     })[]>;
@@ -51,8 +53,10 @@ export declare class TenantsService {
         maxActiveWorkers: number;
         serviceEndDate: Date | null;
         hasWorkerPortalAccess: boolean;
+        hasGeofencingAccess: boolean;
         hasOracleAccess: boolean;
         oraclePrompt: string | null;
+        legalKnowledgeBase: string | null;
         logoUrl: string | null;
         contactPhone: string | null;
     }) | null>;
@@ -66,8 +70,10 @@ export declare class TenantsService {
         maxActiveWorkers: number;
         serviceEndDate: Date | null;
         hasWorkerPortalAccess: boolean;
+        hasGeofencingAccess: boolean;
         hasOracleAccess: boolean;
         oraclePrompt: string | null;
+        legalKnowledgeBase: string | null;
         logoUrl: string | null;
         contactPhone: string | null;
     }>;
