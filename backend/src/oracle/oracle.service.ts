@@ -127,8 +127,7 @@ ${concepts}${editInstruction}`;
           contents: step1Contents,
           config: { 
             systemInstruction: step1SystemPrompt, 
-            temperature: 0.2,
-            tools: [{ googleSearch: {} }] 
+            temperature: 0.2
           }
         }),
         timeoutPromise
@@ -357,8 +356,7 @@ ${dataDictionary}`;
         contents: contentsArray,
         config: {
           systemInstruction: systemPrompt,
-          temperature: 0.1,
-          tools: [{ googleSearch: {} }] // Permite buscar tasa de cambio en vivo
+          temperature: 0.1
         }
       });
       
