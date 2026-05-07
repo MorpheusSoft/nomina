@@ -110,12 +110,12 @@ ${concepts}${editInstruction}`;
         const safeText = tenant.legalKnowledgeBase.length > 500000 
            ? tenant.legalKnowledgeBase.substring(0, 500000) + '\n\n[...TEXTO TRUNCADO POR LÍMITE DE TAMAÑO]'
            : tenant.legalKnowledgeBase;
-        ragContext = `\n\n> ATENCIÓN: BASE DE CONOCIMIENTO PRIVADA DEL CLIENTE (RAG):\n"""\n${safeText}\n"""\nInstrucción Estricta y Obligatoria: 1. DEBES buscar en la base de conocimiento privada. 2. DEBES iniciar tu respuesta citando textualmente el párrafo o cláusula de la base de conocimiento que hable sobre el concepto solicitado. 3. Toda tu explicación y matemáticas DEBEN basarse única y exclusivamente en esa cláusula citada, ignorando cualquier otra ley general (como LOTTT) a menos que la base de conocimiento no lo mencione en absoluto.`;
+        ragContext = `\n\n> ATENCIÓN: BASE DE CONOCIMIENTO PRIVADA DEL CLIENTE (RAG):\n"""\n${safeText}\n"""\nInstrucción Estricta y Obligatoria: DEBES basarte única y exclusivamente en este documento.`;
       }
 
-      const step1SystemPrompt = `${customPromptHeader}\n\nTu único objetivo en esta etapa es recordar y explicar la base teórica legal para la solicitud del usuario. NO escribas código JSON ni MathJS. Basado en tu rol y país, explica la ley o convención paso a paso (menciona porcentajes, topes, horas o condiciones escalonadas que apliquen al concepto).${ragContext}`;
+      const step1SystemPrompt = `${customPromptHeader}\n\nTu único objetivo en esta etapa es recordar y explicar la base teórica legal para la solicitud del usuario. NO escribas código JSON ni MathJS. Explica la ley o convención paso a paso (menciona porcentajes, topes, horas o condiciones escalonadas que apliquen al concepto).`;
       
-      const step1Contents = [{ role: 'user', parts: [{ text: `Explícame la regla legal exacta para esto: ${naturalLanguagePrompt}` }] }];
+      const step1Contents = [{ role: 'user', parts: [{ text: `Explícame la regla legal exacta para esto: ${naturalLanguagePrompt}${ragContext}` }] }];
       
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('TIMEOUT_GOOGLE')), 25000)
