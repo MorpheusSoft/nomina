@@ -128,7 +128,7 @@ export default function TenantsPage() {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     if (file.type !== 'application/pdf') {
-      toast.current?.show({ severity: 'error', summary: 'Archivo Inválido', detail: 'Solo se admiten documentos PDF', life: 3000 });
+      alert('Solo se admiten documentos PDF');
       return;
     }
 
@@ -146,11 +146,11 @@ export default function TenantsPage() {
           ...prev, 
           legalKnowledgeBase: prev.legalKnowledgeBase ? prev.legalKnowledgeBase + '\n\n--- NUEVO DOCUMENTO ---\n\n' + res.data.text : res.data.text 
         }));
-        toast.current?.show({ severity: 'success', summary: 'PDF Procesado', detail: 'Texto extraído exitosamente. Por favor revisa y guarda los cambios.', life: 5000 });
+        alert('Texto extraído exitosamente. Por favor revisa y guarda los cambios.');
       }
     } catch (err: any) {
       console.error(err);
-      toast.current?.show({ severity: 'error', summary: 'Error', detail: err.response?.data?.message || 'Error procesando el PDF', life: 5000 });
+      alert(err.response?.data?.message || 'Error procesando el PDF');
     } finally {
       setIsPdfUploading(false);
       if (e.target) e.target.value = '';
