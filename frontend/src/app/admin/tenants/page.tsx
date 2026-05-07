@@ -142,7 +142,7 @@ export default function TenantsPage() {
       });
       
       if (res.data && res.data.text) {
-        setEditData(prev => ({ 
+        setEditData((prev: any) => ({ 
           ...prev, 
           legalKnowledgeBase: prev.legalKnowledgeBase ? prev.legalKnowledgeBase + '\n\n--- NUEVO DOCUMENTO ---\n\n' + res.data.text : res.data.text 
         }));

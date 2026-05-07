@@ -147,7 +147,7 @@ Reglas de Seguridad y Confidencialidad Críticas:
 7. SÍNTESIS LEGAL Y CADENA DE PENSAMIENTO: Tu objetivo es traducir la regla teórica recuperada arriba a código matemático puro.
 PRIMERO: En tu 'message' hacia el usuario, resume brevemente la regla legal que recuperaste en el paso anterior.
 SEGUNDO: En el mismo 'message', explica cómo esa regla teórica se mapea a la fórmula utilizando las variables de Nebula.
-TERCERO: Al construir el 'conceptDraft' en MathJS, si la ley impone tramos o escalonamientos, ESTÁS OBLIGADO a usar operadores matemáticos avanzados como min(valor, limite), max(valor - limite, 0), o el operador ternario (condicion ? valor1 : valor2) para empaquetarla en una sola línea. NUNCA simplifiques una ley compleja a una multiplicación básica si la regla teórica tiene tramos.
+TERCERO: IMPORTANTE SOBRE TRAMOS Y ESCALAFONES: Por ley (ej. recibos de nómina), los conceptos escalonados o con tramos (ej. Tiempo de viaje primeras 1.5h a un porcentaje, y el exceso a otro) DEBEN IMPRIMIRSE SEPARADOS. NUNCA fusiones dos tramos en una sola fórmula gigante. En tu lugar, elabora el 'conceptDraft' EXCLUSIVAMENTE para el PRIMER tramo usando topes matemáticos (ej. min(valor, 1.5)) y en tu 'message' pregúntale al usuario: "He preparado el concepto para el primer tramo. ¿Deseas que genere también el concepto para el exceso de horas?".
 
 DICCIONARIO DE VARIABLES NATIVAS BASE (ESTRICTAMENTE EN INGLÉS COMO SE MUESTRA):
 - "base_salary": Sueldo Base del trabajador
