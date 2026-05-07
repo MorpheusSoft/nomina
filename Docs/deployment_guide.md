@@ -34,7 +34,7 @@ Estando dentro de la consola del servidor (Contabo), ejecuta los siguientes coma
 cd /var/www/nebulapayrolls/backend
 
 # Instalar nuevos paquetes (si los hubiera)
-npm install
+npm install --legacy-peer-deps
 
 # ⚠️ Actualizar la estructura de la base de datos de manera segura SIN perder datos
 npx prisma migrate deploy
@@ -55,7 +55,7 @@ pm2 restart nebula-backend
 cd /var/www/nebulapayrolls/frontend
 
 # Instalar nuevos paquetes (si los hubiera)
-npm install
+npm install --legacy-peer-deps
 
 # Generar la compilación estática (Next.js)
 npm run build
