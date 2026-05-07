@@ -601,7 +601,7 @@ export default function TenantsPage() {
                              <input type="file" id="pdfUpload" accept="application/pdf" className="hidden" onChange={handlePdfUpload} disabled={isPdfUploading} />
                              <label htmlFor="pdfUpload" className={`cursor-pointer text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition-colors ${isPdfUploading ? 'bg-indigo-300 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}>
                                {isPdfUploading ? <i className="pi pi-spin pi-spinner mr-2"></i> : <i className="pi pi-cloud-upload mr-2"></i>}
-                               {isPdfUploading ? 'Leyendo PDF...' : 'Subir PDF (NotebookLM)'}
+                               {isPdfUploading ? 'Leyendo PDF...' : 'Subir Archivo de Conocimiento'}
                              </label>
                            </div>
                          </label>
