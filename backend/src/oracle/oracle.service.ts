@@ -106,37 +106,16 @@ ${concepts}${editInstruction}`;
       // --- PASO 1: Prompt Chaining (Extracción de Teoría Legal Pura) ---
       let ragContext = '';
       if (tenant.legalKnowledgeBase) {
-        // Truncate to ~500,000 characters since Gemini Flash can easily process 1M tokens in under 15 seconds
-        const safeText = tenant.legalKnowledgeBase.length > 500000 
-           ? tenant.legalKnowledgeBase.substring(0, 500000) + '\n\n[...TEXTO TRUNCADO POR LÍMITE DE TAMAÑO]'
+        // Truncate to ~150,000 characters. Ensures we capture early clauses (e.g., tiempo de viaje at 124k) while keeping latency < 10s.
+        const safeText = tenant.legalKnowledgeBase.length > 150000 
+           ? tenant.legalKnowledgeBase.substring(0, 150000) + '\n\n[...TEXTO TRUNCADO POR LÍMITE DE TAMAÑO]'
            : tenant.legalKnowledgeBase;
-        ragContext = `\n\n> ATENCIÓN: BASE DE CONOCIMIENTO PRIVADA DEL CLIENTE (RAG):\n"""\n${safeText}\n"""\nInstrucción Estricta y Obligatoria: DEBES basarte única y exclusivamente en este documento.`;
+        ragContext = `\n\n> ATENCIÓN: BASE DE CONOCIMIENTO PRIVADA DEL CLIENTE (RAG):\n"""\n${safeText}\n"""\nInstrucción Estricta y Obligatoria: DEBES basarte única y exclusivamente en este documento. Si la respuesta no está en el documento, indícalo.`;
       }
 
-      const step1SystemPrompt = `${customPromptHeader}\n\nTu único objetivo en esta etapa es recordar y explicar la base teórica legal para la solicitud del usuario. NO escribas código JSON ni MathJS. Explica la ley o convención paso a paso (menciona porcentajes, topes, horas o condiciones escalonadas que apliquen al concepto).`;
-      
-      const step1Contents = [{ role: 'user', parts: [{ text: `Explícame la regla legal exacta para esto: ${naturalLanguagePrompt}${ragContext}` }] }];
-      
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('TIMEOUT_GOOGLE')), 25000)
-      );
+      const combinedSystemPrompt = `${customPromptHeader}
 
-      const step1Response: any = await Promise.race([
-        this.ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: step1Contents,
-          config: { 
-            systemInstruction: step1SystemPrompt, 
-            temperature: 0.2
-          }
-        }),
-        timeoutPromise
-      ]);
-      
-      const extractedLegalTheory = step1Response.text || "No se encontró teoría legal específica.";
-
-      // --- PASO 2: Traducción a MathJS Estricto ---
-      const step2SystemPrompt = `${customPromptHeader}
+Tu tarea es analizar el requerimiento del usuario (y el documento legal provisto), extraer la regla, y traducirla DIRECTAMENTE a una fórmula matemática en formato JSON.
 
 Reglas de Dialectos de Ingeniería (INVISIBLES AL USUARIO):
 - Cuando generes los campos matemáticos (formulaFactor, formulaRate, formulaAmount), debes escribir estrictamente en Sintaxis de MathJS, usando sólo variables del entorno en inglés, y operadores numéricos permitidos.
@@ -151,11 +130,8 @@ Reglas de Seguridad y Confidencialidad Críticas:
 5. REFERENCIAS DINÁMICAS: NUNCA hardcodees porcentajes si existen como Variables Globales o de Convenio, inyecta su código.
 6. REGLA DE VARIABLES (ANTI-ALUCINACIÓN): Tienes ESTRICTAMENTE PROHIBIDO inventar nombres de variables o prefijos (como "geografico_", "convenio_", etc). Usa ÚNICAMENTE los códigos matemáticos exactos que te proveo en las listas dinámicas de la empresa y en el diccionario base de variables. Si requieres un valor que no existe, usa un número fijo.
 
-> ATENCIÓN. REGLA LEGAL RECUPERADA DE TU BASE DE CONOCIMIENTO (UTILIZA ESTA REGLA PARA ARMAR LA FÓRMULA):
-"${extractedLegalTheory}"
-
-7. SÍNTESIS LEGAL Y CADENA DE PENSAMIENTO: Tu objetivo es traducir la regla teórica recuperada arriba a código matemático puro.
-PRIMERO: En tu 'message' hacia el usuario, resume brevemente la regla legal que recuperaste en el paso anterior.
+7. SÍNTESIS LEGAL Y CADENA DE PENSAMIENTO:
+PRIMERO: En tu 'message' hacia el usuario, resume brevemente la regla legal que recuperaste del documento (o ley general).
 SEGUNDO: En el mismo 'message', explica cómo esa regla teórica se mapea a la fórmula utilizando las variables de Nebula.
 TERCERO: IMPORTANTE SOBRE TRAMOS Y ESCALAFONES: Por ley (ej. recibos de nómina), los conceptos escalonados o con tramos (ej. Tiempo de viaje primeras 1.5h a un porcentaje, y el exceso a otro) DEBEN IMPRIMIRSE SEPARADOS. NUNCA fusiones dos tramos en una sola fórmula gigante. En tu lugar, elabora el 'conceptDraft' EXCLUSIVAMENTE para el PRIMER tramo usando topes matemáticos (ej. min(valor, 1.5)) y en tu 'message' pregúntale al usuario: "He preparado el concepto para el primer tramo. ¿Deseas que genere también el concepto para el exceso de horas?".
 
@@ -188,7 +164,7 @@ DICCIONARIO DE VARIABLES NATIVAS BASE (ESTRICTAMENTE EN INGLÉS COMO SE MUESTRA)
 - "total_base_islr": Acumulado Renta Bruta Acumulada para ISLR
 - "factor": Valor dinámico evaluado en la casilla de Factor.
 - "rata": Valor dinámico evaluado en la casilla de Rata.
-- Funciones matemáticas permitidas: min(v1,v2), max(v1,v2), round(v1, dec), abs(v)
+- Funciones matemáticas permitidas: min(v1,v2), max(v1,v2), round(v1, dec), abs(v), floor(v)
 ${contextString}
 
 Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
@@ -215,11 +191,11 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
       }));
       contentsArray.push({
          role: 'user',
-         parts: [{ text: `Requerimiento del Analista: ${naturalLanguagePrompt}` }]
+         parts: [{ text: `Requerimiento del Analista: ${naturalLanguagePrompt}${ragContext}` }]
       });
 
-      const timeoutPromise2 = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('TIMEOUT_GOOGLE')), 25000)
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('TIMEOUT_GOOGLE')), 28000)
       );
 
       const response: any = await Promise.race([
@@ -227,12 +203,12 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
           model: 'gemini-2.5-flash',
           contents: contentsArray,
           config: {
-            systemInstruction: step2SystemPrompt,
+            systemInstruction: combinedSystemPrompt,
             responseMimeType: "application/json",
-            temperature: 0.4
+            temperature: 0.2
           }
         }),
-        timeoutPromise2
+        timeoutPromise
       ]);
       
       if (!response.text) {
