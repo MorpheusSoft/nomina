@@ -42,7 +42,7 @@ export class OracleService {
     }
 
     if (!apiKey) {
-      throw new HttpException('API Key de Gemini no configurada en el entorno', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('API Key de Gemini no configurada en el entorno', HttpStatus.BAD_REQUEST);
     }
 
     // Instanciar siempre con la key capturada en vivo
@@ -246,7 +246,8 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
 
       return parsed;
     } catch (error: any) {
-      throw new HttpException('Falla en la predicción del Oráculo: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      // Usar BAD_REQUEST (400) en vez de 500 para evitar que NGINX intercepte el error y lo oculte tras su página HTML genérica.
+      throw new HttpException('Falla en la predicción del Oráculo: ' + error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
