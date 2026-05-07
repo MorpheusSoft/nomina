@@ -6,6 +6,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
+const pdfParse = require('pdf-parse');
 
 @UseGuards(JwtAuthGuard)
 @Controller('tenants')
@@ -68,5 +69,20 @@ export class TenantsController {
     if (user?.email !== 'admin@nebulapayrolls.com') throw new ForbiddenException('Acesso Denegado');
     if (!consultantUserId) throw new BadRequestException('Falta ID del consultor');
     return this.tenantsService.assignConsultant(targetTenantId, consultantUserId);
+  }
+
+  @Post(':id/upload-rag-pdf')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadRagPdf(@Param('id') id: string, @UploadedFile() file: Express.Multer.File, @CurrentUser() user: any) {
+    if (user?.email !== 'admin@nebulapayrolls.com') throw new ForbiddenException('Acceso Denegado');
+    if (!file) throw new BadRequestException('Archivo requerido');
+    if (file.mimetype !== 'application/pdf') throw new BadRequestException('El archivo debe ser un PDF válido');
+    
+    try {
+      const data = await pdfParse(file.buffer);
+      return { text: data.text };
+    } catch(e: any) {
+      throw new BadRequestException('Error leyendo PDF: ' + e.message);
+    }
   }
 }

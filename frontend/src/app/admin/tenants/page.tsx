@@ -122,6 +122,38 @@ export default function TenantsPage() {
     setIsEditDialogVisible(true);
   };
 
+  const [isPdfUploading, setIsPdfUploading] = useState(false);
+
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    if (file.type !== 'application/pdf') {
+      toast.current?.show({ severity: 'error', summary: 'Archivo Inválido', detail: 'Solo se admiten documentos PDF', life: 3000 });
+      return;
+    }
+
+    setIsPdfUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await api.post(`/tenants/${editData.id}/upload-rag-pdf`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      if (res.data && res.data.text) {
+        setEditData({ ...editData, legalKnowledgeBase: res.data.text });
+        toast.current?.show({ severity: 'success', summary: 'PDF Procesado', detail: 'Texto extraído exitosamente. Por favor revisa y guarda los cambios.', life: 5000 });
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.current?.show({ severity: 'error', summary: 'Error', detail: err.response?.data?.message || 'Error procesando el PDF', life: 5000 });
+    } finally {
+      setIsPdfUploading(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -560,8 +592,15 @@ export default function TenantsPage() {
                        </div>
                        
                        <div className="border-t border-indigo-200/50 pt-4">
-                         <label className="block text-sm font-bold text-indigo-900 mb-2 flex items-center gap-2">
-                           <i className="pi pi-book"></i> Base de Conocimiento Legal (RAG)
+                         <label className="block text-sm font-bold text-indigo-900 mb-2 flex items-center justify-between">
+                           <span className="flex items-center gap-2"><i className="pi pi-book"></i> Base de Conocimiento Legal (RAG)</span>
+                           <div>
+                             <input type="file" id="pdfUpload" accept="application/pdf" className="hidden" onChange={handlePdfUpload} disabled={isPdfUploading} />
+                             <label htmlFor="pdfUpload" className={`cursor-pointer text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition-colors ${isPdfUploading ? 'bg-indigo-300 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}>
+                               {isPdfUploading ? <i className="pi pi-spin pi-spinner mr-2"></i> : <i className="pi pi-cloud-upload mr-2"></i>}
+                               {isPdfUploading ? 'Leyendo PDF...' : 'Subir PDF (NotebookLM)'}
+                             </label>
+                           </div>
                          </label>
                          <InputTextarea 
                            rows={6}
@@ -569,8 +608,9 @@ export default function TenantsPage() {
                            onChange={(e) => setEditData({...editData, legalKnowledgeBase: e.target.value})} 
                            className="w-full p-3 text-sm rounded border-indigo-200 focus:border-indigo-500 bg-white" 
                            placeholder="Ej: El tiempo de viaje diurno hasta 1.5h se paga al 52%. El exceso se paga al 77%..."
+                           disabled={isPdfUploading}
                          />
-                         <small className="text-indigo-600/70 font-medium block mt-2 leading-tight">La IA leerá este manual privado de la empresa ANTES de buscar en internet, garantizando precisión corporativa.</small>
+                         <small className="text-indigo-600/70 font-medium block mt-2 leading-tight">La IA leerá este manual privado de la empresa ANTES de buscar en internet, garantizando precisión corporativa. Sube un PDF para autocompletar este campo.</small>
                        </div>
                     </div>
                   )}
