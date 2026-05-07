@@ -31,6 +31,10 @@ export class UpdateTenantDto {
 
   @IsOptional()
   @IsString()
+  legalKnowledgeBase?: string | null;
+
+  @IsOptional()
+  @IsString()
   contactPhone?: string | null;
 
   @IsOptional()

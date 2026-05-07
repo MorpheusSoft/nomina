@@ -355,11 +355,19 @@ export class PayrollEngineService {
         } else {
           // 1. Evaluate Factor if exists
           if (formulaFactor && formulaFactor.trim() !== '') {
-            factor = Number(this.math.evaluate(formulaFactor.toLowerCase(), mem)) || 0;
+            try {
+              factor = Number(this.math.evaluate(formulaFactor.toLowerCase(), mem)) || 0;
+            } catch (e) {
+              factor = 0;
+            }
           }
           // 2. Evaluate Rata if exists
           if (formulaRate && formulaRate.trim() !== '') {
-            rata = Number(this.math.evaluate(formulaRate.toLowerCase(), mem)) || 0;
+            try {
+              rata = Number(this.math.evaluate(formulaRate.toLowerCase(), mem)) || 0;
+            } catch (e) {
+              rata = 0;
+            }
           }
 
           // Inject into memory context for the execution of the Amount formula

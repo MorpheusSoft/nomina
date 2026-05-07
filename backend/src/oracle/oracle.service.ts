@@ -104,14 +104,23 @@ ${concepts}${editInstruction}`;
 
     try {
       // --- PASO 1: Prompt Chaining (Extracción de Teoría Legal Pura) ---
-      const step1SystemPrompt = `${customPromptHeader}\n\nTu único objetivo en esta etapa es recordar y explicar la base teórica legal para la solicitud del usuario. NO escribas código JSON ni MathJS. Basado en tu rol y país, explica la ley o convención paso a paso (menciona porcentajes, topes, horas o condiciones escalonadas que apliquen al concepto).`;
+      let ragContext = '';
+      if (tenant.legalKnowledgeBase) {
+        ragContext = `\n\n> ATENCIÓN: BASE DE CONOCIMIENTO PRIVADA DEL CLIENTE (RAG):\n"""\n${tenant.legalKnowledgeBase}\n"""\nInstrucción Estricta: 1. Lee cuidadosamente esta base de conocimiento privada. 2. Si la base de conocimiento responde a la petición, asume esa información como la LEY ABSOLUTA, ignorando internet. 3. Si la regla no está en la base de conocimiento, usa tus capacidades o herramientas de búsqueda para encontrar la ley actual.`;
+      }
+
+      const step1SystemPrompt = `${customPromptHeader}\n\nTu único objetivo en esta etapa es recordar y explicar la base teórica legal para la solicitud del usuario. NO escribas código JSON ni MathJS. Basado en tu rol y país, explica la ley o convención paso a paso (menciona porcentajes, topes, horas o condiciones escalonadas que apliquen al concepto).${ragContext}`;
       
       const step1Contents = [{ role: 'user', parts: [{ text: `Explícame la regla legal exacta para esto: ${naturalLanguagePrompt}` }] }];
       
       const step1Response = await this.ai.models.generateContent({
         model: 'gemini-2.5-pro',
         contents: step1Contents,
-        config: { systemInstruction: step1SystemPrompt, temperature: 0.2 }
+        config: { 
+          systemInstruction: step1SystemPrompt, 
+          temperature: 0.2,
+          tools: [{ googleSearch: {} }] 
+        }
       });
       
       const extractedLegalTheory = step1Response.text || "No se encontró teoría legal específica.";
@@ -268,7 +277,7 @@ DICCIONARIO DE DATOS (POSTGRESQL):
 Tablas Principales:
 - workers (id, first_name, last_name, primary_identity_number, birth_date, gender, marital_status)
 - employment_records (id, worker_id, payroll_group_id, cost_center_id, department_id, start_date, end_date, contract_type, position, is_active, status) -> status usualmente 'ACTIVE', 'SUSPENDED', 'LIQUIDATED'. (Nota: payroll_group_id representa el 'Convenio').
-- payroll_groups (id, name, code) -> Tabla de convenios.
+- payroll_groups (id, name) -> Tabla de convenios.
 - salary_histories (id, employment_record_id, amount, currency, valid_from, valid_to) -> 'amount' es el salario. 'currency' suele ser 'VES' (Bolívares) o 'USD'.
 - payroll_periods (id, name, start_date, end_date, status) -> Valores de status vitales: 'DRAFT', 'PRE_CALCULATED', 'PENDING_APPROVAL', 'APPROVED', 'PAID', 'CLOSED'.
 - payroll_receipts (id, worker_id, payroll_period_id, total_salary_earnings, total_non_salary_earnings, total_deductions, net_pay, status)

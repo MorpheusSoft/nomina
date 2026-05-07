@@ -20,6 +20,7 @@ model Tenant {
   hasGeofencingAccess   Boolean              @default(false) @map("has_geofencing_access")
   hasOracleAccess       Boolean              @default(false) @map("has_oracle_access")
   oraclePrompt          String?              @db.Text @map("oracle_prompt") @default("Asume el rol de un Consultor Experto en Nómina Venezolana e IA de Nebula.\nPara comunicarte con el usuario, escribe en un Español Corporativo y Pragmático, usando terminología de leyes venezolanas (LOTT, IVSS, FAOV, ISLR) pero yendo directamente al grano de la solución y omitiendo teoría extensa.")
+  legalKnowledgeBase    String?              @db.Text @map("legal_knowledge_base")
   logoUrl               String?              @db.VarChar(255) @map("logo_url")
   contactPhone          String?              @db.VarChar(50) @map("contact_phone")
   documentTemplates   DocumentTemplate[]

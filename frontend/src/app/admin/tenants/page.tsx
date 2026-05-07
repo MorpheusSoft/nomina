@@ -110,6 +110,7 @@ export default function TenantsPage() {
       hasOracleAccess: tenant.hasOracleAccess ?? false,
       hasGeofencingAccess: tenant.hasGeofencingAccess ?? false,
       oraclePrompt: tenant.oraclePrompt || "Asume el rol de un Consultor Experto en Nómina Venezolana e IA de Nebula.\nPara comunicarte con el usuario, escribe en un Español Corporativo y Pragmático, usando terminología de leyes venezolanas (LOTT, IVSS, FAOV, ISLR) pero yendo directamente al grano de la solución y omitiendo teoría extensa.",
+      legalKnowledgeBase: tenant.legalKnowledgeBase || '',
       logoUrl: tenant.logoUrl || '',
       logoFile: null,
       contactPhone: tenant.contactPhone || '',
@@ -543,18 +544,34 @@ export default function TenantsPage() {
                   <small className="text-gray-500 block mb-4">Restringe o habilita el uso de la PWA de asistencia con validación GPS.</small>
 
                   {editData.hasOracleAccess && (
-                    <div className="mb-4 bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                       <label className="block text-sm font-bold text-indigo-900 mb-2 flex items-center gap-2">
-                         <i className="pi pi-sparkles"></i> Prompt Tuning (Directrices Especiales)
-                       </label>
-                       <InputTextarea 
-                         rows={4}
-                         value={editData.oraclePrompt || ''} 
-                         onChange={(e) => setEditData({...editData, oraclePrompt: e.target.value})} 
-                         className="w-full p-3 text-sm rounded border-indigo-200 focus:border-indigo-500 bg-white font-mono" 
-                         placeholder="Ej: Para comunicarte con el usuario, escribe en un Español Corporativo..."
-                       />
-                       <small className="text-indigo-600/70 font-medium block mt-2 leading-tight">Gobernanza de comportamiento IA para esta empresa. Por defecto asume leyes venezolanas.</small>
+                    <div className="mb-4 bg-indigo-50 p-4 rounded-xl border border-indigo-100 space-y-4">
+                       <div>
+                         <label className="block text-sm font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                           <i className="pi pi-sparkles"></i> Prompt Tuning (Directrices Especiales)
+                         </label>
+                         <InputTextarea 
+                           rows={3}
+                           value={editData.oraclePrompt || ''} 
+                           onChange={(e) => setEditData({...editData, oraclePrompt: e.target.value})} 
+                           className="w-full p-3 text-sm rounded border-indigo-200 focus:border-indigo-500 bg-white font-mono" 
+                           placeholder="Ej: Para comunicarte con el usuario, escribe en un Español Corporativo..."
+                         />
+                         <small className="text-indigo-600/70 font-medium block mt-2 leading-tight">Gobernanza de comportamiento IA para esta empresa. Por defecto asume leyes venezolanas.</small>
+                       </div>
+                       
+                       <div className="border-t border-indigo-200/50 pt-4">
+                         <label className="block text-sm font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                           <i className="pi pi-book"></i> Base de Conocimiento Legal (RAG)
+                         </label>
+                         <InputTextarea 
+                           rows={6}
+                           value={editData.legalKnowledgeBase || ''} 
+                           onChange={(e) => setEditData({...editData, legalKnowledgeBase: e.target.value})} 
+                           className="w-full p-3 text-sm rounded border-indigo-200 focus:border-indigo-500 bg-white" 
+                           placeholder="Ej: El tiempo de viaje diurno hasta 1.5h se paga al 52%. El exceso se paga al 77%..."
+                         />
+                         <small className="text-indigo-600/70 font-medium block mt-2 leading-tight">La IA leerá este manual privado de la empresa ANTES de buscar en internet, garantizando precisión corporativa.</small>
+                       </div>
                     </div>
                   )}
                 </div>
