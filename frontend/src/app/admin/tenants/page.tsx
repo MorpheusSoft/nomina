@@ -611,7 +611,7 @@ export default function TenantsPage() {
                            <span className="flex items-center gap-2"><i className="pi pi-book"></i> Base de Conocimiento Legal (RAG)</span>
                            <div>
                              <input type="file" id="pdfUpload" accept="application/pdf" className="hidden" onChange={handlePdfUpload} disabled={isPdfUploading} />
-                             <label htmlFor="pdfUpload" className={`cursor-pointer text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition-colors ${isPdfUploading ? 'bg-indigo-300 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}>
+                             <label htmlFor="pdfUpload" className={`cursor-pointer text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition-colors inline-flex items-center whitespace-nowrap ${isPdfUploading ? 'bg-indigo-300 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}>
                                {isPdfUploading ? <i className="pi pi-spin pi-spinner mr-2"></i> : <i className="pi pi-cloud-upload mr-2"></i>}
                                {isPdfUploading ? 'Leyendo PDF...' : 'Subir PDF'}
                              </label>
