@@ -118,7 +118,7 @@ ${concepts}${editInstruction}`;
       const step1Contents = [{ role: 'user', parts: [{ text: `Explícame la regla legal exacta para esto: ${naturalLanguagePrompt}` }] }];
       
       const step1Response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-pro',
+        model: 'gemini-2.5-flash',
         contents: step1Contents,
         config: { 
           systemInstruction: step1SystemPrompt, 
@@ -213,7 +213,7 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
       });
 
       const response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-pro',
+        model: 'gemini-2.5-flash',
         contents: contentsArray,
         config: {
           systemInstruction: step2SystemPrompt,
@@ -246,6 +246,9 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
 
       return parsed;
     } catch (error: any) {
+      console.error('################ ORACLE ERROR ################');
+      console.error(error);
+      console.error('##############################################');
       // Usar BAD_REQUEST (400) en vez de 500 para evitar que NGINX intercepte el error y lo oculte tras su página HTML genérica.
       throw new HttpException('Falla en la predicción del Oráculo: ' + error.message, HttpStatus.BAD_REQUEST);
     }
@@ -330,7 +333,7 @@ ${dataDictionary}`;
       });
 
       const response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-pro',
+        model: 'gemini-2.5-flash',
         contents: contentsArray,
         config: {
           systemInstruction: systemPrompt,
