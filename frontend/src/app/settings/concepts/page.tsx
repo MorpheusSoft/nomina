@@ -374,7 +374,14 @@ export default function ConceptsPage() {
          costCenterVars: costCenterVars.map(v => ({ code: v.code, name: v.name, value: v.value })),
          existingConcepts: concepts.map(c => ({ code: c.code, name: c.name })),
          payrollGroups: payrollGroups.map(g => ({ id: g.value, name: g.label })),
-         currentForm: watch()
+         currentForm: {
+           name: watch('name'),
+           type: watch('type'),
+           formulaFactor: watch('formulaFactor'),
+           formulaRate: watch('formulaRate'),
+           formulaAmount: watch('formulaAmount'),
+           condition: watch('condition')
+         }
        };
 
        const res = await api.post('/oracle/generate-concept', { 
@@ -390,7 +397,8 @@ export default function ConceptsPage() {
        setChatHistory(prev => [...prev, newModelMessage]);
        
     } catch(err: any) {
-        toast.current?.show({ severity: 'error', summary: 'Error del Oráculo', detail: err.response?.data?.message || 'Tu empresa no cuenta con este módulo premium o hubo un fallo de conexión.', life: 5000 });
+        const errorMessage = err.response?.data?.message || err.message || 'Tu empresa no cuenta con este módulo premium o hubo un fallo de conexión.';
+        toast.current?.show({ severity: 'error', summary: 'Error del Oráculo', detail: errorMessage, life: 7000 });
         // Rollback last user message on error
         setChatHistory(prev => prev.slice(0, -1));
     } finally {
