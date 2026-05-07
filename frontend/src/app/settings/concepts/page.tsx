@@ -378,7 +378,7 @@ export default function ConceptsPage() {
        };
 
        const res = await api.post('/oracle/generate-concept', { 
-         prompt: currentPrompt,
+         prompt: promptText,
          context: payloadContext,
          history: chatHistory
        }, {
