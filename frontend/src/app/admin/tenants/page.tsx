@@ -142,7 +142,10 @@ export default function TenantsPage() {
       });
       
       if (res.data && res.data.text) {
-        setEditData({ ...editData, legalKnowledgeBase: res.data.text });
+        setEditData(prev => ({ 
+          ...prev, 
+          legalKnowledgeBase: prev.legalKnowledgeBase ? prev.legalKnowledgeBase + '\n\n--- NUEVO DOCUMENTO ---\n\n' + res.data.text : res.data.text 
+        }));
         toast.current?.show({ severity: 'success', summary: 'PDF Procesado', detail: 'Texto extraído exitosamente. Por favor revisa y guarda los cambios.', life: 5000 });
       }
     } catch (err: any) {
