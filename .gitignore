@@ -4,3 +4,4 @@ node_modules/
 .env
 .db_analyzer/
 test-remote.js
+backend/dist/
