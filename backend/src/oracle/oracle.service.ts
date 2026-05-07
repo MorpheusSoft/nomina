@@ -106,7 +106,11 @@ ${concepts}${editInstruction}`;
       // --- PASO 1: Prompt Chaining (Extracción de Teoría Legal Pura) ---
       let ragContext = '';
       if (tenant.legalKnowledgeBase) {
-        ragContext = `\n\n> ATENCIÓN: BASE DE CONOCIMIENTO PRIVADA DEL CLIENTE (RAG):\n"""\n${tenant.legalKnowledgeBase}\n"""\nInstrucción Estricta: 1. Lee cuidadosamente esta base de conocimiento privada. 2. Si la base de conocimiento responde a la petición, asume esa información como la LEY ABSOLUTA, ignorando internet. 3. Si la regla no está en la base de conocimiento, usa tus capacidades o herramientas de búsqueda para encontrar la ley actual.`;
+        // Truncate to ~1 million characters to prevent Gemini API from crashing or hitting payload limits when giant PDFs are uploaded
+        const safeText = tenant.legalKnowledgeBase.length > 1000000 
+           ? tenant.legalKnowledgeBase.substring(0, 1000000) + '\n\n[...TEXTO TRUNCADO POR LÍMITE DE TAMAÑO]'
+           : tenant.legalKnowledgeBase;
+        ragContext = `\n\n> ATENCIÓN: BASE DE CONOCIMIENTO PRIVADA DEL CLIENTE (RAG):\n"""\n${safeText}\n"""\nInstrucción Estricta: 1. Lee cuidadosamente esta base de conocimiento privada. 2. Si la base de conocimiento responde a la petición, asume esa información como la LEY ABSOLUTA, ignorando internet. 3. Si la regla no está en la base de conocimiento, usa tus capacidades o herramientas de búsqueda para encontrar la ley actual.`;
       }
 
       const step1SystemPrompt = `${customPromptHeader}\n\nTu único objetivo en esta etapa es recordar y explicar la base teórica legal para la solicitud del usuario. NO escribas código JSON ni MathJS. Basado en tu rol y país, explica la ley o convención paso a paso (menciona porcentajes, topes, horas o condiciones escalonadas que apliquen al concepto).${ragContext}`;
