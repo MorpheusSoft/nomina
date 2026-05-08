@@ -194,22 +194,15 @@ Devuelve ESTRICTAMENTE un objeto JSON con las siguientes llaves exactas:
          parts: [{ text: `Requerimiento del Analista: ${naturalLanguagePrompt}${ragContext}` }]
       });
 
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('TIMEOUT_GOOGLE')), 28000)
-      );
-
-      const response: any = await Promise.race([
-        this.ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: contentsArray,
-          config: {
-            systemInstruction: combinedSystemPrompt,
-            responseMimeType: "application/json",
-            temperature: 0.2
-          }
-        }),
-        timeoutPromise
-      ]);
+      const response: any = await this.ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: contentsArray,
+        config: {
+          systemInstruction: combinedSystemPrompt,
+          responseMimeType: "application/json",
+          temperature: 0.2
+        }
+      });
       
       if (!response.text) {
         throw new Error('El modelo devolvió una respuesta vacía o fue bloqueada por filtros de seguridad.');
