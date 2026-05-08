@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
         destination: 'http://127.0.0.1:3002/api/v1/:path*' // Proxy to Backend on both Local & VPS
       }
     ]
+  },
+  experimental: {
+    proxyTimeout: 120000
   }
 };
 
