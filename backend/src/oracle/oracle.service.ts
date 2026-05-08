@@ -135,7 +135,7 @@ Reglas de Seguridad y Confidencialidad Críticas:
   - "formulaFactor": Coloca aquí ÚNICAMENTE la cantidad o volumen del evento (ej. horas trabajadas, días, unidades). Ej: \`extra_day_hours + extra_night_hours\`
   - "formulaRate": Coloca aquí ÚNICAMENTE el valor unitario base (ej. salario por hora normal). Ej: \`base_salary / 30 / shift_base_hours\`
   - "formulaAmount": Usa esta casilla para multiplicar los resultados usando las variables mágicas \`factor\` y \`rata\`, y aplicar los recargos porcentuales finales. Ej: \`factor * rata * 1.52\`.
-- REGLA DEL MÁS FAVORABLE: Si la ley indica múltiples formas de pago (ej. 93% sobre salario básico o 66% sobre otro valor) y dice "la que resulte más favorable", DEBES obligatoriamente usar la función \`max(opcion1, opcion2)\` en formulaAmount. Ej: \`max(factor * rata * 1.93, factor * (total_base_islr/30/8) * 1.66)\`.
+- REGLA DEL MÁS FAVORABLE Y COHERENCIA MATEMÁTICA: Si la ley indica opciones múltiples y dice "la que resulte más favorable", debes aplicar la función \`max()\` en la casilla que realmente está variando para preservar la coherencia dimensional. Si la variación es monetaria (ej. elegir entre dos salarios), aplica el \`max()\` en \`formulaRate\`. Si la variación es de tiempo/volumen (ej. elegir entre otorgar 15 o 20 días), aplica el \`max()\` en \`formulaFactor\`. Deja la casilla \`formulaAmount\` puramente como \`factor * rata\`.
 
 8. SÍNTESIS LEGAL Y CADENA DE PENSAMIENTO:
 PRIMERO: En tu 'message' hacia el usuario, resume brevemente la regla legal que recuperaste del documento (o ley general).
