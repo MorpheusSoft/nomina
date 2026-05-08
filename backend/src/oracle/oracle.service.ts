@@ -106,9 +106,9 @@ ${concepts}${editInstruction}`;
       // --- PASO 1: Prompt Chaining (Extracción de Teoría Legal Pura) ---
       let ragContext = '';
       if (tenant.legalKnowledgeBase) {
-        // Truncate to ~150,000 characters. Ensures we capture early clauses (e.g., tiempo de viaje at 124k) while keeping latency < 10s.
-        const safeText = tenant.legalKnowledgeBase.length > 150000 
-           ? tenant.legalKnowledgeBase.substring(0, 150000) + '\n\n[...TEXTO TRUNCADO POR LÍMITE DE TAMAÑO]'
+        // Truncate to ~130,000 characters. Ensures we capture early clauses (e.g., tiempo de viaje at 124k, horas extras at 121k) while guaranteeing latency < 12s.
+        const safeText = tenant.legalKnowledgeBase.length > 130000 
+           ? tenant.legalKnowledgeBase.substring(0, 130000) + '\n\n[...TEXTO TRUNCADO POR LÍMITE DE TAMAÑO]'
            : tenant.legalKnowledgeBase;
         ragContext = `\n\n> ATENCIÓN: BASE DE CONOCIMIENTO PRIVADA DEL CLIENTE (RAG):\n"""\n${safeText}\n"""\nInstrucción Estricta y Obligatoria: DEBES basarte única y exclusivamente en este documento. Si la respuesta no está en el documento, indícalo.`;
       }
@@ -134,7 +134,8 @@ Reglas de Seguridad y Confidencialidad Críticas:
 - Tienes ESTRICTAMENTE PROHIBIDO colocar todo el cálculo gigante dentro de "formulaAmount". Debes distribuir la matemática usando las 3 casillas:
   - "formulaFactor": Coloca aquí ÚNICAMENTE la cantidad o volumen del evento (ej. horas trabajadas, días, unidades). Ej: \`extra_day_hours + extra_night_hours\`
   - "formulaRate": Coloca aquí ÚNICAMENTE el valor unitario base (ej. salario por hora normal). Ej: \`base_salary / 30 / shift_base_hours\`
-  - "formulaAmount": Usa esta casilla para multiplicar los resultados usando las variables mágicas \`factor\` y \`rata\`, y aplicar los recargos porcentuales finales. Ej: \`factor * rata * 1.52\` o \`max(factor * rata * 1.93, factor * (SALNORMAL/30/8) * 1.66)\`.
+  - "formulaAmount": Usa esta casilla para multiplicar los resultados usando las variables mágicas \`factor\` y \`rata\`, y aplicar los recargos porcentuales finales. Ej: \`factor * rata * 1.52\`.
+- REGLA DEL MÁS FAVORABLE: Si la ley indica múltiples formas de pago (ej. 93% sobre salario básico o 66% sobre otro valor) y dice "la que resulte más favorable", DEBES obligatoriamente usar la función \`max(opcion1, opcion2)\` en formulaAmount. Ej: \`max(factor * rata * 1.93, factor * (total_base_islr/30/8) * 1.66)\`.
 
 8. SÍNTESIS LEGAL Y CADENA DE PENSAMIENTO:
 PRIMERO: En tu 'message' hacia el usuario, resume brevemente la regla legal que recuperaste del documento (o ley general).
