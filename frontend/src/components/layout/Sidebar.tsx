@@ -155,7 +155,9 @@ export default function Sidebar({ isOpen }: { isOpen: boolean }) {
           <NavLink href="/settings/global-variables" icon="pi-sliders-h" label="Variables Globales" pathname={pathname} />
           <NavLink href="/settings/holidays" icon="pi-calendar-plus" label="Calendario & Feriados" pathname={pathname} />
           <NavLink href="/settings/catalogs" icon="pi-list" label="Catálogos y Listas" pathname={pathname} />
+          <NavLink href="/settings/banks" icon="pi-building" label="Bancos y Cuentas" pathname={pathname} />
           <NavLink href="/settings/templates" icon="pi-file-edit" label="Plantillas de Documentos" pathname={pathname} />
+          <NavLink href="/settings/email" icon="pi-envelope" label="Configuración de Correo" pathname={pathname} />
         </ul>
 
         <div 
@@ -168,6 +170,7 @@ export default function Sidebar({ isOpen }: { isOpen: boolean }) {
         <ul className={`space-y-0.5 overflow-hidden transition-all duration-300 ${sections.personnel ? 'max-h-[500px] opacity-100 mb-6' : 'max-h-0 opacity-0'}`}>
           <NavLink href="/workers" icon="pi-id-card" label="Fichas de Trabajadores" pathname={pathname} exact={true} />
           <NavLink href="/workers/absences" icon="pi-calendar-minus" label="Control de Ausencias" pathname={pathname} />
+          <NavLink href="/hr/recruitment" icon="pi-users" label="Reclutamiento (ATS)" pathname={pathname} />
           <NavLink href="/hr/tickets" icon="pi-inbox" label="Taquilla VIP Tickets" pathname={pathname} />
         </ul>
 

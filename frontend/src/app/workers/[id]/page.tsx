@@ -81,6 +81,7 @@ type FamilyFormData = yup.InferType<typeof familySchema>;
 const contractSchema = yup.object({
   contractType: yup.string().required('El tipo de contrato es requerido'),
   position: yup.string().required('El cargo es requerido'),
+  jobPositionId: yup.string().nullable(),
   startDate: yup.date().nullable().required('La fecha de inicio es requerida'),
   endDate: yup.date().nullable().when('contractType', {
     is: (val: string) => val === 'Ocasional' || val === 'Obra',
@@ -98,6 +99,7 @@ const contractSchema = yup.object({
 
 const transferSchema = yup.object({
   position: yup.string().required('El cargo es requerido'),
+  jobPositionId: yup.string().nullable(),
   costCenterId: yup.string().required('La Sucursal / Centro de Costo es obligatoria'),
   departmentId: yup.string().required('El Departamento es obligatorio'),
   crewId: yup.string().required('La Guardia / Cuadrilla es obligatoria')
@@ -162,6 +164,7 @@ export default function WorkerProfilePage() {
   const [costCenterList, setCostCenterList] = useState<any[]>([]);
   const [fixedConcepts, setFixedConcepts] = useState<any[]>([]);
   const [concepts, setConcepts] = useState<any[]>([]);
+  const [jobPositions, setJobPositions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
@@ -183,10 +186,12 @@ export default function WorkerProfilePage() {
   const [showSalaryDialog, setShowSalaryDialog] = useState(false);
   const [isSubmittingSalary, setIsSubmittingSalary] = useState(false);
 
-  const loadData = async () => {
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
+
+  const loadData = async (showLoading = true) => {
     try {
-      setLoading(true);
-      const [workerRes, familyRes, contractsRes, groupsRes, costCentersRes, fixedConceptsRes, conceptsRes, catalogsRes] = await Promise.all([
+      if (showLoading) setLoading(true);
+      const [workerRes, familyRes, contractsRes, groupsRes, costCentersRes, fixedConceptsRes, conceptsRes, jobPositionsRes, catalogsRes] = await Promise.all([
         api.get(`/workers/${id}`),
         api.get(`/family-members?workerId=${id}`),
         api.get(`/employment-records?workerId=${id}`),
@@ -194,6 +199,7 @@ export default function WorkerProfilePage() {
         api.get('/cost-centers'),
         api.get(`/worker-fixed-concepts?workerId=${id}`),
         api.get('/concepts'),
+        api.get('/job-positions'),
         api.get('/general-catalogs?category=NATIONALITY').catch(() => ({ data: [] }))
       ]);
       setWorker(workerRes.data);
@@ -203,6 +209,7 @@ export default function WorkerProfilePage() {
       setCostCenterList(costCentersRes.data);
       setFixedConcepts(fixedConceptsRes.data);
       setConcepts(conceptsRes.data.map((c: any) => ({ label: `${c.code} - ${c.name}`, value: c.id })));
+      setJobPositions(jobPositionsRes.data.map((j: any) => ({ label: `${j.name}`, value: j.id })));
       if (catalogsRes && catalogsRes.data && catalogsRes.data.length > 0) {
         setNationalityOptions(catalogsRes.data.map((item: any) => ({ label: item.value, value: item.value })));
       }
@@ -210,7 +217,7 @@ export default function WorkerProfilePage() {
       console.error(error);
       setErrorMsg("No se pudo cargar el perfil del trabajador.");
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
@@ -311,6 +318,7 @@ export default function WorkerProfilePage() {
     defaultValues: {
       contractType: 'Fijo',
       position: '',
+      jobPositionId: null as any,
       startDate: null as any,
       endDate: null as any,
       initialSalary: 0,
@@ -368,6 +376,7 @@ export default function WorkerProfilePage() {
     resolver: yupResolver(transferSchema) as any,
     defaultValues: {
       position: '',
+      jobPositionId: null as any,
       costCenterId: '',
       departmentId: '',
       crewId: ''
@@ -384,6 +393,7 @@ export default function WorkerProfilePage() {
     setActiveContractId(record.id);
     resetTransfer({
       position: record.position,
+      jobPositionId: record.jobPositionId || null,
       costCenterId: record.costCenterId || '',
       departmentId: record.departmentId || '',
       crewId: record.crewId || ''
@@ -623,12 +633,16 @@ export default function WorkerProfilePage() {
 
         {/* Paneles de Contenido */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden w-full max-w-full min-w-0">
-          <TabView className="CustomTabView" pt={{ 
-            root: { className: 'w-full flex flex-col min-w-0' },
-            nav: { className: 'flex flex-row overflow-x-auto md:flex-wrap bg-slate-50 border-b border-slate-100' },
-            // action property moved or removed for TS compatibility
-            panelContainer: { className: 'p-0 text-gray-700 w-full overflow-x-hidden' } 
-          }}>
+          <TabView 
+            activeIndex={activeTabIndex} 
+            onTabChange={(e) => setActiveTabIndex(e.index)}
+            className="CustomTabView" 
+            pt={{ 
+              root: { className: 'w-full flex flex-col min-w-0' },
+              nav: { className: 'flex flex-row overflow-x-auto md:flex-wrap bg-slate-50 border-b border-slate-100' },
+              panelContainer: { className: 'p-0 text-gray-700 w-full overflow-x-hidden' } 
+            }}
+          >
             
             <TabPanel header="Datos Personales" leftIcon="pi pi-user mr-2">
               <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -672,7 +686,7 @@ export default function WorkerProfilePage() {
             </TabPanel>
 
             <TabPanel header="Cuenta Bancaria" leftIcon="pi pi-building-columns mr-2">
-              <WorkerBankTab worker={worker} onUpdate={loadData} />
+              <WorkerBankTab worker={worker} onUpdate={() => loadData(false)} />
             </TabPanel>
 
             <TabPanel header="Fideicomiso" leftIcon="pi pi-wallet mr-2">
@@ -896,16 +910,28 @@ export default function WorkerProfilePage() {
         <form onSubmit={handleContractSubmit(onAddContract)} className="space-y-6 pt-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             
-            <div className="flex flex-col gap-2 md:col-span-2">
-              <label className="text-sm font-medium text-gray-700">Cargo de Desempeño <span className="text-red-500">*</span></label>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">Título Personalizado del Cargo <span className="text-red-500">*</span></label>
               <Controller
                 name="position"
                 control={contractControl}
                 render={({ field }) => (
-                  <InputText {...field} className={`w-full ${contractErrors.position ? 'p-invalid' : ''}`} />
+                  <InputText {...field} placeholder="Ej. Desarrollador Frontend" className={`w-full ${contractErrors.position ? 'p-invalid' : ''}`} />
                 )}
               />
               {contractErrors.position && <small className="text-red-500">{contractErrors.position.message as string}</small>}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">Cargo Estandarizado (Perfil IA)</label>
+              <Controller
+                name="jobPositionId"
+                control={contractControl}
+                render={({ field }) => (
+                  <Dropdown {...field} options={jobPositions} placeholder="Seleccione un cargo del catálogo..." showClear filter className={`w-full ${contractErrors.jobPositionId ? 'p-invalid' : ''}`} />
+                )}
+              />
+              <small className="text-gray-500">Usado para evaluaciones de desempeño automatizadas por IA.</small>
             </div>
 
             <div className="flex flex-col gap-2">
