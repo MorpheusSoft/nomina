@@ -435,7 +435,7 @@ export default function EvaluationTemplatesPage() {
               <label className="text-xs font-semibold text-gray-700">Cant. Preguntas</label>
               <InputNumber 
                 value={oracleCount} 
-                onValueChange={(e) => setOracleCount(e.value)} 
+                onValueChange={(e) => setOracleCount(e.value ?? null)} 
                 min={1} 
                 max={15}
               />
