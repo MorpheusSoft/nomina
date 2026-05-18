@@ -203,7 +203,7 @@ export default function EvaluationCampaignsPage() {
       try {
         await api.delete(`/evaluation-campaigns/${id}`);
         toast.current?.show({ severity: 'success', summary: 'Éxito', detail: 'Campaña eliminada correctamente.' });
-        loadCampaigns();
+        loadData();
       } catch (error) {
         toast.current?.show({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar la campaña.' });
       }
