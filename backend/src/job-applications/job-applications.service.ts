@@ -314,33 +314,50 @@ Tu respuesta DEBE estar en formato JSON con la siguiente estructura estricta:
       data: { status: 'HIRED' }
     });
 
-    // 2. Crear ficha de trabajador
+    // 2. Validar si ya existe el trabajador para no duplicarlo
     const crypto = require('crypto');
     const personal = (application.candidate.personalDetails as any) || {};
     
     let identityNumber = personal.primaryIdentityNumber && personal.primaryIdentityNumber !== 'N/A' 
       ? personal.primaryIdentityNumber 
-      : `PENDING-${crypto.randomUUID().substring(0, 8)}`;
+      : null;
 
     let parsedBirthDate = new Date('1990-01-01');
     if (personal.birthDate && personal.birthDate !== '1990-01-01' && !isNaN(Date.parse(personal.birthDate))) {
       parsedBirthDate = new Date(personal.birthDate);
     }
 
-    await this.prisma.worker.create({
-      data: {
-        tenantId,
-        primaryIdentityNumber: identityNumber,
-        firstName: application.candidate.firstName,
-        lastName: application.candidate.lastName,
-        email: application.candidate.email,
-        phone: application.candidate.phone,
-        birthDate: parsedBirthDate,
-        gender: personal.gender && personal.gender !== 'N/A' ? personal.gender : 'N/A',
-        nationality: personal.nationality && personal.nationality !== 'N/A' ? personal.nationality : 'N/A',
-        maritalStatus: personal.maritalStatus && personal.maritalStatus !== 'N/A' ? personal.maritalStatus : 'N/A'
-      }
-    });
+    let existingWorker = null;
+    
+    if (identityNumber) {
+      existingWorker = await this.prisma.worker.findFirst({
+        where: { tenantId, primaryIdentityNumber: identityNumber }
+      });
+    }
+
+    if (!existingWorker && application.candidate.email) {
+      existingWorker = await this.prisma.worker.findFirst({
+        where: { tenantId, email: application.candidate.email }
+      });
+    }
+
+    // Solo lo creamos si no existe previamente en la base de datos de trabajadores
+    if (!existingWorker) {
+      await this.prisma.worker.create({
+        data: {
+          tenantId,
+          primaryIdentityNumber: identityNumber || `PENDING-${crypto.randomUUID().substring(0, 8)}`,
+          firstName: application.candidate.firstName,
+          lastName: application.candidate.lastName,
+          email: application.candidate.email,
+          phone: application.candidate.phone,
+          birthDate: parsedBirthDate,
+          gender: personal.gender && personal.gender !== 'N/A' ? personal.gender : 'N/A',
+          nationality: personal.nationality && personal.nationality !== 'N/A' ? personal.nationality : 'N/A',
+          maritalStatus: personal.maritalStatus && personal.maritalStatus !== 'N/A' ? personal.maritalStatus : 'N/A'
+        }
+      });
+    }
 
     // 3. Cerrar vacante y rechazar demás si es solicitado
     if (closeVacancy) {

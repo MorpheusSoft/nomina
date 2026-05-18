@@ -101,7 +101,13 @@ export class WorkersService {
         tenantId, 
         deletedAt: null,
         ...(employmentRecordFilter && { employmentRecords: employmentRecordFilter })
-      } 
+      },
+      include: {
+        bankAccounts: {
+          include: { bank: true },
+          orderBy: { isPrimary: 'desc' }
+        }
+      }
     });
     if (!worker) throw new NotFoundException('Worker not found or belongs to another tenant');
     return worker;
@@ -129,5 +135,79 @@ export class WorkersService {
       where: { id, tenantId },
       data: { deletedAt: new Date() }
     });
+  }
+
+  // --- BANK ACCOUNTS MANAGEMENT ---
+
+  async addBankAccount(tenantId: string, workerId: string, data: any) {
+    await this.findOne(tenantId, workerId); // Check ownership
+
+    if (data.isPrimary) {
+      await this.prisma.bankAccount.updateMany({
+        where: { workerId },
+        data: { isPrimary: false }
+      });
+    } else {
+      // If no accounts exist, force this one to be primary
+      const existing = await this.prisma.bankAccount.count({ where: { workerId } });
+      if (existing === 0) data.isPrimary = true;
+    }
+
+    return this.prisma.bankAccount.create({
+      data: {
+        workerId,
+        bankId: data.bankId,
+        accountNumber: data.accountNumber,
+        accountType: data.accountType,
+        isPrimary: data.isPrimary
+      }
+    });
+  }
+
+  async updateBankAccount(tenantId: string, workerId: string, accountId: string, data: any) {
+    await this.findOne(tenantId, workerId); // Check ownership
+    
+    if (data.isPrimary) {
+      await this.prisma.bankAccount.updateMany({
+        where: { workerId, id: { not: accountId } },
+        data: { isPrimary: false }
+      });
+    }
+
+    return this.prisma.bankAccount.updateMany({
+      where: { id: accountId, workerId },
+      data: {
+        bankId: data.bankId,
+        accountNumber: data.accountNumber,
+        accountType: data.accountType,
+        isPrimary: data.isPrimary
+      }
+    });
+  }
+
+  async removeBankAccount(tenantId: string, workerId: string, accountId: string) {
+    await this.findOne(tenantId, workerId); // Check ownership
+    
+    await this.prisma.bankAccount.deleteMany({
+      where: { id: accountId, workerId }
+    });
+
+    // If we deleted the primary, make the first remaining one primary
+    const remaining = await this.prisma.bankAccount.findFirst({
+      where: { workerId }
+    });
+    if (remaining) {
+      const hasPrimary = await this.prisma.bankAccount.findFirst({
+        where: { workerId, isPrimary: true }
+      });
+      if (!hasPrimary) {
+        await this.prisma.bankAccount.updateMany({
+          where: { id: remaining.id },
+          data: { isPrimary: true }
+        });
+      }
+    }
+    
+    return { success: true };
   }
 }

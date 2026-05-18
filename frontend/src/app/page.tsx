@@ -18,7 +18,9 @@ import {
   PieChart,
   Building2,
   UserSquare2,
-  Smartphone
+  Smartphone,
+  UserPlus,
+  Star
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -130,6 +132,32 @@ export default function LandingPage() {
       ],
       screenshotDesc: "Portal Privado del Trabajador mostrando saldo y recibos.",
       imageSrc: "/images/portal.png"
+    },
+    {
+      title: "Reclutamiento Inteligente (ATS)",
+      icon: <UserPlus className="w-6 h-6" />,
+      color: "bg-pink-600",
+      description: "Centralice su embudo de contratación y encuentre al candidato ideal con Inteligencia Artificial.",
+      details: [
+        "Portal de Vacantes: Publicación rápida con códigos QR.",
+        "Análisis de CV con IA: Extracción estructurada de experiencia y habilidades.",
+        "Onboarding Ágil: Convierta un candidato en trabajador con un solo clic."
+      ],
+      screenshotDesc: "Tablero Kanban y embudo de candidatos en módulo ATS.",
+      imageSrc: "/images/ats.png"
+    },
+    {
+      title: "Evaluación Continua y Consenso 360°",
+      icon: <Star className="w-6 h-6" />,
+      color: "bg-cyan-600",
+      description: "Mida el rendimiento, detecte talento clave y genere reportes ejecutivos sin usar Excel.",
+      details: [
+        "Workflows 360: Autoevaluaciones, revisión de supervisores y reuniones de consenso.",
+        "Plantillas Dinámicas: Separe habilidades blandas de metas operativas.",
+        "Analítica 9-Box y Radar: Clasificación visual de talento corporativo."
+      ],
+      screenshotDesc: "Matriz 9-Box y reporte de evaluación de desempeño.",
+      imageSrc: "/images/performance.png"
     }
   ];
 

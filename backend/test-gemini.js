@@ -1,21 +1,20 @@
 const { GoogleGenAI } = require('@google/genai');
-const dotenv = require('dotenv');
-dotenv.config();
+const apiKey = "AIzaSyBFk9SA8KxamYN-RZEk_6h67C1vow9RSEo";
+const ai = new GoogleGenAI({ apiKey });
 
-async function main() {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+async function test() {
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-pro',
-      contents: [{ role: 'user', parts: [{ text: "Dame la tasa BCV hoy y devuelve json." }] }],
-      config: {
-        responseMimeType: "application/json",
-        tools: [{ googleSearch: {} }]
+      contents: [{ role: 'user', parts: [{ text: 'Explícame la ley de trabajo' }] }],
+      config: { 
+        temperature: 0.2,
+        tools: [{ googleSearch: {} }] 
       }
     });
-    console.log("Success:", response.text);
-  } catch(e) {
-    console.log("Error:", e.message);
+    console.log("SUCCESS:", response.text);
+  } catch(err) {
+    console.error("ERROR:", err.message);
   }
 }
-main();
+test();

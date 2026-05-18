@@ -96,6 +96,27 @@ export class RecruitmentProcessesService {
       }
     });
 
+    // Encontrar al contratado actual para descartarlo
+    const hiredApps = await this.prisma.jobApplication.findMany({
+      where: { recruitmentProcessId: id, status: 'HIRED' },
+      select: { id: true }
+    });
+    const hiredIds = hiredApps.map(a => a.id);
+
+    // Restaurar a los demás que habían sido rechazados automáticamente al cerrar
+    await this.prisma.jobApplication.updateMany({
+      where: { recruitmentProcessId: id, status: 'REJECTED' },
+      data: { status: 'APPLIED' }
+    });
+
+    // Descartar definitivamente al que había sido contratado (echó para atrás)
+    if (hiredIds.length > 0) {
+      await this.prisma.jobApplication.updateMany({
+        where: { id: { in: hiredIds } },
+        data: { status: 'REJECTED' }
+      });
+    }
+
     return { success: true };
   }
 }

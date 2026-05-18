@@ -12,6 +12,7 @@ import { Badge } from 'primereact/badge';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { TabView, TabPanel } from 'primereact/tabview';
+import { Dialog } from 'primereact/dialog';
 import PayslipPrintTemplate from '@/components/payroll/PayslipPrintTemplate';
 
 import api from '../../../../lib/api';
@@ -34,6 +35,14 @@ export default function PayrollEngineConsole({ params }: { params: Promise<{ id:
   const [exchangeRate, setExchangeRate] = useState<string>('1.00');
   const [currency, setCurrency] = useState<string>('VES');
   const [isUpdatingRate, setIsUpdatingRate] = useState(false);
+  
+  // TXT Generation State
+  const [showBankDialog, setShowBankDialog] = useState(false);
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [companyAccounts, setCompanyAccounts] = useState<any[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [selectedAccount, setSelectedAccount] = useState('');
+  const [isGeneratingTxt, setIsGeneratingTxt] = useState(false);
   
   const fetchPeriodData = async () => {
     try {
@@ -60,6 +69,48 @@ export default function PayrollEngineConsole({ params }: { params: Promise<{ id:
     }
   }, [id]);
 
+  const openBankDialog = async () => {
+    setShowBankDialog(true);
+    try {
+      const [tplRes, accRes] = await Promise.all([
+        api.get('/bank-file-templates'),
+        api.get('/company-bank-accounts')
+      ]);
+      setTemplates(tplRes.data);
+      setCompanyAccounts(accRes.data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleGenerateTxt = async () => {
+    if (!selectedTemplate || !selectedAccount) {
+      alert('Seleccione la plantilla y la cuenta emisora');
+      return;
+    }
+    try {
+      setIsGeneratingTxt(true);
+      const res = await api.post(`/payroll-periods/${id}/generate-txt`, {
+        templateId: selectedTemplate,
+        companyBankAccountId: selectedAccount
+      });
+      
+      const blob = new Blob([res.data.txt], { type: 'text/plain;charset=utf-8' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Nomina_${period?.name || 'TXT'}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setShowBankDialog(false);
+    } catch (e: any) {
+      alert(e.response?.data?.message || 'Error al generar el TXT');
+    } finally {
+      setIsGeneratingTxt(false);
+    }
+  };
+
   const handleCalculate = async () => {
     try {
       setComputing(true);
@@ -67,8 +118,11 @@ export default function PayrollEngineConsole({ params }: { params: Promise<{ id:
       await fetchPeriodData();
     } catch (e: any) {
       console.error(e);
-      const backendMsg = e.response?.data?.message || e.message || '';
-      alert(`Hubo un error al compilar la nómina:\n\n${backendMsg}`);
+      let backendMsg = e.response?.data?.message || e.message || '';
+      if (Array.isArray(backendMsg)) backendMsg = backendMsg.join('\n- ');
+      else if (typeof backendMsg === 'object') backendMsg = JSON.stringify(backendMsg);
+      
+      alert(`Hubo un error al compilar la nómina (Error 400):\n\n${backendMsg}\n\nPosibles causas:\n1. El Convenio (Grupo de Nómina) no tiene un 'Concepto Raíz' asignado para este tipo de período.\n2. Error matemático en una fórmula de los conceptos.`);
     } finally {
       setComputing(false);
     }
@@ -198,6 +252,13 @@ export default function PayrollEngineConsole({ params }: { params: Promise<{ id:
           
           <div className="flex flex-col gap-3">
              <Button 
+                label="Generar TXT Bancario" 
+                icon="pi pi-file" 
+                className="px-6 py-3 rounded-xl font-bold bg-teal-600 text-white border-none hover:bg-teal-700 shadow-md transition-all"
+                onClick={openBankDialog}
+                disabled={receipts.length === 0 || !['APPROVED', 'PAID', 'CLOSED'].includes(period?.status)}
+             />
+             <Button 
                 label="Imprimir Recibos PDF" 
                 icon="pi pi-print" 
                 className={`px-6 py-3 rounded-xl font-bold bg-white text-indigo-700 border border-indigo-200 hover:bg-indigo-50 shadow-sm transition-all`}
@@ -215,6 +276,51 @@ export default function PayrollEngineConsole({ params }: { params: Promise<{ id:
              />
           </div>
         </div>
+
+        <Dialog header="Generar Archivo Bancario" visible={showBankDialog} onHide={() => setShowBankDialog(false)} style={{ width: '450px' }}>
+          <div className="flex flex-col gap-4 pt-4">
+            <div className="flex flex-col gap-2">
+              <label className="font-semibold text-gray-700">Cuenta de la Empresa (Emisora)</label>
+              <Dropdown 
+                options={companyAccounts.map(a => ({ label: `${a.bank?.name || 'Banco'} - ${a.accountNumber}`, value: a.id }))} 
+                value={selectedAccount} 
+                onChange={e => {
+                  setSelectedAccount(e.value);
+                  const matchingAcc = companyAccounts.find(a => a.id === e.value);
+                  if (matchingAcc) {
+                    const validTemplates = templates.filter(t => t.bankId === matchingAcc.bankId || t.bank?.id === matchingAcc.bankId);
+                    if (validTemplates.length === 1) {
+                      setSelectedTemplate(validTemplates[0].id);
+                    } else if (!validTemplates.find(t => t.id === selectedTemplate)) {
+                      setSelectedTemplate('');
+                    }
+                  }
+                }} 
+                placeholder="Seleccione la cuenta corporativa"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="font-semibold text-gray-700">Plantilla de Archivo (Formato)</label>
+              <Dropdown 
+                options={templates
+                  .filter(t => {
+                     if (!selectedAccount) return true;
+                     const matchingAcc = companyAccounts.find(a => a.id === selectedAccount);
+                     return matchingAcc && (t.bankId === matchingAcc.bankId || t.bank?.id === matchingAcc.bankId);
+                  })
+                  .map(t => ({ label: t.name, value: t.id }))} 
+                value={selectedTemplate} 
+                onChange={e => setSelectedTemplate(e.value)} 
+                placeholder={selectedAccount ? "Seleccione la plantilla bancaria" : "Seleccione primero la cuenta emisora"}
+                disabled={!selectedAccount}
+              />
+            </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button label="Cancelar" icon="pi pi-times" onClick={() => setShowBankDialog(false)} className="p-button-text p-button-secondary" />
+              <Button label="Generar y Descargar" icon="pi pi-download" onClick={handleGenerateTxt} loading={isGeneratingTxt} className="bg-teal-600 border-none hover:bg-teal-700 text-white" />
+            </div>
+          </div>
+        </Dialog>
 
         {computing && (
            <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-6 mb-6">

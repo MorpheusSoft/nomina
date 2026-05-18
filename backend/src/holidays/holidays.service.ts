@@ -6,29 +6,55 @@ export class HolidaysService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: any) {
-    const createData = { ...data };
-    if (data.date) createData.date = new Date(data.date);
-    return this.prisma.holiday.create({ data: createData });
+    const { costCenterIds, ...restData } = data;
+    const createData = { ...restData };
+    if (restData.date) createData.date = new Date(restData.date);
+
+    return this.prisma.holiday.create({ 
+      data: {
+        ...createData,
+        costCenterHolidays: costCenterIds?.length ? {
+          create: costCenterIds.map((id: string) => ({ costCenterId: id }))
+        } : undefined
+      },
+      include: { costCenterHolidays: true }
+    });
   }
 
   async findAll() {
     return this.prisma.holiday.findMany({
-      orderBy: { date: 'desc' }
+      orderBy: { date: 'desc' },
+      include: { costCenterHolidays: true }
     });
   }
 
   async findOne(id: string) {
-    const holiday = await this.prisma.holiday.findUnique({ where: { id } });
+    const holiday = await this.prisma.holiday.findUnique({ 
+      where: { id },
+      include: { costCenterHolidays: true }
+    });
     if (!holiday) throw new NotFoundException('Holiday not found');
     return holiday;
   }
 
   async update(id: string, data: any) {
-    const updateData = { ...data };
-    if (data.date) updateData.date = new Date(data.date);
+    const { costCenterIds, ...restData } = data;
+    const updateData = { ...restData };
+    if (restData.date) updateData.date = new Date(restData.date);
+
+    // Si envían costCenterIds, actualizamos las relaciones
+    const costCenterUpdate = costCenterIds ? {
+      deleteMany: {}, // Limpiamos las existentes
+      create: costCenterIds.map((cid: string) => ({ costCenterId: cid }))
+    } : undefined;
+
     return this.prisma.holiday.update({
       where: { id },
-      data: updateData
+      data: {
+        ...updateData,
+        ...(costCenterUpdate ? { costCenterHolidays: costCenterUpdate } : {})
+      },
+      include: { costCenterHolidays: true }
     });
   }
 

@@ -18,20 +18,13 @@ export class AttendanceEngineService {
     
     let holidays = preloadedHolidays;
     if (!holidays) {
-       holidays = await this.prisma.holiday.findMany({ where: { tenantId } });
+       holidays = await this.prisma.holiday.findMany({ 
+         where: { tenantId },
+         include: { costCenterHolidays: true }
+       });
     }
     
-    // Check if baseDate is holiday
     const [year, month, day] = baseDate.split('-').map(Number);
-    const isHoliday = holidays.some(h => {
-       if (h.isAnnual) {
-         // month is 0-indexed in JS dates when using getMonth, but here we split 'YYYY-MM-DD' so month is 1-indexed.
-         // h.date is UTC Date.
-         return (h.date.getUTCMonth() + 1) === month && h.date.getUTCDate() === day;
-       } else {
-         return h.date.getUTCFullYear() === year && (h.date.getUTCMonth() + 1) === month && h.date.getUTCDate() === day;
-       }
-    });
     const endOfDay = new Date(startOfDay.getTime() + (24 * 60 * 60 * 1000) - 1);
 
     // 1. Obtener las marcas crudas del día
@@ -55,6 +48,21 @@ export class AttendanceEngineService {
           owner: { include: { shiftTemplate: true } },
           crew: { include: { shiftPattern: true } }
         }
+    });
+
+    // Check if baseDate is holiday for THIS worker
+    const isHoliday = holidays.some(h => {
+       const isNational = !h.costCenterHolidays || h.costCenterHolidays.length === 0;
+       const workerCC = activeEmployment?.costCenterId;
+       const appliesToWorker = isNational || (workerCC && h.costCenterHolidays.some((c: any) => c.costCenterId === workerCC));
+       
+       if (!appliesToWorker) return false;
+
+       if (h.isAnnual) {
+         return (h.date.getUTCMonth() + 1) === month && h.date.getUTCDate() === day;
+       } else {
+         return h.date.getUTCFullYear() === year && (h.date.getUTCMonth() + 1) === month && h.date.getUTCDate() === day;
+       }
     });
 
     const pg = activeEmployment?.payrollGroup;
@@ -235,7 +243,10 @@ export class AttendanceEngineService {
     // 0. Autogenerar feriados antes de correr
     const targetYear = startDate.getUTCFullYear();
     await this.holidaysService.generateDynamicHolidaysForYear(tenantId, targetYear);
-    const holidays = await this.prisma.holiday.findMany({ where: { tenantId } });
+    const holidays = await this.prisma.holiday.findMany({ 
+      where: { tenantId },
+      include: { costCenterHolidays: true }
+    });
 
     // 1. Encontrar todos los punches no procesados en este período
     const unprocPunches = await this.prisma.attendancePunch.findMany({

@@ -102,7 +102,7 @@ export default function Sidebar({ isOpen }: { isOpen: boolean }) {
   
   const [sections, setSections] = useState({
     config: pathname.startsWith('/settings'),
-    personnel: pathname.startsWith('/workers') || pathname.startsWith('/hr/tickets'),
+    personnel: pathname.startsWith('/workers') || pathname.startsWith('/hr/tickets') || pathname.startsWith('/hr/recruitment') || pathname.startsWith('/hr/evaluations'),
     operations: pathname.startsWith('/payroll'),
     finance: pathname.startsWith('/finance') || pathname.startsWith('/reports') || pathname.startsWith('/hr/islr') || pathname.startsWith('/portal/islr-ari')
   });
@@ -171,6 +171,8 @@ export default function Sidebar({ isOpen }: { isOpen: boolean }) {
           <NavLink href="/workers" icon="pi-id-card" label="Fichas de Trabajadores" pathname={pathname} exact={true} />
           <NavLink href="/workers/absences" icon="pi-calendar-minus" label="Control de Ausencias" pathname={pathname} />
           <NavLink href="/hr/recruitment" icon="pi-users" label="Reclutamiento (ATS)" pathname={pathname} />
+          <NavLink href="/hr/evaluations/templates" icon="pi-file-edit" label="Plantillas de Evaluación" pathname={pathname} />
+          <NavLink href="/hr/evaluations/campaigns" icon="pi-star" label="Campañas de Desempeño" pathname={pathname} />
           <NavLink href="/hr/tickets" icon="pi-inbox" label="Taquilla VIP Tickets" pathname={pathname} />
         </ul>
 

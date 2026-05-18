@@ -10,6 +10,7 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Checkbox } from 'primereact/checkbox';
 import { Calendar } from 'primereact/calendar';
+import { MultiSelect } from 'primereact/multiselect';
 import { useAuth } from '@/contexts/AuthContext';
 import { Toast } from 'primereact/toast';
 import { format } from 'date-fns';
@@ -20,11 +21,14 @@ export default function HolidaysPage() {
   const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);
   const [editingHoliday, setEditingHoliday] = useState<any>(null);
+  const [costCenters, setCostCenters] = useState<any[]>([]);
   
   // Form state
   const [name, setName] = useState('');
   const [date, setDate] = useState<Date | null>(null);
   const [isAnnual, setIsAnnual] = useState(false);
+  const [isNational, setIsNational] = useState(true);
+  const [costCenterIds, setCostCenterIds] = useState<string[]>([]);
 
   const { user } = useAuth();
   const toast = React.useRef<Toast>(null);
@@ -36,8 +40,18 @@ export default function HolidaysPage() {
   useEffect(() => {
     if (user?.tenantId) {
       loadHolidays();
+      loadCostCenters();
     }
   }, [user]);
+
+  const loadCostCenters = async () => {
+    try {
+      const res = await api.get('/cost-centers');
+      setCostCenters(res.data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const loadHolidays = async () => {
     setLoading(true);
@@ -63,6 +77,8 @@ export default function HolidaysPage() {
     setName('');
     setDate(null);
     setIsAnnual(false);
+    setIsNational(true);
+    setCostCenterIds([]);
     setShowDialog(true);
   };
 
@@ -76,6 +92,12 @@ export default function HolidaysPage() {
       setDate(null);
     }
     setIsAnnual(holiday.isAnnual);
+    
+    // Regional config
+    const cch = holiday.costCenterHolidays || [];
+    setIsNational(cch.length === 0);
+    setCostCenterIds(cch.map((c: any) => c.costCenterId));
+    
     setShowDialog(true);
   };
 
@@ -86,16 +108,20 @@ export default function HolidaysPage() {
     }
 
     try {
+      const payload = {
+         name, 
+         date, 
+         isAnnual,
+         costCenterIds: isNational ? [] : costCenterIds
+      };
+
       if (editingHoliday) {
-         // Update not fully implemented in UI for simplicity, we just delete/recreate or patch
-         await api.patch(`/holidays/${editingHoliday.id}`, { name, date, isAnnual });
+         await api.patch(`/holidays/${editingHoliday.id}`, payload);
          showToast('success', 'Actualizado', 'Feriado actualizado con éxito');
       } else {
          await api.post('/holidays', {
            tenantId: user?.tenantId,
-           name,
-           date,
-           isAnnual
+           ...payload
          });
          showToast('success', 'Creado', 'Feriado creado con éxito');
       }
@@ -129,9 +155,16 @@ export default function HolidaysPage() {
   };
 
   const renderBadge = (rowData: any) => {
-    return rowData.isAnnual 
-      ? <span className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-bold">Fijo (Anual)</span>
-      : <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded font-bold">Móvil (Específico)</span>;
+    const isRegional = rowData.costCenterHolidays && rowData.costCenterHolidays.length > 0;
+    
+    return (
+      <div className="flex gap-1 items-center">
+        {rowData.isAnnual 
+          ? <span className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-bold">Fijo (Anual)</span>
+          : <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded font-bold">Móvil (Específico)</span>}
+        {isRegional && <span className="bg-purple-100 text-purple-800 text-[10px] px-2 py-1 rounded-full font-bold shadow-sm" title="Aplica solo a ciertas sucursales">Regional</span>}
+      </div>
+    );
   };
 
   const actionBody = (rowData: any) => (
@@ -190,6 +223,30 @@ export default function HolidaysPage() {
                 Se repite todos los años el mismo día (Fijo)
               </label>
             </div>
+
+            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-100">
+              <Checkbox inputId="isNational" checked={isNational} onChange={(e) => setIsNational(e.checked as boolean)} />
+              <label htmlFor="isNational" className="text-sm text-gray-700 font-medium cursor-pointer">
+                Aplica para toda la empresa (Feriado Nacional)
+              </label>
+            </div>
+
+            {!isNational && (
+              <div className="flex flex-col gap-1 mt-1 bg-purple-50 p-3 rounded-lg border border-purple-100">
+                <label className="text-xs font-bold text-purple-800 uppercase tracking-wide">Solo aplica a (Centros de Costo)</label>
+                <MultiSelect 
+                  value={costCenterIds} 
+                  options={costCenters} 
+                  onChange={(e) => setCostCenterIds(e.value)} 
+                  optionLabel="name" 
+                  optionValue="id"
+                  placeholder="Seleccione las sucursales" 
+                  display="chip" 
+                  className="w-full text-sm"
+                  pt={{ label: { className: 'py-1' } }}
+                />
+              </div>
+            )}
 
             <Button label="Guardar Festividad" icon="pi pi-save" onClick={saveHoliday} className="mt-4" />
           </div>

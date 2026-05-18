@@ -3,11 +3,16 @@ import { PayrollPeriodsService } from './payroll-periods.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 
+import { BankTxtGeneratorService } from '../bank-file-templates/bank-txt-generator.service';
+
 @UseGuards(JwtAuthGuard)
 
 @Controller('payroll-periods')
 export class PayrollPeriodsController {
-  constructor(private readonly payrollPeriodsService: PayrollPeriodsService) {}
+  constructor(
+    private readonly payrollPeriodsService: PayrollPeriodsService,
+    private readonly bankTxtGeneratorService: BankTxtGeneratorService
+  ) {}
 
   @Post()
   create(@Body() data: any, @CurrentUser() user: any) {
@@ -27,6 +32,24 @@ export class PayrollPeriodsController {
   @Get(':id/budget-analysis')
   getBudgetAnalysis(@Param('id') id: string, @CurrentUser() user: any) {
     return this.payrollPeriodsService.getBudgetAnalysis(user.tenantId, id);
+  }
+
+  @Post(':id/generate-txt')
+  async generateTxt(
+    @Param('id') id: string,
+    @Body() data: { companyBankAccountId: string, templateId: string },
+    @CurrentUser() user: any
+  ) {
+    const hasApproverRole = user.permissions?.includes('ALL_ACCESS') || user.permissions?.includes('PAYROLL_APPROVE');
+    const txtContent = await this.bankTxtGeneratorService.generateTxtFile(
+      user.tenantId,
+      id,
+      data.companyBankAccountId,
+      data.templateId,
+      user.id,
+      hasApproverRole
+    );
+    return { txt: txtContent };
   }
 
   @Patch(':id')

@@ -39,4 +39,30 @@ export class WorkersController {
     const canViewConfidential = user.permissions?.includes('ALL_ACCESS') || user.permissions?.includes('CONFIDENTIAL_VIEW');
     return this.workersService.remove(user.tenantId, id, canViewConfidential);
   }
+
+  // --- BANK ACCOUNTS ROUTES ---
+
+  @Post(':id/bank-accounts')
+  addBankAccount(@Param('id') id: string, @Body() data: any, @CurrentUser() user: any) {
+    return this.workersService.addBankAccount(user.tenantId, id, data);
+  }
+
+  @Patch(':id/bank-accounts/:accountId')
+  updateBankAccount(
+    @Param('id') id: string, 
+    @Param('accountId') accountId: string, 
+    @Body() data: any, 
+    @CurrentUser() user: any
+  ) {
+    return this.workersService.updateBankAccount(user.tenantId, id, accountId, data);
+  }
+
+  @Delete(':id/bank-accounts/:accountId')
+  removeBankAccount(
+    @Param('id') id: string, 
+    @Param('accountId') accountId: string, 
+    @CurrentUser() user: any
+  ) {
+    return this.workersService.removeBankAccount(user.tenantId, id, accountId);
+  }
 }

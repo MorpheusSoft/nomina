@@ -6,6 +6,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 @Module({
   imports: [PrismaModule],
   providers: [OracleService],
-  controllers: [OracleController]
+  controllers: [OracleController],
+  exports: [OracleService]
 })
 export class OracleModule {}

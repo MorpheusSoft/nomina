@@ -33,6 +33,59 @@ export default function RecruitmentDashboard() {
   const [viewingFeedback, setViewingFeedback] = useState<any | null>(null);
   const [loadingSummaryFor, setLoadingSummaryFor] = useState<string | null>(null);
 
+  // Talent Pool
+  const [showTalentPool, setShowTalentPool] = useState(false);
+  const [talentPoolCandidates, setTalentPoolCandidates] = useState<any[]>([]);
+  const [talentPoolLoading, setTalentPoolLoading] = useState(false);
+  const [oracleMatchLoading, setOracleMatchLoading] = useState(false);
+  const [oraclePicks, setOraclePicks] = useState<any[]>([]);
+
+  const fetchTalentPool = async () => {
+    setTalentPoolLoading(true);
+    try {
+      const res = await api.get('/candidates');
+      setTalentPoolCandidates(res.data);
+    } catch (error) {
+      console.error(error);
+      alert('Error cargando la base de talentos.');
+    } finally {
+      setTalentPoolLoading(false);
+    }
+  };
+
+  const executeOracleMatch = async () => {
+    if (!selectedProcessId) {
+      alert('Selecciona una vacante en el panel lateral primero.');
+      return;
+    }
+    setOracleMatchLoading(true);
+    setOraclePicks([]);
+    try {
+      const res = await api.post('/candidates/oracle-match', { processId: selectedProcessId });
+      setOraclePicks(res.data); // [{ candidateId, reason }]
+    } catch (error) {
+      console.error(error);
+      alert('Error ejecutando el Oráculo.');
+    } finally {
+      setOracleMatchLoading(false);
+    }
+  };
+
+  const assignCandidateToVacancy = async (candidateId: string) => {
+    if (!selectedProcessId) {
+      alert('Selecciona una vacante primero.');
+      return;
+    }
+    try {
+      await api.post('/candidates/assign-to-vacancy', { candidateId, processId: selectedProcessId });
+      alert('Candidato asignado exitosamente.');
+      setShowTalentPool(false);
+      fetchApplications(selectedProcessId);
+    } catch (error: any) {
+      alert('Error al asignar candidato: ' + (error.response?.data?.message || ''));
+    }
+  };
+
   const handleViewHolisticSummary = async (applicationId: string) => {
     setLoadingSummaryFor(applicationId);
     try {
@@ -112,11 +165,14 @@ export default function RecruitmentDashboard() {
 
   // Reopen Vacancy
   const handleReopenProcess = async (id: string) => {
-    if (!confirm('¿Estás seguro de reabrir esta vacante? Esto te permitirá contratar a un nuevo candidato.')) return;
+    if (!confirm('¿Estás seguro de reabrir esta vacante? Esto descartará automáticamente al candidato contratado y restaurará al resto.')) return;
     try {
       await api.post(`/recruitment-processes/${id}/reopen`);
       alert('Vacante reabierta exitosamente.');
       fetchProcesses();
+      if (selectedProcessId === id) {
+        fetchApplications(id);
+      }
     } catch (e) {
       alert('Error al reabrir la vacante.');
     }
@@ -311,6 +367,8 @@ export default function RecruitmentDashboard() {
     .filter(p => p.title.toLowerCase().includes(processSearchTerm.toLowerCase()));
 
   const isSelectedProcessVisible = visibleProcesses.some(p => p.id === selectedProcessId);
+  const activeProcess = processes.find(p => p.id === selectedProcessId);
+  const isProcessClosed = activeProcess?.status === 'CLOSED';
 
   const filteredApps = applications.filter(app => {
     const candidate = app.candidate;
@@ -319,6 +377,10 @@ export default function RecruitmentDashboard() {
     return (candidate.firstName && candidate.firstName.toLowerCase().includes(term)) ||
            (candidate.lastName && candidate.lastName.toLowerCase().includes(term)) ||
            (candidate.skills && Array.isArray(candidate.skills) && candidate.skills.some((s: string) => s.toLowerCase().includes(term)));
+  }).sort((a, b) => {
+    if (a.isStarred && !b.isStarred) return -1;
+    if (!a.isStarred && b.isStarred) return 1;
+    return 0;
   });
 
   return (
@@ -330,6 +392,15 @@ export default function RecruitmentDashboard() {
             <p className="text-slate-500 mt-1">Gestiona vacantes y el embudo de contratación.</p>
           </div>
         <div className="flex gap-2">
+          <button 
+            onClick={() => {
+              setShowTalentPool(true);
+              fetchTalentPool();
+            }}
+            className="bg-white text-emerald-600 border border-emerald-200 px-4 py-2 rounded-lg flex items-center hover:bg-emerald-50 transition shadow-sm font-medium"
+          >
+            Base de Talentos
+          </button>
           <button 
             onClick={() => window.location.href = '/hr/recruitment/exams'}
             className="bg-white text-indigo-600 border border-indigo-200 px-4 py-2 rounded-lg flex items-center hover:bg-indigo-50 transition shadow-sm font-medium"
@@ -430,7 +501,7 @@ export default function RecruitmentDashboard() {
               <div key={p.id} className={`flex items-center w-full px-4 py-2 rounded-lg border transition-all ${selectedProcessId === p.id ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
                 <button 
                   onClick={() => setSelectedProcessId(p.id)}
-                  className="flex-1 text-left"
+                  className="flex-1 text-left min-w-0 overflow-hidden"
                 >
                   <span className={`block font-bold ${p.status === 'CLOSED' ? 'text-slate-400' : 'text-slate-800'}`}>
                     {p.title}
@@ -492,41 +563,47 @@ export default function RecruitmentDashboard() {
                     </p>
                   </div>
                   <div className="flex gap-2 mt-3 sm:mt-0">
-                    <button 
-                      onClick={() => {
-                        const link = typeof window !== 'undefined' ? `${window.location.origin}/apply/${selectedProcessId}` : `/apply/${selectedProcessId}`;
-                        navigator.clipboard.writeText(link);
-                        alert('¡Enlace copiado al portapapeles!');
-                      }}
-                      className="flex items-center px-4 py-2 bg-white text-indigo-700 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition shadow-sm font-medium text-sm"
-                    >
-                      <Copy className="w-4 h-4 mr-2" /> Copiar Link
-                    </button>
-                    <button 
-                      onClick={() => setShowQrCode(true)}
-                      className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-sm font-medium text-sm"
-                    >
-                      <QrCode className="w-4 h-4 mr-2" /> Ver Código QR
-                    </button>
+                    {!isProcessClosed && (
+                      <>
+                        <button 
+                          onClick={() => {
+                            const link = typeof window !== 'undefined' ? `${window.location.origin}/apply/${selectedProcessId}` : `/apply/${selectedProcessId}`;
+                            navigator.clipboard.writeText(link);
+                            alert('¡Enlace copiado al portapapeles!');
+                          }}
+                          className="flex items-center px-4 py-2 bg-white text-indigo-700 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition shadow-sm font-medium text-sm"
+                        >
+                          <Copy className="w-4 h-4 mr-2" /> Copiar Link
+                        </button>
+                        <button 
+                          onClick={() => setShowQrCode(true)}
+                          className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-sm font-medium text-sm"
+                        >
+                          <QrCode className="w-4 h-4 mr-2" /> Ver Código QR
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-indigo-200 flex flex-col sm:flex-row gap-3">
-                  <button 
-                    onClick={autoScreenCandidates}
-                    disabled={actionLoading}
-                    className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold py-2 px-4 rounded-lg flex items-center justify-center transition disabled:opacity-50"
-                  >
-                    ✨ Filtrar Top Candidatos con Oráculo
-                  </button>
-                  <button 
-                    onClick={bulkAssignExams}
-                    disabled={actionLoading}
-                    className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center transition disabled:opacity-50"
-                  >
-                    🚀 Enviar Exámenes a Candidatos Elegibles
-                  </button>
-                </div>
+                {!isProcessClosed && (
+                  <div className="pt-4 border-t border-indigo-200 flex flex-col sm:flex-row gap-3">
+                    <button 
+                      onClick={autoScreenCandidates}
+                      disabled={actionLoading}
+                      className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold py-2 px-4 rounded-lg flex items-center justify-center transition disabled:opacity-50"
+                    >
+                      ✨ Filtrar Top Candidatos con Oráculo
+                    </button>
+                    <button 
+                      onClick={bulkAssignExams}
+                      disabled={actionLoading}
+                      className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center transition disabled:opacity-50"
+                    >
+                      🚀 Enviar Exámenes a Candidatos Elegibles
+                    </button>
+                  </div>
+                )}
               </div>
             <div className="flex items-center space-x-3 bg-white p-4 rounded-xl shadow-sm border border-slate-100">
               <Search className="w-5 h-5 text-slate-400 ml-2" />
@@ -555,7 +632,7 @@ export default function RecruitmentDashboard() {
                           Descartado
                         </span>
                       )}
-                      {app.status !== 'HIRED' && app.status !== 'REJECTED' && (
+                      {!isProcessClosed && app.status !== 'HIRED' && app.status !== 'REJECTED' && (
                         <button onClick={() => toggleStar(app.id)} className="focus:outline-none transition-transform hover:scale-110">
                           <Star className={`w-6 h-6 ${app.isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300 hover:text-yellow-200'}`} />
                         </button>
@@ -611,42 +688,46 @@ export default function RecruitmentDashboard() {
                       </div>
 
                       <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-2">
-                        {app.status === 'SHORTLISTED' ? (
-                          <button 
-                            onClick={() => toggleShortlist(app.id, app.status)}
-                            className="bg-yellow-50 text-yellow-800 hover:bg-yellow-100 transition text-xs font-bold px-2 py-1.5 rounded flex items-center justify-center w-full mb-1"
-                          >
-                            🌟 PRE-SELECCIONADO (Quitar)
-                          </button>
-                        ) : (
-                          <div className="flex gap-2 mb-1">
-                            {app.status !== 'REJECTED' && (
+                        {!isProcessClosed && (
+                          <>
+                            {app.status === 'SHORTLISTED' ? (
                               <button 
                                 onClick={() => toggleShortlist(app.id, app.status)}
-                                className="flex-1 bg-slate-100 text-slate-600 hover:bg-slate-200 transition text-xs font-bold px-2 py-1.5 rounded flex items-center justify-center"
+                                className="bg-yellow-50 text-yellow-800 hover:bg-yellow-100 transition text-xs font-bold px-2 py-1.5 rounded flex items-center justify-center w-full mb-1"
                               >
-                                Pre-seleccionar
+                                🌟 PRE-SELECCIONADO (Quitar)
                               </button>
+                            ) : (
+                              <div className="flex gap-2 mb-1">
+                                {app.status !== 'REJECTED' && (
+                                  <button 
+                                    onClick={() => toggleShortlist(app.id, app.status)}
+                                    className="flex-1 bg-slate-100 text-slate-600 hover:bg-slate-200 transition text-xs font-bold px-2 py-1.5 rounded flex items-center justify-center"
+                                  >
+                                    Pre-seleccionar
+                                  </button>
+                                )}
+                                {app.status !== 'REJECTED' && (
+                                  <button 
+                                    onClick={() => handleRejectCandidate(app.id)}
+                                    className="flex-1 bg-rose-50 text-rose-600 hover:bg-rose-100 transition text-xs font-bold px-2 py-1.5 rounded flex items-center justify-center"
+                                    title="Descartar Candidato"
+                                  >
+                                    <i className="pi pi-ban mr-1"></i> Descartar
+                                  </button>
+                                )}
+                                {app.status === 'REJECTED' && (
+                                  <button 
+                                    onClick={() => handleRestoreCandidate(app.id)}
+                                    className="flex-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition text-xs font-bold px-2 py-1.5 rounded flex items-center justify-center"
+                                    title="Restaurar Candidato"
+                                  >
+                                    <i className="pi pi-refresh mr-1"></i> Restaurar
+                                  </button>
+                                )}
+                              </div>
                             )}
-                            {app.status !== 'REJECTED' && (
-                              <button 
-                                onClick={() => handleRejectCandidate(app.id)}
-                                className="flex-1 bg-rose-50 text-rose-600 hover:bg-rose-100 transition text-xs font-bold px-2 py-1.5 rounded flex items-center justify-center"
-                                title="Descartar Candidato"
-                              >
-                                <i className="pi pi-ban mr-1"></i> Descartar
-                              </button>
-                            )}
-                            {app.status === 'REJECTED' && (
-                              <button 
-                                onClick={() => handleRestoreCandidate(app.id)}
-                                className="flex-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition text-xs font-bold px-2 py-1.5 rounded flex items-center justify-center"
-                                title="Restaurar Candidato"
-                              >
-                                <i className="pi pi-refresh mr-1"></i> Restaurar
-                              </button>
-                            )}
-                          </div>
+                          </>
                         )}
                         
                         {app.candidateExams && app.candidateExams.length > 0 ? (
@@ -667,7 +748,7 @@ export default function RecruitmentDashboard() {
                           </div>
                         ) : null}
 
-                        {app.status === 'SHORTLISTED' && (
+                        {!isProcessClosed && app.status === 'SHORTLISTED' && (
                           <div className="flex gap-2 w-full mt-2">
                             <button 
                               onClick={() => {
@@ -688,24 +769,26 @@ export default function RecruitmentDashboard() {
                           </div>
                         )}
 
-                        {app.portalToken ? (
-                          <button 
-                            onClick={() => {
-                              const link = typeof window !== 'undefined' ? `${window.location.origin}/candidates/${app.portalToken}` : `/candidates/${app.portalToken}`;
-                              navigator.clipboard.writeText(link);
-                              alert('¡Enlace del Portal copiado al portapapeles!');
-                            }}
-                            className="w-full bg-slate-900 text-white font-medium hover:bg-slate-800 py-2 rounded-lg transition-colors text-sm"
-                          >
-                            Copiar Link de Portal
-                          </button>
-                        ) : (
-                          <button 
-                            onClick={() => setSendingExamTo(app.id)}
-                            className="w-full bg-white border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 py-2 rounded-lg transition-colors text-sm"
-                          >
-                            Asignar Individual
-                          </button>
+                        {!isProcessClosed && (
+                          app.portalToken ? (
+                            <button 
+                              onClick={() => {
+                                const link = typeof window !== 'undefined' ? `${window.location.origin}/candidates/${app.portalToken}` : `/candidates/${app.portalToken}`;
+                                navigator.clipboard.writeText(link);
+                                alert('¡Enlace del Portal copiado al portapapeles!');
+                              }}
+                              className="w-full bg-slate-900 text-white font-medium hover:bg-slate-800 py-2 rounded-lg transition-colors text-sm"
+                            >
+                              Copiar Link de Portal
+                            </button>
+                          ) : (
+                            <button 
+                              onClick={() => setSendingExamTo(app.id)}
+                              className="w-full bg-white border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 py-2 rounded-lg transition-colors text-sm"
+                            >
+                              Asignar Individual
+                            </button>
+                          )
                         )}
                       </div>
                     </div>
@@ -1033,6 +1116,107 @@ export default function RecruitmentDashboard() {
             >
               Cerrar
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Base de Talentos */}
+      {showTalentPool && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl w-full max-w-5xl h-[80vh] shadow-2xl flex flex-col overflow-hidden">
+            <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+              <div>
+                <h3 className="text-2xl font-bold text-slate-800">Base de Talentos Global</h3>
+                <p className="text-sm text-slate-500">
+                  {selectedProcessId 
+                    ? 'Selecciona candidatos para agregar a tu vacante activa.' 
+                    : 'Explora todos los candidatos registrados en el sistema.'}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                {selectedProcessId && (
+                  <button 
+                    onClick={executeOracleMatch}
+                    disabled={oracleMatchLoading}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center disabled:opacity-50"
+                  >
+                    {oracleMatchLoading ? 'Consultando Oráculo...' : '✨ Buscar con Oráculo'}
+                  </button>
+                )}
+                <button 
+                  onClick={() => setShowTalentPool(false)}
+                  className="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50 font-medium transition"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-6 bg-slate-100">
+              {talentPoolLoading ? (
+                <div className="flex justify-center items-center h-full text-slate-500">Cargando base de talentos...</div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[...talentPoolCandidates].sort((a, b) => {
+                    const aPick = oraclePicks.some(p => p.candidateId === a.id);
+                    const bPick = oraclePicks.some(p => p.candidateId === b.id);
+                    if (aPick && !bPick) return -1;
+                    if (!aPick && bPick) return 1;
+                    return 0;
+                  }).map(c => {
+                    const oraclePick = oraclePicks.find(p => p.candidateId === c.id);
+                    // Hide candidates that are already applied to the current process
+                    const isAlreadyApplied = selectedProcessId && c.jobApplications?.some((app: any) => app.recruitmentProcessId === selectedProcessId);
+                    
+                    if (isAlreadyApplied) return null;
+
+                    return (
+                      <div key={c.id} className={`bg-white p-5 rounded-xl border ${oraclePick ? 'border-indigo-400 shadow-md ring-2 ring-indigo-50' : 'border-slate-200'} transition flex flex-col`}>
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h4 className="font-bold text-slate-900 text-lg">{c.firstName} {c.lastName}</h4>
+                            <p className="text-sm text-slate-500">{c.email} • {c.phone}</p>
+                          </div>
+                          {oraclePick && (
+                            <span className="bg-indigo-100 text-indigo-800 text-[10px] uppercase font-bold px-2 py-1 rounded-full flex items-center shrink-0 ml-2">
+                              ✨ Match IA
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="text-sm text-slate-600 mb-4 line-clamp-2">
+                          {c.professionalSummary || 'Sin resumen profesional registrado.'}
+                        </div>
+                        
+                        {oraclePick && (
+                          <div className="mb-4 bg-indigo-50 border border-indigo-100 rounded-lg p-3 text-xs text-indigo-900">
+                            <strong>Razón del Oráculo:</strong> {oraclePick.reason}
+                          </div>
+                        )}
+
+                        <div className="flex justify-between items-center mt-auto border-t border-slate-100 pt-4">
+                          <span className="text-xs text-slate-500 font-medium">
+                            {c.experienceYears} años exp.
+                          </span>
+                          <button
+                            onClick={() => assignCandidateToVacancy(c.id)}
+                            disabled={!selectedProcessId}
+                            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition ${selectedProcessId ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}
+                          >
+                            Asignar a Vacante
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {talentPoolCandidates.length === 0 && (
+                    <div className="col-span-full text-center py-12 text-slate-500 bg-white rounded-xl border border-dashed border-slate-300">
+                      No hay candidatos en la base de talentos.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

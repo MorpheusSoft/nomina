@@ -8,7 +8,7 @@ export class TenantMiddleware implements NestMiddleware {
   constructor(private readonly jwtService: JwtService, private readonly prisma: PrismaService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    if (req.originalUrl.includes('/auth/login') || req.originalUrl.includes('/auth/register') || req.originalUrl.includes('/portal') || req.originalUrl.includes('/ari-forms/floor') || req.originalUrl.includes('/ari-forms/employee') || req.originalUrl.includes('/ari-forms/simulate') || req.originalUrl.includes('/ari-forms/details') || req.originalUrl.includes('/uploads')) {
+    if (req.originalUrl.includes('/auth/login') || req.originalUrl.includes('/auth/register') || req.originalUrl.includes('/portal') || req.originalUrl.includes('/ari-forms') || req.originalUrl.includes('/uploads') || req.originalUrl.includes('/candidates/apply') || req.originalUrl.includes('/candidates/upload-resume') || req.originalUrl.includes('/evaluation-instances/token')) {
       return next();
     }
 

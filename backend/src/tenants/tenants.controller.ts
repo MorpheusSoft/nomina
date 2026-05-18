@@ -19,6 +19,13 @@ export class TenantsController {
     return this.tenantsService.findOne(user.tenantId);
   }
 
+  @Patch('my-settings')
+  async updateMySettings(@Body() data: any, @CurrentUser() user: any) {
+    if (!user?.tenantId) throw new ForbiddenException('Acesso Denegado');
+    const { smtpEmail, smtpPassword } = data;
+    return this.tenantsService.update(user.tenantId, { smtpEmail, smtpPassword });
+  }
+
   @Get()
   findAll(@CurrentUser() user: any) {
     if (user?.email !== 'admin@nebulapayrolls.com') throw new ForbiddenException('Acesso Denegado');

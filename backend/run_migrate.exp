@@ -1,0 +1,14 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn npx prisma migrate dev --name init_banks_holidays_txt
+expect {
+    "Are you sure you want create and apply this migration?" {
+        send "y\r"
+        exp_continue
+    }
+    "We need to reset the PostgreSQL database" {
+        send "y\r"
+        exp_continue
+    }
+    eof
+}

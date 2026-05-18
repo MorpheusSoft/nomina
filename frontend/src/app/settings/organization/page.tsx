@@ -21,6 +21,7 @@ export default function OrganizationSettingsPage() {
   const [workLocations, setWorkLocations] = useState<any[]>([]);
   const [expandedRows, setExpandedRows] = useState<DataTableExpandedRows | any[] | undefined>(undefined);
   const [expandedDeptRows, setExpandedDeptRows] = useState<DataTableExpandedRows | any[] | undefined>(undefined);
+  const [workers, setWorkers] = useState<any[]>([]);
   
   const [costCenterDialog, setCostCenterDialog] = useState(false);
   const [departmentDialog, setDepartmentDialog] = useState(false);
@@ -28,7 +29,7 @@ export default function OrganizationSettingsPage() {
   const [locationsManagerDialog, setLocationsManagerDialog] = useState(false);
 
   const [currentCostCenter, setCurrentCostCenter] = useState<any>({ name: '', accountingCode: '', workLocationId: null });
-  const [currentDepartment, setCurrentDepartment] = useState<any>({ name: '', code: '', costCenterId: '' });
+  const [currentDepartment, setCurrentDepartment] = useState<any>({ name: '', code: '', costCenterId: '', supervisorId: null });
   const [currentCrew, setCurrentCrew] = useState<any>({ name: '', departmentId: '', shiftPatternId: null, patternAnchor: null });
 
   const [costCenterVars, setCostCenterVars] = useState<any[]>([]);
@@ -41,7 +42,17 @@ export default function OrganizationSettingsPage() {
     loadData();
     loadShifts();
     loadWorkLocations();
+    loadWorkers();
   }, []);
+
+  const loadWorkers = async () => {
+    try {
+      const resp = await api.get('/workers');
+      setWorkers(resp.data.map((w: any) => ({ label: `${w.firstName} ${w.lastName}`, value: w.id })));
+    } catch (error) {
+      console.error('Error loading workers', error);
+    }
+  };
 
   const loadWorkLocations = async () => {
     try {
@@ -152,6 +163,7 @@ export default function OrganizationSettingsPage() {
         name: currentDepartment.name,
         code: currentDepartment.code?.toUpperCase() || null,
         costCenterId: currentDepartment.costCenterId,
+        supervisorId: currentDepartment.supervisorId || null,
         monthlyBudget: currentDepartment.monthlyBudget ? Number(currentDepartment.monthlyBudget) : null
       };
 
@@ -224,7 +236,7 @@ export default function OrganizationSettingsPage() {
       <div className="p-3 bg-gray-50 rounded-lg ml-8 border border-gray-200">
         <div className="flex justify-between items-center mb-2">
           <h5 className="font-semibold text-gray-700 m-0">Departamentos de {costCenter.name}</h5>
-          <Button icon="pi pi-plus" size="small" label="Agregar Depto" onClick={() => { setCurrentDepartment({ name: '', code: '', costCenterId: costCenter.id }); setDepartmentDialog(true); }} />
+          <Button icon="pi pi-plus" size="small" label="Agregar Depto" onClick={() => { setCurrentDepartment({ name: '', code: '', costCenterId: costCenter.id, supervisorId: null }); setDepartmentDialog(true); }} />
         </div>
         <DataTable value={costCenter.departments} expandedRows={expandedDeptRows} onRowToggle={(e) => setExpandedDeptRows(e.data)} rowExpansionTemplate={deptExpansionTemplate} dataKey="id" size="small" emptyMessage="No hay departamentos registrados.">
           <Column expander style={{ width: '3rem' }} />
@@ -396,6 +408,11 @@ export default function OrganizationSettingsPage() {
             <label className="text-sm font-semibold">Código Alfanumérico (Opcional)</label>
             <InputText value={currentDepartment?.code || ''} onChange={(e) => setCurrentDepartment({...currentDepartment, code: e.target.value.toUpperCase()})} placeholder="Ej. PND" className="font-mono" />
             <small className="text-gray-500">Útil para enlazarlo con las Fórmulas del Oráculo.</small>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-semibold">Supervisor (Jefe del Departamento)</label>
+            <Dropdown options={workers} value={currentDepartment?.supervisorId || null} onChange={(e) => setCurrentDepartment({...currentDepartment, supervisorId: e.target.value})} placeholder="Seleccione un supervisor" showClear filter />
+            <small className="text-gray-500">Esta persona será la encargada de evaluar al personal del departamento.</small>
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-sm font-semibold">Presupuesto Mensual ($)</label>

@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
       {
         source: '/api/v1/:path*',
         destination: 'http://127.0.0.1:3002/api/v1/:path*' // Proxy to Backend on both Local & VPS
+      },
+      {
+        source: '/uploads/:path*',
+        destination: 'http://127.0.0.1:3002/uploads/:path*' // Proxy uploads to backend
       }
     ]
   },

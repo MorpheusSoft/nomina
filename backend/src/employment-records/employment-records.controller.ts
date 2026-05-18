@@ -27,7 +27,7 @@ export class EmploymentRecordsController {
   }
 
   @Patch(':id/transfer')
-  transferWorker(@Param('id') id: string, @Body() data: { position: string, costCenterId: string, departmentId: string, crewId: string }) {
+  transferWorker(@Param('id') id: string, @Body() data: { position: string, jobPositionId?: string, costCenterId: string, departmentId: string, crewId: string }) {
     return this.employmentRecordsService.transferWorker(id, data);
   }
 

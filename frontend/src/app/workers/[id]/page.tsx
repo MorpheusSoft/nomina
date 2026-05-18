@@ -98,8 +98,7 @@ const contractSchema = yup.object({
 }).required();
 
 const transferSchema = yup.object({
-  position: yup.string().required('El cargo es requerido'),
-  jobPositionId: yup.string().nullable(),
+  jobPositionId: yup.string().required('El cargo es requerido'),
   costCenterId: yup.string().required('La Sucursal / Centro de Costo es obligatoria'),
   departmentId: yup.string().required('El Departamento es obligatorio'),
   crewId: yup.string().required('La Guardia / Cuadrilla es obligatoria')
@@ -254,6 +253,18 @@ export default function WorkerProfilePage() {
     }
   };
 
+  const handleDeleteWorker = async () => {
+    if (confirm('¿Está seguro que desea eliminar este trabajador? Esta acción no se puede deshacer.')) {
+      try {
+        await api.delete(`/workers/${id}`);
+        router.push('/workers');
+      } catch (error: any) {
+        console.error(error);
+        alert(error.response?.data?.message || 'Error al eliminar trabajador. Es posible que tenga registros asociados.');
+      }
+    }
+  };
+
   const openEditProfile = () => {
     if (worker) {
       resetProfile({
@@ -392,8 +403,7 @@ export default function WorkerProfilePage() {
   const openTransferModal = (record: any) => {
     setActiveContractId(record.id);
     resetTransfer({
-      position: record.position,
-      jobPositionId: record.jobPositionId || null,
+      jobPositionId: record.jobPositionId || '',
       costCenterId: record.costCenterId || '',
       departmentId: record.departmentId || '',
       crewId: record.crewId || ''
@@ -404,7 +414,12 @@ export default function WorkerProfilePage() {
   const onTransfer = async (data: any) => {
     try {
       setIsSubmittingTransfer(true);
-      await api.patch(`/employment-records/${activeContractId}/transfer`, data);
+      const selectedJob = jobPositions.find(j => j.value === data.jobPositionId);
+      const payload = {
+        ...data,
+        position: selectedJob ? selectedJob.label : ''
+      };
+      await api.patch(`/employment-records/${activeContractId}/transfer`, payload);
       
       setShowTransferDialog(false);
       
@@ -627,6 +642,17 @@ export default function WorkerProfilePage() {
             
             <div className="hidden md:flex gap-3">
               <WorkerDocumentGenerator workerId={id as string} />
+              {(worker.primaryIdentityNumber.startsWith('PENDING') || contracts.length === 0) && (
+                <Button 
+                  icon="pi pi-trash" 
+                  rounded 
+                  text 
+                  severity="danger" 
+                  tooltip="Eliminar Trabajador"
+                  className="bg-red-50 border border-red-100 hover:bg-red-100 transition-colors"
+                  onClick={handleDeleteWorker}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -1108,13 +1134,13 @@ export default function WorkerProfilePage() {
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-700">Nuevo Cargo Desempeñado <span className="text-red-500">*</span></label>
             <Controller
-              name="position"
+              name="jobPositionId"
               control={transferControl}
               render={({ field }) => (
-                <InputText {...field} className={`w-full ${transferErrors.position ? 'p-invalid' : ''}`} />
+                <Dropdown {...field} options={jobPositions} placeholder="Seleccione cargo del catálogo..." filter className={`w-full ${transferErrors.jobPositionId ? 'p-invalid' : ''}`} />
               )}
             />
-            {transferErrors.position && <small className="text-red-500">{transferErrors.position.message as string}</small>}
+            {transferErrors.jobPositionId && <small className="text-red-500">{transferErrors.jobPositionId.message as string}</small>}
           </div>
 
           <div className="flex flex-col gap-2">

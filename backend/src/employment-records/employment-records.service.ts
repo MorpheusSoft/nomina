@@ -99,11 +99,12 @@ export class EmploymentRecordsService {
     });
   }
 
-  async transferWorker(recordId: string, data: { position: string, costCenterId: string, departmentId: string, crewId: string }) {
+  async transferWorker(recordId: string, data: { position: string, jobPositionId?: string, costCenterId: string, departmentId: string, crewId: string }) {
     return this.prisma.employmentRecord.update({
       where: { id: recordId },
       data: {
         position: data.position,
+        jobPositionId: data.jobPositionId,
         costCenterId: data.costCenterId,
         departmentId: data.departmentId,
         crewId: data.crewId

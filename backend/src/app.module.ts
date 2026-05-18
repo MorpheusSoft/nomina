@@ -49,6 +49,18 @@ import { join } from 'path';
 import { AriFormsModule } from './ari-forms/ari-forms.module';
 import { OracleModule } from './oracle/oracle.module';
 import { WorkLocationsModule } from './work-locations/work-locations.module';
+import { BanksModule } from './banks/banks.module';
+import { CompanyBankAccountsModule } from './company-bank-accounts/company-bank-accounts.module';
+import { BankFileTemplatesModule } from './bank-file-templates/bank-file-templates.module';
+import { CandidatesModule } from './candidates/candidates.module';
+import { JobApplicationsModule } from './job-applications/job-applications.module';
+import { RecruitmentProcessesModule } from './recruitment-processes/recruitment-processes.module';
+import { ExamTemplatesModule } from './exam-templates/exam-templates.module';
+import { CandidateExamsModule } from './candidate-exams/candidate-exams.module';
+import { JobPositionsModule } from './job-positions/job-positions.module';
+import { EvaluationTemplatesModule } from './evaluation-templates/evaluation-templates.module';
+import { EvaluationCampaignsModule } from './evaluation-campaigns/evaluation-campaigns.module';
+import { EvaluationInstancesModule } from './evaluation-instances/evaluation-instances.module';
 
 @Module({
   imports: [
@@ -56,7 +68,7 @@ import { WorkLocationsModule } from './work-locations/work-locations.module';
       rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads/',
     }),
-    PrismaModule, TenantsModule, WorkersModule, FamilyMembersModule, PayrollModule, GlobalVariablesModule, ConceptsModule, EmploymentRecordsModule, PayrollGroupsModule, PayrollGroupVariablesModule, ConceptDependenciesModule, PayrollPeriodsModule, AttendanceSummariesModule, AttendanceDetailsModule, HolidaysModule, CostCentersModule, DepartmentsModule, CrewsModule, PayrollEngineModule, WorkerFixedConceptsModule, AuthModule, UsersModule, RolesModule, WorkerLoansModule, PayrollAccumulatorsModule, ContractTrustsModule, VacationHistoriesModule, AccountingJournalsModule, AttendancePunchesModule, AttendanceEngineModule, BiometricDevicesModule, ShiftTemplatesModule, DashboardModule, GeneralCatalogsModule, ShiftsModule, WorkerAbsencesModule, DocumentTemplatesModule, PortalModule, WorkerNoveltiesModule, ReportsModule, ShiftPatternsModule, WorkerTicketsModule, AriFormsModule, OracleModule, WorkLocationsModule],
+    PrismaModule, TenantsModule, WorkersModule, FamilyMembersModule, PayrollModule, GlobalVariablesModule, ConceptsModule, EmploymentRecordsModule, PayrollGroupsModule, PayrollGroupVariablesModule, ConceptDependenciesModule, PayrollPeriodsModule, AttendanceSummariesModule, AttendanceDetailsModule, HolidaysModule, CostCentersModule, DepartmentsModule, CrewsModule, PayrollEngineModule, WorkerFixedConceptsModule, AuthModule, UsersModule, RolesModule, WorkerLoansModule, PayrollAccumulatorsModule, ContractTrustsModule, VacationHistoriesModule, AccountingJournalsModule, AttendancePunchesModule, AttendanceEngineModule, BiometricDevicesModule, ShiftTemplatesModule, DashboardModule, GeneralCatalogsModule, ShiftsModule, WorkerAbsencesModule, DocumentTemplatesModule, PortalModule, WorkerNoveltiesModule, ReportsModule, ShiftPatternsModule, WorkerTicketsModule, AriFormsModule, OracleModule, WorkLocationsModule, BanksModule, CompanyBankAccountsModule, BankFileTemplatesModule, CandidatesModule, JobApplicationsModule, RecruitmentProcessesModule, ExamTemplatesModule, CandidateExamsModule, JobPositionsModule, EvaluationTemplatesModule, EvaluationCampaignsModule, EvaluationInstancesModule],
   controllers: [AppController],
   providers: [AppService],
 })
