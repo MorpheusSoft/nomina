@@ -311,9 +311,12 @@ Reglas ESTRICTAS de Seguridad (Capa 2):
 6. El JSON de respuesta debe ir estructurado exactamente así SIN desviarse:
 {
   "sql_query": "SELECT first_name, last_name FROM workers LIMIT 10;",
-  "message": "Aquí tienes los trabajadores encontrados según tu reporte mensual."
+  "message": "Aquí tienes los trabajadores encontrados según tu reporte mensual.",
+  "visualize_as": "table" 
 }
-Si la solicitud es imposible con el diccionario actual, deja "sql_query" vacío y explica por qué.
+Opciones válidas para visualize_as: "table", "bar", "pie", "line". 
+Si el usuario solicita un análisis visual, comparativo o estadístico (ej. distribución de sueldos), usa "bar" o "pie". Si pide una línea de tiempo, histórico o tendencia, usa "line".
+CRÍTICO: Si usas "bar", "pie" o "line", tu consulta SQL DEBE devolver EXACTAMENTE dos columnas aliasadas como 'label' (texto, fechas o categorías) y 'value' (número numérico o count). Ejemplo: SELECT d.name AS label, COUNT(*) AS value FROM...
 
 ${dataDictionary}`;
 
@@ -359,6 +362,7 @@ ${dataDictionary}`;
       return {
         message: parsed.message,
         sql_query_used: parsed.sql_query,
+        visualize_as: parsed.visualize_as || 'table',
         data: rows
       };
     } catch (error: any) {

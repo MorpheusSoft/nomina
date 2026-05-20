@@ -7,9 +7,15 @@ import puppeteer from 'puppeteer';
   
   await page.setViewport({ width: 1200, height: 1000, deviceScaleFactor: 2 });
   
-  console.log('Cargando la página local...');
-  await page.goto('http://localhost:5173/', { waitUntil: 'networkidle0' });
-  
+  console.log('Cargando la página local (App.jsx)...');
+  await page.goto('http://localhost:5174/', { waitUntil: 'networkidle0' });
+    
+  // Configurar viewport alto para que todo renderice en una pantalla virtual larga (para el PNG completo)
+  await page.setViewport({ width: 800, height: 1131, deviceScaleFactor: 2 });
+    
+  // Esperar a que fuentes/imágenes terminen de pintar
+  await new Promise(r => setTimeout(r, 2000));
+    
   // Imponer renderizado de colores y quitar márgenes extra
   await page.addStyleTag({ content: `
     @media print {
@@ -18,28 +24,38 @@ import puppeteer from 'puppeteer';
         print-color-adjust: exact !important;
       }
       @page {
-        size: letter portrait;
+        size: A4 portrait;
         margin: 0;
       }
     }
   `});
 
-  console.log('Generando PDF vertical...');
+  // 1. PDF Vertical 
+  console.log('Generando PDF corporativo...');
+  const pdfPath = '/home/lzambrano/Documents/Nebula_Payrolls_Corporate_Flyer.pdf';
   await page.pdf({
-    path: '/home/lzambrano/Documents/Nebula_Flyer_Vertical.pdf',
+    path: pdfPath,
+    format: 'A4',
     printBackground: true,
-    format: 'Letter',
-    landscape: false,
-    scale: 0.75, // Escalar el diseño ancho para que entre perfecto en la orientación vertical
-    pageRanges: '1' // Evitar que se parta en más páginas
+    scale: 0.99, // Ajuste para que entre perfecto
+    pageRanges: '1',
+    margin: {
+      top: '0px',
+      right: '0px',
+      bottom: '0px',
+      left: '0px'
+    }
   });
 
-  console.log('Generando PNG completo...');
+  // 2. PNG Alta Resolución
+  console.log('Generando PNG corporativo...');
+  const pngPath = '/home/lzambrano/Documents/Nebula_Payrolls_Corporate_Flyer.png';
   await page.screenshot({
-    path: '/home/lzambrano/Documents/Nebula_Flyer_Completo.png',
-    fullPage: true
+    path: pngPath,
+    fullPage: true,
+    type: 'png'
   });
 
   await browser.close();
-  console.log('PDF Vertical guardado en /home/lzambrano/Documents/Nebula_Flyer_Vertical.pdf');
+  console.log('PDF y PNG guardados en /home/lzambrano/Documents/');
 })();

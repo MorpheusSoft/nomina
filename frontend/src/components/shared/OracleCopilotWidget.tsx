@@ -7,6 +7,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import api from '@/lib/api';
+import OracleChartWidget from './OracleChartWidget';
 
 export default function OracleCopilotWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,6 +42,7 @@ export default function OracleCopilotWidget() {
       setHistory((prev) => [...prev, {
         role: 'model',
         content: dataObj.message,
+        visualize_as: dataObj.visualize_as,
         data: dataObj.data
       }]);
 
@@ -102,18 +104,22 @@ export default function OracleCopilotWidget() {
                     <div className="whitespace-pre-wrap text-[12px] leading-relaxed select-text">{msg.content}</div>
                     
                     {msg.role === 'model' && msg.data && msg.data.length > 0 && (
-                        <div className="mt-3 border border-slate-200 rounded-md overflow-hidden bg-white max-w-full">
-                        <DataTable value={msg.data} size="small" scrollable scrollHeight="150px" stripedRows className="text-[10px]" emptyMessage="N/A">
-                            {Object.keys(msg.data[0]).map(col => (
-                            <Column key={col} field={col} header={col} body={(rowData) => {
-                                const val = rowData[col];
-                                if (val === null || val === undefined) return <span className="text-slate-400 italic">0 (Nulo)</span>;
-                                if (typeof val === 'object') return <span className="text-slate-700">{JSON.stringify(val)}</span>;
-                                return <span className="font-semibold text-slate-800">{String(val)}</span>;
-                            }} style={{ minWidth: '80px', padding: '0.4rem 0.5rem' }}></Column>
-                            ))}
-                        </DataTable>
-                        </div>
+                        msg.visualize_as === 'pie' || msg.visualize_as === 'bar' || msg.visualize_as === 'line' ? (
+                            <OracleChartWidget data={msg.data} type={msg.visualize_as} />
+                        ) : (
+                            <div className="mt-3 border border-slate-200 rounded-md overflow-hidden bg-white max-w-full">
+                            <DataTable value={msg.data} size="small" scrollable scrollHeight="150px" stripedRows className="text-[10px]" emptyMessage="N/A">
+                                {Object.keys(msg.data[0]).map(col => (
+                                <Column key={col} field={col} header={col} body={(rowData) => {
+                                    const val = rowData[col];
+                                    if (val === null || val === undefined) return <span className="text-slate-400 italic">0 (Nulo)</span>;
+                                    if (typeof val === 'object') return <span className="text-slate-700">{JSON.stringify(val)}</span>;
+                                    return <span className="font-semibold text-slate-800">{String(val)}</span>;
+                                }} style={{ minWidth: '80px', padding: '0.4rem 0.5rem' }}></Column>
+                                ))}
+                            </DataTable>
+                            </div>
+                        )
                     )}
                     {msg.role === 'model' && msg.data && msg.data.length === 0 && (
                         <div className="mt-2 text-[10px] font-bold text-slate-400 bg-slate-100 p-1.5 rounded text-center border border-slate-200">
